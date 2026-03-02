@@ -7,11 +7,16 @@
     {
       "name": "indigo",
       "source": "./",
-      "description": "Indigo home automation development toolkit — plugin development, API integration, and control page building",
-      "version": "1.0.0",
+      "description": "Indigo home automation development toolkit \u2014 plugin development, API integration, and control page building",
+      "version": "1.0.1",
       "repository": "https://github.com/simons-plugins/indigo-claude-plugin",
       "license": "MIT",
-      "keywords": ["indigo", "home-automation", "plugin-development", "iot"]
+      "keywords": [
+        "indigo",
+        "home-automation",
+        "plugin-development",
+        "iot"
+      ]
     }
   ]
 }
