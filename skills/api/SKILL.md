@@ -1,5 +1,5 @@
 ---
-name: api-integration
+name: api
 description: Indigo WebSocket and HTTP API integration guidance
 match:
   - "**/WebSocketService*"
