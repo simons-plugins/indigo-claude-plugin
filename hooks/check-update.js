@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Check for Indigo plugin updates in background, write result to cache
-// Called by SessionStart hook - runs once per session
+// SessionStart hook: read cached update info and inject notification, then refresh cache in background
+// Called synchronously so stdout is captured by Claude Code as additionalContext
 
 const fs = require('fs');
 const path = require('path');
@@ -20,7 +20,32 @@ if (!fs.existsSync(cacheDir)) {
   fs.mkdirSync(cacheDir, { recursive: true });
 }
 
-// Run check in background
+// --- Step 1: Read cache and output notification if update available ---
+let additionalContext = '';
+
+try {
+  if (fs.existsSync(cacheFile)) {
+    const cache = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
+    if (cache.update_available && cache.installed && cache.latest) {
+      additionalContext = `<important-reminder>Indigo plugin update available: ${cache.installed} → ${cache.latest}. Run /indigo:update to install.</important-reminder>`;
+    }
+  }
+} catch (e) {
+  // Cache read failed - skip notification
+}
+
+// Output JSON for Claude Code context injection
+const output = {};
+if (additionalContext) {
+  output.additional_context = additionalContext;
+  output.hookSpecificOutput = {
+    hookEventName: 'SessionStart',
+    additionalContext: additionalContext
+  };
+}
+console.log(JSON.stringify(output));
+
+// --- Step 2: Refresh cache in background for next session ---
 const child = spawn(process.execPath, ['-e', `
   const fs = require('fs');
   const https = require('https');
