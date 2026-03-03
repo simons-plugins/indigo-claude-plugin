@@ -27,7 +27,55 @@ try {
   if (fs.existsSync(cacheFile)) {
     const cache = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
     if (cache.update_available && cache.installed && cache.latest) {
+      // AI context (stdout)
       additionalContext = `<important-reminder>Indigo plugin update available: ${cache.installed} → ${cache.latest}. Run /indigo:update to install.</important-reminder>`;
+
+      // Terminal display (stderr) — visible to the user
+      const yellow = '\x1b[33m';
+      const bold = '\x1b[1m';
+      const dim = '\x1b[2m';
+      const reset = '\x1b[0m';
+
+      const header = `Indigo Plugin Update: ${cache.installed} → ${cache.latest}`;
+      const footer = 'Run /indigo:update to install';
+
+      // Calculate box width from longest line
+      let maxLen = Math.max(header.length, footer.length);
+      const notes = cache.release_notes || [];
+      for (const rel of notes) {
+        const lines = (rel.body || '').split('\n').filter(l => l.trim());
+        const verLine = `v${rel.version}`;
+        maxLen = Math.max(maxLen, verLine.length);
+        for (const line of lines) {
+          maxLen = Math.max(maxLen, line.length);
+        }
+      }
+      const w = maxLen + 4; // padding
+
+      const pad = (s, len) => s + ' '.repeat(Math.max(0, len - s.length));
+
+      let box = '';
+      box += `${yellow}╔${'═'.repeat(w)}╗${reset}\n`;
+      box += `${yellow}║${reset}  ${bold}${header}${reset}${' '.repeat(Math.max(0, w - header.length - 2))}${yellow}║${reset}\n`;
+
+      if (notes.length > 0) {
+        box += `${yellow}╠${'═'.repeat(w)}╣${reset}\n`;
+        for (const rel of notes) {
+          box += `${yellow}║${reset}${' '.repeat(w)}${yellow}║${reset}\n`;
+          const verLine = `v${rel.version}`;
+          box += `${yellow}║${reset}  ${bold}${verLine}${reset}${' '.repeat(Math.max(0, w - verLine.length - 2))}${yellow}║${reset}\n`;
+          const lines = (rel.body || '').split('\n').filter(l => l.trim());
+          for (const line of lines) {
+            box += `${yellow}║${reset}  ${dim}${line}${reset}${' '.repeat(Math.max(0, w - line.length - 2))}${yellow}║${reset}\n`;
+          }
+        }
+      }
+
+      box += `${yellow}║${reset}${' '.repeat(w)}${yellow}║${reset}\n`;
+      box += `${yellow}║${reset}  ${bold}${footer}${reset}${' '.repeat(Math.max(0, w - footer.length - 2))}${yellow}║${reset}\n`;
+      box += `${yellow}╚${'═'.repeat(w)}╝${reset}\n`;
+
+      process.stderr.write(box);
     }
   }
 } catch (e) {
