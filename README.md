@@ -6,7 +6,7 @@ Claude Code plugin for [Indigo](https://www.indigodomo.com) home automation deve
 
 | Command | Description |
 |---------|-------------|
-| `/indigo:plugin` | Plugin development — SDK docs, examples, lifecycle, IOM reference |
+| `/indigo:dev` | Plugin development — SDK docs, examples, lifecycle, IOM reference |
 | `/indigo:api` | API integration — WebSocket and HTTP APIs for client apps |
 | `/indigo:control-pages` | Control page builder — guided XML generation with wireframes |
 

@@ -36,4 +36,4 @@ You're working on an Indigo plugin. Key resources available:
 
 ## Full Documentation
 
-For comprehensive guidance, use `/indigo:plugin`.
+For comprehensive guidance, use `/indigo:dev`.

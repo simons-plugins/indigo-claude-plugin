@@ -12,7 +12,7 @@ description: Indigo API integration expert — WebSocket and HTTP APIs for clien
 
 Expert assistant for building applications that integrate with Indigo home automation via WebSocket and HTTP APIs. Perfect for iOS/Android apps, web dashboards, and third-party service integrations.
 
-**Note**: This command is for **client-side development** (apps that connect TO Indigo). For **server-side plugin development** (building Indigo plugins), use `/indigo:plugin` instead.
+**Note**: This command is for **client-side development** (apps that connect TO Indigo). For **server-side plugin development** (building Indigo plugins), use `/indigo:dev` instead.
 
 ## CRITICAL: Context Optimization Strategy
 
@@ -165,5 +165,5 @@ Both APIs use **API Keys** or **Local Secrets**:
 
 ## Related Commands
 
-- `/indigo:plugin` — Server-side plugin development
+- `/indigo:dev` — Server-side plugin development
 - `/indigo:control-pages` — Control page builder

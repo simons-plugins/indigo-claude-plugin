@@ -118,5 +118,5 @@ Or read `docs/control-pages/export/clipping-export.md` for the manual export pro
 
 ## Related Commands
 
-- `/indigo:plugin` — Server-side plugin development
+- `/indigo:dev` — Server-side plugin development
 - `/indigo:api` — Client-side API integration (WebSocket, HTTP)
