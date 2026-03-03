@@ -12,19 +12,33 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check version was bumped
+      - name: Check version was bumped and in sync
         run: |
           PR_VERSION=$(python3 -c "import json; print(json.load(open('.claude-plugin/plugin.json'))['version'])")
+          MARKETPLACE_VERSION=$(python3 -c "import json; print(json.load(open('.claude-plugin/marketplace.json'))['plugins'][0]['version'])")
           MAIN_VERSION=$(git show origin/main:.claude-plugin/plugin.json | python3 -c "import sys,json; print(json.load(sys.stdin)['version'])")
 
-          echo "PR version:   $PR_VERSION"
-          echo "Main version: $MAIN_VERSION"
+          echo "plugin.json version:      $PR_VERSION"
+          echo "marketplace.json version: $MARKETPLACE_VERSION"
+          echo "main branch version:      $MAIN_VERSION"
+
+          FAILED=false
 
           if [ "$PR_VERSION" = "$MAIN_VERSION" ]; then
             echo ""
-            echo "::error::Version in .claude-plugin/plugin.json was not bumped ($MAIN_VERSION). Please update the version before merging."
+            echo "::error::Version in plugin.json was not bumped ($MAIN_VERSION). Please update the version before merging."
+            FAILED=true
+          fi
+
+          if [ "$PR_VERSION" != "$MARKETPLACE_VERSION" ]; then
+            echo ""
+            echo "::error::Version mismatch — plugin.json ($PR_VERSION) and marketplace.json ($MARKETPLACE_VERSION) must match."
+            FAILED=true
+          fi
+
+          if [ "$FAILED" = "true" ]; then
             exit 1
           fi
 
           echo ""
-          echo "Version bumped: $MAIN_VERSION → $PR_VERSION"
+          echo "Version bumped: $MAIN_VERSION → $PR_VERSION (plugin.json and marketplace.json in sync)"
