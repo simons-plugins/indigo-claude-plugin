@@ -1,0 +1,64 @@
+name: Create Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version from plugin.json
+        id: version
+        run: |
+          VERSION=$(python3 -c "import json; print(json.load(open('.claude-plugin/plugin.json'))['version'])")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check if tag already exists
+        id: check
+        run: |
+          if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate release notes from commits
+        if: steps.check.outputs.exists == 'false'
+        id: notes
+        run: |
+          # Find previous tag, or use first commit if none
+          PREV_TAG=$(git tag --sort=-v:refname | head -n1)
+          if [ -z "$PREV_TAG" ]; then
+            RANGE="HEAD"
+          else
+            RANGE="${PREV_TAG}..HEAD"
+          fi
+
+          # Get commit messages (skip merge commits, bump-only commits)
+          NOTES=$(git log "$RANGE" --pretty=format:"- %s" --no-merges \
+            | grep -v "^\- Bump version" \
+            | grep -v "\[skip bump\]" \
+            || echo "- Minor updates")
+
+          # Write to file to preserve newlines
+          echo "$NOTES" > /tmp/release-notes.txt
+          echo "Generated release notes:"
+          cat /tmp/release-notes.txt
+
+      - name: Create tag and release
+        if: steps.check.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v${{ steps.version.outputs.version }}" \
+            --title "v${{ steps.version.outputs.version }}" \
+            --notes-file /tmp/release-notes.txt
