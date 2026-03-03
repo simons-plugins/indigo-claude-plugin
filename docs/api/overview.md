@@ -133,18 +133,20 @@ Both APIs support the same authentication methods:
 ## Connection Security
 
 ### Local Network
-- `ws://` or `http://` - Unencrypted (use cautiously)
-- Direct connection to Indigo server IP
+- `ws://` or `http://` - Unencrypted (use cautiously, only on trusted networks)
+- `wss://` or `https://` - **Local HTTPS** with self-signed certificate (encrypted, recommended)
+- Direct connection to Indigo server IP on port 8176
 - Fast, low latency
-- Only use on trusted networks
+
+Indigo's local server supports HTTPS with a self-signed TLS certificate. Clients must explicitly trust the self-signed cert (e.g., disable certificate verification for local connections only). This provides encryption without requiring the Reflector.
 
 ### Remote Access (Indigo Reflector)
-- `wss://` or `https://` - TLS encrypted (recommended)
+- `wss://` or `https://` - TLS encrypted with valid certificate (recommended)
 - Connection via `{REFLECTOR}.indigodomo.net`
 - Secure over internet
 - Slightly higher latency
 
-→ See [authentication.md](authentication.md) for security best practices
+→ See [authentication.md](authentication.md) for security best practices and self-signed certificate handling
 
 ## Next Steps
 

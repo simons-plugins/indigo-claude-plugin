@@ -173,6 +173,66 @@ http://192.168.1.100:8176/v2/api/indigo.devices
 
 **When to use**: Only on fully trusted networks (home network with WPA2/WPA3 encryption)
 
+**Local HTTPS/WSS (wss:// or https:// with self-signed certificate)**:
+```
+wss://192.168.1.100:8176/v2/api/ws/device-feed
+https://192.168.1.100:8176/v2/api/indigo.devices
+```
+
+✅ Pros: **TLS encryption** on local network, protects credentials in transit
+⚠️ Cons: Uses **self-signed certificate** — clients must explicitly trust it (see below)
+
+**When to use**: When you want encryption on your local network without routing through the Reflector. Indigo's local server generates a self-signed TLS certificate automatically when HTTPS is enabled.
+
+### Handling Self-Signed Certificates (Local HTTPS)
+
+When connecting to Indigo's local HTTPS server, standard TLS validation will reject the self-signed certificate. Your client must explicitly trust it.
+
+**Python**:
+```python
+import requests
+
+# Disable certificate verification for local self-signed cert
+response = requests.get(
+    'https://192.168.1.100:8176/v2/api/indigo.devices',
+    headers={'Authorization': f'Bearer {API_KEY}'},
+    verify=False
+)
+```
+
+**Swift (iOS/macOS)**:
+```swift
+// Use a URLSessionDelegate that trusts self-signed certificates
+class LocalTrustDelegate: NSObject, URLSessionDelegate {
+    static let shared = LocalTrustDelegate()
+
+    func urlSession(_ session: URLSession,
+                    didReceive challenge: URLAuthenticationChallenge,
+                    completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+              let serverTrust = challenge.protectionSpace.serverTrust else {
+            completionHandler(.performDefaultHandling, nil)
+            return
+        }
+        completionHandler(.useCredential, URLCredential(trust: serverTrust))
+    }
+}
+
+// Use with URLSession
+let session = URLSession(configuration: .ephemeral,
+                         delegate: LocalTrustDelegate.shared,
+                         delegateQueue: nil)
+```
+
+**curl**:
+```bash
+# -k flag skips certificate verification
+curl -k -H "Authorization: Bearer API_KEY" \
+  https://192.168.1.100:8176/v2/api/indigo.devices
+```
+
+⚠️ **Important**: Only bypass certificate verification for **local** connections to your own Indigo server. Always use proper certificate validation for remote/Reflector connections.
+
 ### Remote Access (Indigo Reflector)
 
 **Encrypted (wss:// or https://)**:
@@ -181,19 +241,20 @@ wss://REFLECTOR.indigodomo.net/v2/api/ws/device-feed
 https://REFLECTOR.indigodomo.net/v2/api/indigo.devices
 ```
 
-✅ Pros: **TLS encryption**, secure over internet
+✅ Pros: **TLS encryption** with valid certificate, secure over internet
 ❌ Cons: Slightly higher latency
 
 **When to use**: All remote access, mobile apps, public internet
 
 ### Security Recommendations
 
-1. **Use HTTPS/WSS** for all remote connections
+1. **Use HTTPS/WSS** for all connections (remote and local where possible)
 2. **Use API Keys** instead of local secrets
 3. **Enable OAuth** in server preferences
 4. **Firewall rules**: Only expose Indigo server if using Reflector
 5. **Monitor access**: Check Indigo logs for unauthorized attempts
 6. **Revoke unused keys**: Remove old API keys for retired applications
+7. **Local HTTPS**: Enable for encrypted local connections; only trust self-signed certs for your own server
 
 ## Troubleshooting
 
