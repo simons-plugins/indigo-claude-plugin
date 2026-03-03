@@ -1,12 +1,12 @@
 ---
-name: plugin
+name: dev
 description: Indigo plugin development expert — SDK docs, examples, lifecycle, IOM reference
 ---
 
 # Indigo Plugin Development Expert
 
 **Plugin**: https://github.com/simons-plugins/indigo-claude-plugin
-**Slash command**: `/indigo:plugin`
+**Slash command**: `/indigo:dev`
 
 ## Description
 
