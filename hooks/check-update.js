@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // SessionStart hook: read cached update info and inject notification, then refresh cache in background
-// Called synchronously so stdout is captured by Claude Code as additionalContext
+// Called synchronously so stdout JSON is parsed by Claude Code for context injection
 
 const fs = require('fs');
 const path = require('path');
@@ -21,16 +21,30 @@ if (!fs.existsSync(cacheDir)) {
 }
 
 // --- Step 1: Read cache and output notification if update available ---
-let additionalContext = '';
+let systemMessage = '';
 
 try {
   if (fs.existsSync(cacheFile)) {
     const cache = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
     if (cache.update_available && cache.installed && cache.latest) {
-      // AI context (stdout)
-      additionalContext = `<important-reminder>Indigo plugin update available: ${cache.installed} → ${cache.latest}. Run /indigo:update to install.</important-reminder>`;
+      // Build message for Claude Code context
+      let msg = `Indigo plugin update available: ${cache.installed} → ${cache.latest}. Run /indigo:update to install.`;
 
-      // Terminal display (stderr) — visible to the user
+      const notes = cache.release_notes || [];
+      if (notes.length > 0) {
+        msg += '\n\nRelease notes:';
+        for (const rel of notes) {
+          msg += `\nv${rel.version}`;
+          const lines = (rel.body || '').split('\n').filter(l => l.trim());
+          for (const line of lines) {
+            msg += `\n  ${line}`;
+          }
+        }
+      }
+
+      systemMessage = msg;
+
+      // Terminal display (stderr) — visible in standalone terminal
       const yellow = '\x1b[33m';
       const bold = '\x1b[1m';
       const dim = '\x1b[2m';
@@ -39,9 +53,7 @@ try {
       const header = `Indigo Plugin Update: ${cache.installed} → ${cache.latest}`;
       const footer = 'Run /indigo:update to install';
 
-      // Calculate box width from longest line
       let maxLen = Math.max(header.length, footer.length);
-      const notes = cache.release_notes || [];
       for (const rel of notes) {
         const lines = (rel.body || '').split('\n').filter(l => l.trim());
         const verLine = `v${rel.version}`;
@@ -50,9 +62,7 @@ try {
           maxLen = Math.max(maxLen, line.length);
         }
       }
-      const w = maxLen + 4; // padding
-
-      const pad = (s, len) => s + ' '.repeat(Math.max(0, len - s.length));
+      const w = maxLen + 4;
 
       let box = '';
       box += `${yellow}╔${'═'.repeat(w)}╗${reset}\n`;
@@ -82,14 +92,10 @@ try {
   // Cache read failed - skip notification
 }
 
-// Output JSON for Claude Code context injection
+// Output JSON for Claude Code context injection using documented fields
 const output = {};
-if (additionalContext) {
-  output.additional_context = additionalContext;
-  output.hookSpecificOutput = {
-    hookEventName: 'SessionStart',
-    additionalContext: additionalContext
-  };
+if (systemMessage) {
+  output.systemMessage = systemMessage;
 }
 console.log(JSON.stringify(output));
 
