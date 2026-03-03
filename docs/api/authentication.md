@@ -200,19 +200,6 @@ response = requests.get(
 )
 ```
 
-**JavaScript (Node.js)**:
-```javascript
-const https = require('https');
-
-// Create agent that accepts self-signed certificates
-const agent = new https.Agent({ rejectUnauthorized: false });
-
-fetch('https://192.168.1.100:8176/v2/api/indigo.devices', {
-  headers: { 'Authorization': `Bearer ${API_KEY}` },
-  agent
-});
-```
-
 **Swift (iOS/macOS)**:
 ```swift
 // Use a URLSessionDelegate that trusts self-signed certificates
