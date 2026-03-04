@@ -8,9 +8,8 @@
 
 ## Structure
 
-- `commands/` — Slash commands (`/indigo:dev`, `/indigo:api`, `/indigo:control-pages`, `/indigo:update`)
+- `commands/` — Slash commands (`/indigo:dev`, `/indigo:api`, `/indigo:control-pages`)
 - `skills/` — Auto-triggered skills (activate on matching file patterns)
-- `hooks/` — Session hooks (e.g., update check on startup)
 - `docs/` — Documentation loaded by commands/skills
 - `sdk-examples/` — 16 official Indigo SDK example plugins
 - `reference/` — SDK reference documents
