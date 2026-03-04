@@ -10,6 +10,7 @@
 
 - `commands/` — Slash commands (`/indigo:dev`, `/indigo:api`, `/indigo:control-pages`)
 - `skills/` — Auto-triggered skills (activate on matching file patterns)
+- `hooks/` — SessionStart hook (update availability notification)
 - `docs/` — Documentation loaded by commands/skills
 - `sdk-examples/` — 16 official Indigo SDK example plugins
 - `reference/` — SDK reference documents
