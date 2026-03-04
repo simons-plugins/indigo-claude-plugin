@@ -2,9 +2,9 @@
 
 ## Release Process
 
-- **Bump version** in `.claude-plugin/plugin.json` with every PR
+- **Bump version** in both `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` with every PR — they must match
+- A CI check enforces version bump and sync between the two files
 - Use semantic versioning: patch for fixes/tweaks, minor for new features
-- The version is checked by the `/indigo:update` command to detect available updates
 
 ## Structure
 
