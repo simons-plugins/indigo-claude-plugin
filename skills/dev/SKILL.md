@@ -1,5 +1,5 @@
 ---
-name: plugin
+name: dev
 description: Indigo plugin development guidance
 match:
   - "**/*.indigoPlugin/**"
