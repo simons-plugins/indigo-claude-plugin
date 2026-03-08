@@ -118,6 +118,8 @@ For detailed guidance on specific topics, read these files relative to `${CLAUDE
 | Actions.xml & actionControl callbacks | `docs/plugin-dev/concepts/actions.md` |
 | Menu items (MenuItems.xml) | `docs/plugin-dev/concepts/menu-items.md` |
 | Custom events | `docs/plugin-dev/concepts/events.md` |
+| HTTP Responder (web endpoints, IWS) | `docs/plugin-dev/concepts/http-responder.md` |
+| Scripting shell & CLI | `docs/plugin-dev/concepts/scripting-shell.md` |
 | Plugin preferences & PluginConfig.xml | `docs/plugin-dev/concepts/plugin-preferences.md` |
 | API patterns (state updates, replaceOnServer) | `docs/plugin-dev/patterns/api-patterns.md` |
 | Troubleshooting | `docs/plugin-dev/troubleshooting/common-issues.md` |
