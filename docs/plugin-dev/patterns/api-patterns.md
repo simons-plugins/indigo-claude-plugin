@@ -153,6 +153,36 @@ indigo.variable.updateValue(var.id, value="running")
 indigo.variable.updateValue("MyPluginStatus", value="running")
 ```
 
+### Typed Variable Access
+
+Variable values are always stored as strings. Use `getValue()` for typed access:
+
+```python
+var = indigo.variables["MyCounter"]
+
+# Typed access with defaults (preferred)
+count = var.getValue(int, default=0)         # Returns int
+temp = var.getValue(float, default=0.0)      # Returns float
+flag = var.getValue(bool, default=False)     # Returns bool (handles "true"/"false"/"on"/"off" etc.)
+
+# Manual conversion (older approach)
+count = int(var.value)
+temp = float(var.value)
+```
+
+### Variable Properties
+
+```python
+var = indigo.variables["MyVar"]
+var.id              # Unique ID (int)
+var.name            # Variable name (str)
+var.value           # Current value (always str)
+var.readOnly        # True if read-only (bool)
+var.folderId        # Folder ID (int, 0 = no folder)
+var.remoteDisplay   # Show in remote UI (bool)
+var.sharedProps     # Shared properties (indigo.Dict, v2.3+)
+```
+
 ### Safe Variable Access
 
 ```python
@@ -198,6 +228,48 @@ indigo.actionGroup.moveToFolder(ag.id, value=folder_id)
 ```
 
 ## Schedule Patterns
+
+### Schedule Properties
+
+```python
+sched = indigo.schedules[123456]
+sched.id                  # Unique ID (int)
+sched.name                # Schedule name (str)
+sched.enabled             # Is enabled (bool)
+sched.description         # Description (str)
+sched.folderId            # Folder ID (int)
+sched.nextExecution       # Next execution datetime
+sched.autoDelete          # Auto-delete after execution (bool)
+sched.suppressLogging     # Suppress log messages (bool)
+
+# Date configuration
+sched.dateType            # indigo.kDateType (see below)
+sched.absoluteDate        # For Absolute type
+sched.absoluteDateTime    # For Absolute type (combined)
+sched.absoluteTime        # Time component
+
+# Time configuration
+sched.timeType            # indigo.kTimeType (see below)
+sched.sunDelta            # Minutes offset from sunrise/sunset
+sched.randomizeBy         # Minutes of random variation
+
+# Plugin properties
+sched.pluginProps         # Plugin-specific properties (indigo.Dict)
+sched.globalProps         # Global properties (indigo.Dict)
+sched.sharedProps         # Shared properties (indigo.Dict, v2.3+)
+```
+
+**Date type constants** (`indigo.kDateType`):
+- `Absolute` — specific date
+- `EveryDay` — daily
+- `DaysOfWeek` — specific days of week
+- `DaysOfMonth` — specific days of month
+
+**Time type constants** (`indigo.kTimeType`):
+- `Absolute` — specific time
+- `Sunrise` — relative to sunrise (offset via `sunDelta`)
+- `Sunset` — relative to sunset (offset via `sunDelta`)
+- `Countdown` — countdown timer
 
 ### Execute and Control
 

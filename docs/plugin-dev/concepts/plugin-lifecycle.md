@@ -592,6 +592,19 @@ def shutdown(self):
     # Note: Do NOT call super().shutdown() - it doesn't exist
 ```
 
+## Plugin Failure Modes
+
+Indigo handles plugin failures differently depending on where they occur:
+
+| Failure | Cause | Indigo Response |
+|---------|-------|-----------------|
+| **Plugin Fatal** | Invalid XML or `__init__` crash | Plugin suspended, must fix and re-enable |
+| **Plugin Auto-Restarted** | Unhandled exception in startup/shutdown | Auto-restart after delay |
+| **Concurrent Thread Auto-Restarted** | Unhandled exception in `runConcurrentThread()` | Thread restarted (can cause loops) |
+| **Error Logged** | Unhandled exception in callbacks | Error logged, plugin continues |
+
+**Best practice**: Always wrap risky operations in try/except. Catch exceptions in `runConcurrentThread()` to prevent restart loops.
+
 ## Resource Management Checklist
 
 - [ ] All instance variables initialized in `__init__()`
