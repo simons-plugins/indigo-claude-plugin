@@ -226,6 +226,41 @@ def _on_motion_detected(self, zone):
             self.motion_triggers.remove(trigger_id)
 ```
 
+## Event Data Dictionary
+
+When executing action groups or triggers, you can pass an `event_data` dictionary. Indigo automatically adds a `source` key indicating the origin.
+
+### Standard Event Data Keys
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `event-indigo-id` | int | ID of the Indigo object that fired the event |
+| `event-type` | str | Type identifier for the event |
+| `source` | str | Auto-added by Indigo: `"server"`, `"python"`, `"api-http"`, or `"api-websocket"` |
+| `timestamp` | float | Epoch timestamp of the event |
+
+### Webhook Event Data Keys
+
+When events originate from HTTP webhooks, additional keys are present:
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `http-method` | str | HTTP method (`GET`, `POST`, etc.) |
+| `request-url` | str | The request URL path |
+| `status-code` | int | HTTP response status code |
+| `webhook-id` | str | Identifier of the webhook |
+| `data` | dict | Parsed request body data |
+
+### Passing Custom Event Data
+
+```python
+event_data = indigo.Dict()
+event_data["scene"] = "evening"
+event_data["triggered_by"] = "schedule"
+indigo.actionGroup.execute(ag.id, event_data=event_data)
+# Indigo auto-adds "source" key to event_data
+```
+
 ## Best Practices
 
 - Use descriptive event IDs and names

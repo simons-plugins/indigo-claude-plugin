@@ -234,6 +234,16 @@ sys.path.insert(0, './Contents/Packages')
 import requests
 ```
 
+### Shared Python Libraries
+
+Indigo provides a shared library path for Python modules used across multiple plugins:
+
+```
+/Library/Application Support/Perceptive Automation/Python3-includes/
+```
+
+Place `.py` files here to make them importable by any plugin. After adding or updating files, go to **Plugins > Reload Libraries and Attachments** to pick up changes without restarting Indigo.
+
 ## Common First-Time Issues
 
 ### Plugin Won't Enable
