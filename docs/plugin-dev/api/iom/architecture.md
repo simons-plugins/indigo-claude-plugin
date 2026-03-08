@@ -125,6 +125,35 @@ newProps["onCycles"] = newProps.get("onCycles", 0) + 1
 dev.replacePluginPropsOnServer(newProps)
 ```
 
+## Folder Operations
+
+All collections have a `.folders` attribute:
+
+```python
+# Iterate folders
+for folder in indigo.devices.folders:
+    self.logger.info(f"Folder: {folder.name} (id={folder.id})")
+
+# Folder properties
+folder.id              # Unique ID (int)
+folder.name            # Folder name (str)
+folder.remoteDisplay   # Show in remote UI (bool)
+
+# Folder commands (via collection namespace)
+indigo.devices.folder.create("My Folder")
+indigo.devices.folder.delete(folder_id)
+indigo.devices.folder.delete(folder_id, deleteAllChildren=True)
+indigo.devices.folder.duplicate(folder_id, duplicateName="Copy")
+indigo.devices.folder.getId("My Folder")   # Returns folder ID
+indigo.devices.folder.displayInRemoteUI(folder_id, value=True)
+
+# Check device's folder
+dev = indigo.devices[123456]
+dev.folderId   # 0 = no folder
+```
+
+Available for: `indigo.devices.folder`, `indigo.triggers.folder`, `indigo.schedules.folder`, `indigo.actionGroups.folder`, `indigo.variables.folder`.
+
 ### globalProps (Cross-Plugin Access)
 
 Plugins have read-only access to other plugins' props:
