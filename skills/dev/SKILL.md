@@ -114,8 +114,11 @@ For detailed guidance on specific topics, read these files relative to `${CLAUDE
 |-------|------|
 | Plugin lifecycle (full) | `docs/plugin-dev/concepts/plugin-lifecycle.md` |
 | Device design & Devices.xml | `docs/plugin-dev/concepts/devices.md` |
+| ConfigUI reference (fields, attributes, bindings) | `docs/plugin-dev/concepts/configui.md` |
+| Actions.xml & actionControl callbacks | `docs/plugin-dev/concepts/actions.md` |
+| Menu items (MenuItems.xml) | `docs/plugin-dev/concepts/menu-items.md` |
 | Custom events | `docs/plugin-dev/concepts/events.md` |
-| Plugin preferences & ConfigUI | `docs/plugin-dev/concepts/plugin-preferences.md` |
+| Plugin preferences & PluginConfig.xml | `docs/plugin-dev/concepts/plugin-preferences.md` |
 | API patterns (state updates, replaceOnServer) | `docs/plugin-dev/patterns/api-patterns.md` |
 | Troubleshooting | `docs/plugin-dev/troubleshooting/common-issues.md` |
 | SDK examples guide | `docs/plugin-dev/examples/sdk-examples-guide.md` |

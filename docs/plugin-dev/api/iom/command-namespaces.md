@@ -230,13 +230,148 @@ indigo.x10.subscribeToOutgoing()
 
 ## Server Commands
 
+### Properties
+
+```python
+indigo.server.apiVersion       # API version string, e.g., "3.6"
+indigo.server.version          # Indigo version string, e.g., "2025.1"
+indigo.server.address          # Server address
+indigo.server.portNum          # Server port number
+indigo.server.connectionGood   # True if connected to server
+indigo.server.licenseStatus    # kLicenseStatus enum value
+```
+
+### Logging
+
 ```python
 indigo.server.log("message")
+indigo.server.log("message", type="My Plugin", level=logging.INFO)
 indigo.server.error("error message")
+indigo.server.getEventLogList(lineCount=100)
+indigo.server.getEventLogList(returnAsList=True, lineCount=50, showTimeStamp=True)
+```
+
+### Communication
+
+```python
 indigo.server.speak("text to speak", waitUntilDone=False)
-indigo.server.getTime()
-indigo.server.apiVersion   # Property, e.g., "3.6"
-indigo.server.version      # Property, e.g., "2025.1"
+indigo.server.sendEmailTo("user@example.com", subject="Alert", body="Motion detected")
+```
+
+### Time & Location
+
+```python
+indigo.server.getTime()                     # Current server datetime
+indigo.server.calculateSunrise()            # Today's sunrise
+indigo.server.calculateSunset()             # Today's sunset
+indigo.server.calculateSunrise(date_obj)    # Sunrise for specific date
+indigo.server.calculateSunset(date_obj)     # Sunset for specific date
+indigo.server.getLatitudeAndLongitude()     # Returns (latitude, longitude) tuple
+```
+
+### File System & Database
+
+```python
+indigo.server.getDbName()              # Database name
+indigo.server.getDbFilePath()          # Full path to database file
+indigo.server.getInstallFolderPath()   # Indigo installation folder
+```
+
+### Hardware & Network
+
+```python
+indigo.server.getSerialPorts(filter="indigo.ignoreBluetooth")
+indigo.server.getReflectorURL()        # Remote access URL
+indigo.server.getWebServerURL()        # Local web server URL
+```
+
+### Plugin Management
+
+```python
+indigo.server.getPlugin(pluginId)      # Returns plugin object (see below)
+indigo.server.getPluginList()          # List of all installed plugin IDs
+indigo.server.savePluginPrefs()        # Force save current plugin prefs
+indigo.server.restartPlugin(message="Restarting", isError=False)
+indigo.server.stopPlugin(message="Stopping", isError=False)
+```
+
+### Broadcasting
+
+```python
+indigo.server.broadcastToSubscribers(messageName="myEvent")
+indigo.server.subscribeToLogBroadcasts()  # Receive log entries as broadcasts
+```
+
+### Maintenance
+
+```python
+indigo.server.removeAllDelayedActions()    # Remove all pending delayed actions
+indigo.server.waitUntilIdle()              # Block until server is idle
+indigo.server.getDeprecatedElems(includeWarnings=False)  # Deprecated object scan
+```
+
+## Plugin Object Access
+
+Access other plugins (or self) via `indigo.server.getPlugin()`:
+
+```python
+plugin = indigo.server.getPlugin("com.other.plugin")
+```
+
+### Plugin Properties
+
+```python
+plugin.pluginId                  # Bundle identifier
+plugin.pluginVersion             # Version string
+plugin.pluginDisplayName         # Display name
+plugin.pluginFolderPath          # Path to plugin bundle
+plugin.pluginServerApiVersion    # API version
+plugin.pluginSupportURL          # Support URL
+
+# Status
+plugin.isEnabled()               # Is plugin enabled?
+plugin.isInstalled()             # Is plugin installed?
+plugin.isRunning()               # Is plugin running?
+
+# Plugin Store info
+plugin.storeIconURL              # Store icon URL
+plugin.storeName                 # Store display name
+plugin.storePluginURL            # Store page URL
+plugin.storeSummary              # Store description
+plugin.includedWithServer        # Bundled with Indigo?
+
+# Update info
+plugin.compatibleUpdateAvailable     # Compatible update available?
+plugin.incompatibleUpdateAvailable   # Incompatible update available?
+plugin.latestCompatibleVers          # Latest compatible version string
+plugin.latestVers                    # Latest version string (any)
+plugin.latestCompatibleDownloadURL   # Download URL
+plugin.latestCompatibleDownloadCount # Download count
+plugin.latestCompatibleReleaseDate   # Release date
+plugin.latestCompatibleSummaryDesc   # Release summary
+plugin.latestCompatibleWhatsNewDesc  # What's new text
+plugin.latestRequiresIndigoVers      # Required Indigo version
+plugin.latestReleaseDate             # Latest release date
+```
+
+### Executing Actions on Other Plugins
+
+```python
+plugin = indigo.server.getPlugin("com.other.plugin")
+
+# Execute a plugin action (defined in its Actions.xml)
+result = plugin.executeAction("actionId", deviceId=12345,
+                               props={"key": "value"},
+                               waitUntilDone=True)
+# result can be: None, bool, int, float, str, indigo.Dict, indigo.List
+```
+
+### Restarting Plugins
+
+```python
+plugin = indigo.server.getPlugin("com.other.plugin")
+plugin.restart(waitUntilDone=True)
+plugin.restartAndDebug(waitUntilDone=True)  # Restart with debug logging
 ```
 
 ## Common Command Patterns
