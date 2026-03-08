@@ -15,6 +15,7 @@ This guide explains what each example plugin in the SDK demonstrates and when to
 | [Device - Speed Control](#example-device---speed-control) | Variable speed devices | Fan control, speed levels |
 | [HTTP Responder](#example-http-responder) | Web API or web interface | HTTP handlers, Jinja2 templates, JSON/XML |
 | [Action API](#example-action-api) | Complex plugin actions | Action configuration, YAML processing |
+| [Device - Factory](#example-device---factory) | Hub with multiple child devices | Device groups, add/remove devices |
 | [Database Traverse](#example-database-traverse) | Inspect Indigo database | Iterating devices/variables |
 | [Custom Broadcaster](#example-custom-broadcaster) | Send events to other plugins | Inter-plugin communication |
 | [Custom Subscriber](#example-custom-subscriber) | Receive events from other plugins | Event listening |
@@ -134,6 +135,51 @@ def actionControlSensor(self, action, dev):
 - Tracking electricity usage
 - Power monitoring devices
 - Accumulating usage over time
+
+### Example Device - Factory
+
+**Path**: `../../sdk-examples/Example Device - Factory.indigoPlugin`
+
+**What It Demonstrates**:
+- Device Factory pattern for creating groups of child devices
+- `<DeviceFactory>` element in Devices.xml with ConfigUI buttons
+- Adding and removing devices dynamically via `indigo.device.create()` / `indigo.device.delete()`
+- Factory dialog callbacks: `getDeviceFactoryUiValues`, `validateDeviceFactoryUi`, `closedDeviceFactoryUi`
+- Populating a dynamic device group list
+- Setting `dev.model` and `dev.subType` for UI display
+
+**Use This When**:
+- Building a hub/bridge plugin that discovers multiple sub-devices
+- A single configuration dialog needs to manage multiple device types
+- Users should be able to add/remove devices from a group
+- Different child device types (relay, dimmer, sensor) under one umbrella
+
+**Key Code Sections**:
+- `_add_relay()`, `_add_dimmer()` — Create child devices with `indigo.device.create()`
+- `_remove_relay_devices()`, `_remove_all_devices()` — Delete devices from group
+- `_get_device_group_list()` — Populate the device list in the factory dialog
+- `getDeviceFactoryUiValues()` — Prime initial factory dialog values
+- `validateDeviceFactoryUi()` — Validate before closing factory dialog
+- `actionControlDevice()` — Standard relay/dimmer action handling for child devices
+
+**Factory Pattern**:
+```xml
+<DeviceFactory>
+    <Name>Define Device Group...</Name>
+    <ButtonTitle>Close</ButtonTitle>
+    <ConfigUI>
+        <Field type="list" id="deviceGroupList">
+            <List class="self" method="_get_device_group_list" dynamicReload="true" />
+        </Field>
+        <Field type="button" id="addRelay">
+            <Title>Add Relay</Title>
+            <CallbackMethod>_add_relay</CallbackMethod>
+        </Field>
+    </ConfigUI>
+</DeviceFactory>
+```
+
+**Important**: Device groups should only contain plugin-defined devices. The UI doesn't properly handle X10/INSTEON/Z-Wave devices as group members.
 
 ### Example HTTP Responder
 

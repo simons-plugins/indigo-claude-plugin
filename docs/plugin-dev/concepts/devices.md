@@ -106,6 +106,113 @@ States store device data and can trigger events:
 
 **Field Types**: `textfield`, `textarea`, `checkbox`, `menu`, `list`, `button`, `label`, `separator`
 
+## Device Factory Pattern
+
+A Device Factory creates and manages a group of child devices from a single dialog. Use this when a hub or controller discovers multiple sub-devices (e.g., a bridge with relays, dimmers, and sensors).
+
+### Devices.xml Structure
+
+Instead of (or in addition to) individual `<Device>` elements, define a `<DeviceFactory>`:
+
+```xml
+<Devices>
+    <DeviceFactory>
+        <Name>Define Device Group...</Name>
+        <ButtonTitle>Close</ButtonTitle>
+        <ConfigUI>
+            <!-- List showing current devices in the group -->
+            <Field type="list" id="deviceGroupList">
+                <Label>Device group:</Label>
+                <List class="self" method="_get_device_group_list" dynamicReload="true" />
+            </Field>
+            <Field type="separator" id="sep1" />
+            <!-- Buttons to add/remove devices -->
+            <Field type="button" id="addRelay">
+                <Title>Add Relay</Title>
+                <CallbackMethod>_add_relay</CallbackMethod>
+            </Field>
+            <Field type="button" id="removeAll">
+                <Title>Remove All Devices</Title>
+                <CallbackMethod>_remove_all_devices</CallbackMethod>
+            </Field>
+        </ConfigUI>
+    </DeviceFactory>
+
+    <!-- Child device types that the factory creates -->
+    <Device type="relay" id="myRelayType">
+        <Name>Relay</Name>
+        <!-- ... -->
+    </Device>
+    <Device type="dimmer" id="myDimmerType">
+        <Name>Dimmer</Name>
+        <!-- ... -->
+    </Device>
+</Devices>
+```
+
+### Plugin Callbacks
+
+All factory methods receive `dev_id_list` — the list of device IDs currently in the group:
+
+```python
+def getDeviceFactoryUiValues(self, dev_id_list):
+    """Prime initial values for the factory dialog."""
+    values_dict = indigo.Dict()
+    error_msg_dict = indigo.Dict()
+    return (values_dict, error_msg_dict)
+
+def validateDeviceFactoryUi(self, values_dict, dev_id_list):
+    """Validate factory dialog before closing."""
+    errors_dict = indigo.Dict()
+    return (True, values_dict, errors_dict)
+
+def closedDeviceFactoryUi(self, values_dict, user_cancelled, dev_id_list):
+    """Called after factory dialog closes."""
+    pass
+```
+
+### Adding and Removing Devices
+
+Button callbacks create/delete devices using `indigo.device.create()` and `indigo.device.delete()`:
+
+```python
+def _add_relay(self, values_dict, dev_id_list):
+    newdev = indigo.device.create(indigo.kProtocol.Plugin, deviceTypeId="myRelayType")
+    newdev.model = "My Hub"        # Display in UI
+    newdev.subType = "Relay"       # Tab label in UI
+    newdev.replaceOnServer()
+    return values_dict
+
+def _remove_all_devices(self, values_dict, dev_id_list):
+    for dev_id in dev_id_list:
+        try:
+            indigo.device.delete(dev_id)
+        except:
+            pass  # Root element cannot be deleted
+    return values_dict
+```
+
+### Populating the Device Group List
+
+```python
+def _get_device_group_list(self, filter, values_dict, dev_id_list):
+    """Return list of (id, name) tuples for the group list UI."""
+    menu_items = []
+    for dev_id in dev_id_list:
+        if dev_id in indigo.devices:
+            menu_items.append((dev_id, indigo.devices[dev_id].name))
+        else:
+            menu_items.append((dev_id, "- device not found -"))
+    return menu_items
+```
+
+### Important Notes
+
+- Device groups should only contain devices defined by the plugin (not X10/INSTEON/Z-Wave)
+- Set `dev.model` and `dev.subType` after creation, then call `dev.replaceOnServer()`
+- The `dev_id_list` auto-updates after `indigo.device.create()` / `indigo.device.delete()`
+- See the **Example Device - Factory** SDK example for a complete working implementation
+
 ## Device Lifecycle
 
 Device lifecycle callbacks are documented in [Plugin Lifecycle → Device Callbacks](plugin-lifecycle.md#device-lifecycle-callbacks).
