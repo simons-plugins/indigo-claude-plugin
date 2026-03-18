@@ -139,8 +139,9 @@ MyPlugin.indigoPlugin/
 │   │   ├── MenuItems.xml          # Plugin menu items
 │   │   ├── PluginConfig.xml       # Plugin configuration UI
 │   │   └── Events.xml             # Event/trigger definitions
+│   │   └── requirements.txt        # Python dependencies (auto-installed)
 │   ├── Resources/                  # Web content (auto-served)
-│   └── Packages/                   # Bundled Python libraries
+│   └── Packages/                   # Auto-managed by Indigo (do not commit)
 ```
 
 **Minimum required files:**
@@ -223,14 +224,38 @@ def validatePrefsConfigUi(self, valuesDict):
 
 ### ❌ Mistake 4: Using system Python packages
 
-```python
-# WRONG - Relies on system packages (may not exist)
-import requests
+Use `requirements.txt` in `Contents/Server Plugin/` — Indigo auto-installs packages on plugin load:
 
-# RIGHT - Bundle packages in Contents/Packages/
-# Install: pip install -t "Contents/Packages/" requests
+```
+# Contents/Server Plugin/requirements.txt
+requests==2.32.5
+paho-mqtt==2.1.0
+```
+
+Then just import normally in `plugin.py`:
+```python
+import requests
+import paho.mqtt.client as mqtt
+```
+
+**How it works:**
+- Indigo runs `pip install` into `Contents/Packages/` automatically on first load
+- Indigo tracks installation via `pip-install-log-success.txt` in `Packages/`
+- Subsequent restarts skip installation if the success marker exists
+- If you change `requirements.txt`, delete the success marker to force reinstall
+
+**Important:**
+- Do NOT commit `Contents/Packages/` to git — add it to `.gitignore`
+- Do NOT manually bundle packages with `pip install -t` — architecture and Python version mismatches will cause `dlopen` errors (e.g. arm64 `.so` on an x86_64 server, or cpython-311 files on Python 3.10)
+- Do NOT use `sys.path.insert()` hacks — Indigo handles the path automatically
+
+```python
+# WRONG - Manual bundling causes architecture/version mismatches
 import sys
 sys.path.insert(0, './Contents/Packages')
+import requests
+
+# RIGHT - Just import. Indigo handles everything via requirements.txt
 import requests
 ```
 
@@ -271,8 +296,9 @@ Place `.py` files here to make them importable by any plugin. After adding or up
 **Symptoms**: `ModuleNotFoundError` or `ImportError` in Event Log
 
 **Solutions**:
-- Bundle all dependencies in `Contents/Packages/`
-- Don't rely on system Python packages
+- Add a `requirements.txt` in `Contents/Server Plugin/` listing your dependencies
+- Delete `Contents/Packages/pip-install-log-success.txt` to force Indigo to reinstall
+- If you see `dlopen` errors with architecture mismatches, remove any manually bundled `.so` files from `Contents/Packages/` and let Indigo reinstall via `requirements.txt`
 - Use Python 3 syntax (not Python 2)
 - Check package compatibility with Python 3.10+
 

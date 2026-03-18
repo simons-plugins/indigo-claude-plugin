@@ -44,8 +44,9 @@
    ```
    ModuleNotFoundError: No module named 'requests'
    ```
-   - Install missing package to `Contents/Packages/` directory
-   - Don't rely on system Python packages
+   - Add a `requirements.txt` in `Contents/Server Plugin/` — Indigo auto-installs on load
+   - Don't manually bundle packages or rely on system Python packages
+   - See [Python Dependencies](#python-dependency-issues) below
 
 3. **API Version Mismatch**
    ```
@@ -271,6 +272,65 @@ def validateDeviceConfigUi(self, values_dict, type_id, dev_id):
 def validateDeviceConfigUi(self, values_dict, type_id, dev_id):
     return (True, values_dict)  # Correct tuple
 ```
+
+## Python Dependency Issues
+
+### Using requirements.txt (Recommended)
+
+Indigo 2023.2+ auto-installs Python packages from `Contents/Server Plugin/requirements.txt`:
+
+```
+# Contents/Server Plugin/requirements.txt
+requests==2.32.5
+paho-mqtt==2.1.0
+zeroconf==0.148.0
+```
+
+**How Indigo handles it:**
+1. On plugin load, Indigo checks for `requirements.txt`
+2. Runs `pip install` into `Contents/Packages/` using Indigo's Python
+3. Creates `Contents/Packages/pip-install-log-success.txt` as a marker
+4. On subsequent restarts, skips installation if the marker exists
+
+### Force Reinstall
+
+If you change `requirements.txt` or packages are corrupted:
+1. Delete `Contents/Packages/pip-install-log-success.txt`
+2. Restart the plugin
+3. Indigo will re-run `pip install`
+
+### Architecture Mismatch Errors
+
+**Symptoms**: `dlopen` error mentioning "incompatible architecture" or wrong cpython version
+```
+dlopen(.../zeroconf/_cache.cpython-311-darwin.so):
+  mach-o file, but is an incompatible architecture (have 'arm64', need 'x86_64')
+```
+
+**Cause**: Packages were manually bundled (`pip install -t`) on a different machine than the Indigo server. Compiled `.so` files are architecture-specific (arm64 vs x86_64) and Python-version-specific (cpython-311 vs cpython-310).
+
+**Solution**:
+1. Remove the manually bundled packages from `Contents/Packages/`
+2. Delete `pip-install-log-success.txt`
+3. Use `requirements.txt` instead — Indigo will install with the correct architecture and Python version
+4. Add `Contents/Packages/` to `.gitignore` to prevent committing compiled files
+
+### Don't Bundle Packages Manually
+
+```python
+# WRONG - sys.path hack with manually bundled packages
+import sys
+sys.path.insert(0, './Contents/Packages')
+import requests
+
+# RIGHT - Just import. Indigo handles everything via requirements.txt
+import requests
+```
+
+**Why manual bundling fails:**
+- `.so` files compiled on arm64 (Apple Silicon) won't work on x86_64 (Intel) servers
+- Files built for Python 3.11 won't load on Python 3.10
+- `__file__` is not defined in Indigo's plugin environment, breaking `os.path.dirname(__file__)` patterns
 
 ## Python 3 Issues
 
