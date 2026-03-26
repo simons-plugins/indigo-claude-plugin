@@ -141,6 +141,7 @@ MyPlugin.indigoPlugin/
 │   │   └── Events.xml             # Event/trigger definitions
 │   │   └── requirements.txt        # Python dependencies (auto-installed)
 │   ├── Resources/                  # Web content (auto-served)
+│   │   └── icon.png               # Plugin icon (shown in Plugin Store)
 │   └── Packages/                   # Auto-managed by Indigo (do not commit)
 ```
 
