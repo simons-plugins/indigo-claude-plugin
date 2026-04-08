@@ -20,21 +20,14 @@ Skills activate automatically when working on relevant files:
 
 ## Installation
 
-Add to your Claude Code plugins configuration:
-
-```json
-{
-  "plugins": [
-    "/path/to/indigo-claude-plugin"
-  ]
-}
-```
-
-Or install from GitHub:
-
-```
-claude plugin add simons-plugins/indigo-claude-plugin
-```
+  # 1. Add the marketplace                                                                                                                                                                         
+  /plugin marketplace add simons-plugins/indigo-claude-plugin                           
+                                                                                                                                                                                                   
+  # 2. Install the plugin                                                               
+  /plugin install indigo@simons-plugins/indigo-claude-plugin                                                                                                                                       
+                                                                                        
+  # 3. Reload to activate    
+  /reload-plugins    
 
 ## Documentation
 
