@@ -106,22 +106,25 @@ Target three breakpoints:
 }
 ```
 
-## Deployment Paths
+## Deployment Options
 
-### Domio Plugin (primary)
+### Serve from an Indigo Plugin
 
+Copy to any plugin's `Contents/Resources/static/pages/` directory and restart:
 ```bash
-cp "page.html" "/Volumes/Macintosh HD-1/Library/Application Support/Perceptive Automation/Indigo 2025.1/Plugins/Domio.indigoPlugin/Contents/Resources/static/pages/"
+cp "page.html" "/Volumes/Macintosh HD-1/Library/Application Support/Perceptive Automation/Indigo 2025.1/Plugins/{PluginName}.indigoPlugin/Contents/Resources/static/pages/"
 ```
-
-Then restart: `mcp__indigo__restart_plugin(plugin_id="com.simons-plugins.domio")`
-
-### Other Plugins
-
-Copy to any plugin's `Contents/Resources/static/pages/` directory.
-
-### Browser Testing
+Then restart: `mcp__indigo__restart_plugin(plugin_id="{plugin.bundle.id}")`
 
 Access via: `https://{server}:8176/{bundleID}/static/pages/page.html?api-key=KEY`
 
 The `?api-key=` parameter authenticates with IWS and provides credentials to `indigo-api.js`.
+
+### Browser-Only (No Plugin)
+
+Save the HTML file anywhere and open directly in a browser. Pages should detect when `INDIGO_CONFIG` is missing and show a connection form prompting for the server URL and API key. See `examples/active-devices.html` for the fallback pattern.
+
+This approach works for:
+- Quick testing during development
+- Standalone dashboards on wall-mounted tablets
+- Users without any specific plugin installed

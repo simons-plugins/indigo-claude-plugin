@@ -10,7 +10,7 @@ description: Indigo HTML page builder — generates interactive dashboard pages 
 
 ## Description
 
-Guided builder for Indigo HTML dashboard pages. Generates self-contained HTML files with `indigo-api.js` for live device data and controls. Compatible with any Indigo plugin's static file serving.
+Guided builder for Indigo HTML dashboard pages. Generates self-contained HTML files with `indigo-api.js` for live device data and controls. Pages can be served from any Indigo plugin's static file directory or opened directly in a browser.
 
 ## On Command Load
 
@@ -52,14 +52,18 @@ Produce a single self-contained HTML file. Refer to `references/indigo-api-js.md
 
 ### Phase 4: DEPLOY
 
-Offer deployment options:
+Offer deployment options based on how the page will be used:
 
-**Option A — Domio plugin on Indigo server** (if volume mounted):
+**Option A — Serve from an Indigo plugin** (recommended for app integration):
+Determine which plugin to deploy to. Copy the HTML file to the plugin's static pages directory:
 ```bash
-cp "page-name.html" "/Volumes/Macintosh HD-1/Library/Application Support/Perceptive Automation/Indigo 2025.1/Plugins/Domio.indigoPlugin/Contents/Resources/static/pages/"
+cp "page-name.html" "/Volumes/Macintosh HD-1/Library/Application Support/Perceptive Automation/Indigo 2025.1/Plugins/{PluginName}.indigoPlugin/Contents/Resources/static/pages/"
 ```
-Then restart: `mcp__indigo__restart_plugin(plugin_id="com.simons-plugins.domio")`
+Then restart the plugin: `mcp__indigo__restart_plugin(plugin_id="{plugin.bundle.id}")`
 
-**Option B — Another plugin**: Copy to its `Contents/Resources/static/pages/`.
+The page is then accessible at `https://{server}:8176/{bundleID}/static/pages/page-name.html`.
 
-**Option C — Save locally**: Write to current working directory.
+**Option B — Browser-only**:
+Save the HTML file anywhere (working directory, Desktop, etc.). Open directly in a browser — the page shows a connection form prompting for the Indigo server URL and API key. No plugin deployment needed.
+
+**Option C — Save locally for later**: Write to current working directory for manual placement.

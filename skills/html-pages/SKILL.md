@@ -14,15 +14,16 @@ match:
 
 # Indigo HTML Dashboard Pages
 
-Self-contained HTML pages served by Indigo plugins via the IWS static file system. Pages use `indigo-api.js` for client-side device data and control via the Indigo REST API. Compatible with any plugin — primarily designed for the Domio plugin.
+Self-contained HTML pages that display Indigo device data and controls. Pages use `indigo-api.js` for client-side REST API access. Serve from any Indigo plugin's static file directory, or open directly in a browser.
 
 ## Core Concepts
 
 - **Self-contained**: Each page is a single `.html` file with inline CSS and JS
-- **Self-describing**: Meta tags in `<head>` provide page name, icon, and description for app discovery
+- **Self-describing**: `domio-page-*` meta tags in `<head>` provide page name, icon, and description for app discovery
 - **Live data**: `indigo-api.js` fetches device state and sends commands via `POST /v2/api/command`
 - **Dark mode**: All pages support `prefers-color-scheme` for automatic light/dark switching
 - **Responsive**: Pages adapt to iPhone, iPad, and desktop browsers
+- **Browser-friendly**: Pages include a connection form when `INDIGO_CONFIG` is not injected, so they work opened directly in any browser
 
 ## Workflow
 
@@ -65,24 +66,27 @@ Produce a single HTML file following this structure:
     <div id="content"></div>
     <script src="../js/indigo-api.js"></script>
     <script>
-        const indigo = new IndigoAPI();
-        if (IndigoAPI.isConfigured()) {
-            indigo.observeAll(render, 5000);
+        if (typeof IndigoAPI !== "undefined" && IndigoAPI.isConfigured()) {
+            startDashboard();
+        } else {
+            showConfigForm();  // browser fallback — prompt for server URL + API key
         }
-        function render(devices) { /* ... */ }
     </script>
 </body>
 </html>
 ```
 
-**Critical**: Load `indigo-api.js` via `../js/indigo-api.js` (sibling directory). All commands use `POST /v2/api/command` — consult `/indigo:api` skill docs (`docs/api/device-commands.md`) for the full command reference.
+**Critical**: All device commands go to `POST /v2/api/command` — consult `/indigo:api` skill docs (`docs/api/device-commands.md`) for the command reference. Do not guess command formats.
 
 ### Phase 4: DEPLOY
 
-Offer deployment options:
-1. **Domio plugin on Indigo server** — copy to `Resources/static/pages/`, restart plugin via MCP
-2. **Another plugin** — copy to that plugin's `Resources/static/pages/`
-3. **Local save** — write to working directory for manual placement
+Offer deployment options based on how the page will be used:
+
+**Option A — Serve from an Indigo plugin** (recommended for app integration):
+Copy to any plugin's `Contents/Resources/static/pages/` directory and restart the plugin. The page is then accessible at `https://{server}:8176/{bundleID}/static/pages/page.html`. Apps like Domio discover pages via the plugin's `/pages/` manifest endpoint.
+
+**Option B — Browser-only**:
+Save the HTML file anywhere. Open it directly in a browser — the page shows a connection form prompting for the Indigo server URL and API key. No plugin deployment needed. Good for quick testing or standalone dashboards on a wall-mounted tablet.
 
 ## Quick API Reference
 
@@ -102,11 +106,11 @@ For detailed API and design documentation, consult:
 - **`references/indigo-api-js.md`** — Full indigo-api.js V1 API reference, device properties, error handling
 - **`references/design-guidelines.md`** — CSS theme template, SF Symbol icons, interactive control patterns, responsive layout, deployment paths
 
+### Example Files
+
+- **`examples/active-devices.html`** — Working example page showing active devices with toggle controls, dark mode, and browser connection form fallback
+
 ### Related Skills
 
 - **`/indigo:api`** — Indigo REST and WebSocket API reference (device commands, authentication)
 - **`/indigo:control-pages`** — XML-based Indigo control pages (alternative to HTML pages)
-
-### Working Example
-
-The Domio plugin ships with `home-summary.html` — a bundled sample page that dynamically fetches devices, shows type counts, lists active devices with toggle and brightness controls. Examine it as a reference implementation.

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="domio-page-name" content="Active Devices">
+    <meta name="domio-page-icon" content="bolt.fill">
+    <meta name="domio-page-description" content="Devices currently on with toggle controls">
+    <title>Active Devices</title>
+    <style>
+        :root {
+            --bg: #f5f5f7;
+            --card-bg: #ffffff;
+            --text: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent: #5856d6;
+            --on-color: #34c759;
+            --off-color: #d2d2d7;
+            --shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #000000;
+                --card-bg: #1c1c1e;
+                --text: #f5f5f7;
+                --text-secondary: #98989d;
+                --accent: #7d7aff;
+                --on-color: #30d158;
+                --off-color: #48484a;
+                --shadow: 0 1px 3px rgba(0,0,0,0.3);
+            }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg); color: var(--text);
+            padding: 16px 16px 32px;
+        }
+        h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+        .subtitle { font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; }
+        .loading { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+        .spinner {
+            width: 24px; height: 24px; border: 3px solid var(--off-color);
+            border-top-color: var(--accent); border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin: 0 auto 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .device-list { display: flex; flex-direction: column; gap: 8px; }
+        .device-row {
+            background: var(--card-bg); border-radius: 12px; padding: 14px 16px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: var(--shadow);
+        }
+        .device-name { font-size: 16px; font-weight: 500; }
+        .device-state { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+        .toggle { position: relative; width: 51px; height: 31px; flex-shrink: 0; margin-left: 12px; cursor: pointer; }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .toggle .slider {
+            position: absolute; inset: 0; background: var(--off-color);
+            border-radius: 31px; transition: background 0.25s;
+        }
+        .toggle .slider::before {
+            content: ""; position: absolute; width: 27px; height: 27px;
+            left: 2px; bottom: 2px; background: white; border-radius: 50%;
+            transition: transform 0.25s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .toggle input:checked + .slider { background: var(--on-color); }
+        .toggle input:checked + .slider::before { transform: translateX(20px); }
+        .toggle input:disabled + .slider { opacity: 0.5; }
+        .empty { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
+        .last-updated { text-align: center; font-size: 12px; color: var(--text-secondary); padding-top: 16px; }
+
+        /* ── Browser Config Form ── */
+        #config-form {
+            max-width: 400px; margin: 60px auto; padding: 24px;
+            background: var(--card-bg); border-radius: 14px; box-shadow: var(--shadow);
+        }
+        #config-form h2 { font-size: 20px; margin-bottom: 12px; }
+        #config-form label { display: block; font-size: 14px; color: var(--text-secondary); margin-top: 12px; }
+        #config-form input {
+            width: 100%; padding: 10px; margin-top: 4px; border: 1px solid var(--off-color);
+            border-radius: 8px; font-size: 15px; background: var(--bg); color: var(--text);
+        }
+        #config-form button {
+            margin-top: 16px; width: 100%; padding: 12px; border: none; border-radius: 10px;
+            background: var(--accent); color: white; font-size: 16px; font-weight: 600; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <div class="loading"><div class="spinner"></div><p>Connecting...</p></div>
+    </div>
+
+    <!--
+        Load indigo-api.js from sibling directory when served by a plugin.
+        When opened as a local file or from another server, the script tag
+        will fail silently and the config form below handles setup.
+    -->
+    <script src="../js/indigo-api.js"></script>
+    <script>
+        // If indigo-api.js didn't load (local file or different server), define stubs.
+        if (typeof IndigoAPI === "undefined") {
+            document.getElementById("content").innerHTML = "";
+            showConfigForm();
+        } else if (IndigoAPI.isConfigured()) {
+            startDashboard();
+        } else {
+            document.getElementById("content").innerHTML = "";
+            showConfigForm();
+        }
+
+        function showConfigForm() {
+            const content = document.getElementById("content");
+            content.innerHTML = `
+                <div id="config-form">
+                    <h2>Connect to Indigo</h2>
+                    <p style="font-size:14px;color:var(--text-secondary)">
+                        Enter your Indigo server details to load the dashboard.
+                    </p>
+                    <label>Server URL
+                        <input id="cfg-url" type="url" placeholder="https://your-reflector.indigodomo.net">
+                    </label>
+                    <label>API Key
+                        <input id="cfg-key" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+                    </label>
+                    <button onclick="connectManual()">Connect</button>
+                </div>`;
+        }
+
+        function connectManual() {
+            const baseURL = document.getElementById("cfg-url").value.replace(/\/+$/, "");
+            const apiKey = document.getElementById("cfg-key").value.trim();
+            if (!baseURL || !apiKey) return;
+            window.INDIGO_CONFIG = { baseURL, apiKey };
+
+            // Dynamically load indigo-api.js if it wasn't available
+            if (typeof IndigoAPI === "undefined") {
+                const script = document.createElement("script");
+                script.src = baseURL + "/com.simons-plugins.domio/static/js/indigo-api.js";
+                script.onload = () => startDashboard();
+                script.onerror = () => {
+                    // Fall back to inline fetch — indigo-api.js not available on this server
+                    alert("Could not load indigo-api.js from server. Ensure a plugin with indigo-api.js is installed.");
+                };
+                document.head.appendChild(script);
+            } else {
+                startDashboard();
+            }
+        }
+
+        function startDashboard() {
+            document.getElementById("content").innerHTML =
+                '<h1>Active Devices</h1><p class="subtitle" id="subtitle">Loading...</p>' +
+                '<div id="list"></div><p class="last-updated" id="updated"></p>';
+
+            const indigo = new IndigoAPI();
+            indigo.observeAll(render, 5000);
+        }
+
+        function render(devices) {
+            const active = devices.filter(d => d.onState === true);
+            document.getElementById("subtitle").textContent =
+                `${active.length} of ${devices.length} devices on`;
+
+            const list = document.getElementById("list");
+            if (active.length === 0) {
+                list.innerHTML = '<p class="empty">All devices are off</p>';
+            } else {
+                list.innerHTML = '<div class="device-list">' +
+                    active.map(d => `
+                        <div class="device-row">
+                            <div>
+                                <div class="device-name">${escapeHtml(d.name)}</div>
+                                <div class="device-state">${describeState(d)}</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" data-id="${d.id}" checked
+                                    onchange="handleToggle(this)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>`).join("") +
+                    '</div>';
+            }
+
+            document.getElementById("updated").textContent =
+                `Updated ${new Date().toLocaleTimeString()}`;
+        }
+
+        function describeState(d) {
+            const cls = (d.class || "").toLowerCase();
+            if (cls.includes("dimmer")) return `${d.brightness || 0}%`;
+            if (cls.includes("thermostat")) return `${d.hvacMode || "on"}`;
+            return "On";
+        }
+
+        async function handleToggle(el) {
+            el.disabled = true;
+            try {
+                const indigo = new IndigoAPI();
+                await indigo.toggle(parseInt(el.dataset.id));
+            } catch (e) {
+                el.checked = !el.checked;
+            }
+            setTimeout(() => { el.disabled = false; }, 500);
+        }
+
+        function escapeHtml(t) {
+            const d = document.createElement("div");
+            d.textContent = t;
+            return d.innerHTML;
+        }
+    </script>
+</body>
+</html>
