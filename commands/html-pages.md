@@ -41,7 +41,7 @@ Determine layout, device selection, interactivity, and refresh rate. Refer to `r
 Produce a single self-contained HTML file. Refer to `references/indigo-api-js.md` for the full API.
 
 **Requirements:**
-- `domio-page-*` meta tags for app discovery
+- `indigo-page-*` meta tags for app discovery
 - Inline CSS with `prefers-color-scheme` dark mode support
 - Load `indigo-api.js` via `<script src="../js/indigo-api.js"></script>`
 - Use `observeAll()` or `observe(deviceId)` for live polling

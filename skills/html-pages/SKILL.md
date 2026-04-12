@@ -19,33 +19,52 @@ Self-contained HTML pages that display Indigo device data and controls. Pages us
 ## Core Concepts
 
 - **Self-contained**: Each page is a single `.html` file with inline CSS and JS
-- **Self-describing**: `domio-page-*` meta tags in `<head>` provide page name, icon, and description for app discovery
+- **Self-describing**: `indigo-page-*` meta tags in `<head>` provide page name, icon, and description for app discovery
 - **Live data**: `indigo-api.js` fetches device state and sends commands via `POST /v2/api/command`
-- **Dark mode**: All pages support `prefers-color-scheme` for automatic light/dark switching
+- **Dark mode**: All pages must support `prefers-color-scheme` for automatic light/dark switching
 - **Responsive**: Pages adapt to iPhone, iPad, and desktop browsers
-- **Browser-friendly**: Pages include a connection form when `INDIGO_CONFIG` is not injected, so they work opened directly in any browser
+- **Browser-friendly**: Include a connection form fallback when `INDIGO_CONFIG` is not injected, enabling direct browser use without plugin infrastructure
 
 ## Workflow
 
 ### Phase 1: DISCOVER
 
-Determine what the page should display. Use Indigo MCP tools to find available devices:
+Determine what the page should display. Use Indigo MCP tools to explore the user's setup:
 - `mcp__indigo__list_devices` — all devices
 - `mcp__indigo__get_devices_by_type` — filter by type (relay, dimmer, thermostat, sensor)
 - `mcp__indigo__list_action_groups` — available scenes
 - `mcp__indigo__list_variables` — variables
 
+Clarify the page's purpose. Common patterns:
+- **Room dashboard** — all devices in a specific room with controls
+- **Device type page** — all lights, all thermostats, all sensors
+- **Status overview** — device counts by type, active devices only
+- **Scene launcher** — grid of action group buttons
+- **Single device focus** — detailed view of one device with history
+
 ### Phase 2: DESIGN
 
-Determine layout and interactivity:
-- **Layout**: Grid of cards, compact list, or single-focus dashboard
-- **Devices**: Specific devices by name/ID, or all of a type
-- **Controls**: View-only, toggles, brightness sliders, thermostat setpoints
-- **Refresh rate**: Polling interval for live updates (default: 5 seconds)
+Determine layout, device selection, and interactivity:
+
+**Layout options:**
+- **Card grid** — responsive grid of device cards (best for mixed device types)
+- **Compact list** — rows with name + control (best for many devices)
+- **Single-focus** — one large widget for a single device or metric
+
+**Interactivity levels:**
+- **View-only** — display state, no controls (sensors, status boards)
+- **Toggle** — on/off switches for relays and dimmers
+- **Full control** — toggles + brightness sliders + thermostat setpoints
+- **Action buttons** — execute action groups (scenes)
+
+**Polling interval:**
+- Default: 5 seconds (`observeAll(callback, 5000)`)
+- Fast (2s): for security or time-sensitive pages
+- Slow (15-30s): for overview dashboards that don't need instant updates
 
 ### Phase 3: GENERATE
 
-Produce a single HTML file following this structure:
+Produce a single HTML file. Follow this template structure:
 
 ```html
 <!DOCTYPE html>
@@ -53,13 +72,13 @@ Produce a single HTML file following this structure:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <meta name="domio-page-name" content="PAGE NAME">
-    <meta name="domio-page-icon" content="house.fill">
-    <meta name="domio-page-description" content="Brief description">
+    <meta name="indigo-page-name" content="PAGE NAME">
+    <meta name="indigo-page-icon" content="house.fill">
+    <meta name="indigo-page-description" content="Brief description">
     <title>PAGE NAME</title>
     <style>
-        :root { /* light theme */ }
-        @media (prefers-color-scheme: dark) { :root { /* dark theme */ } }
+        :root { /* light theme vars — see references/design-guidelines.md */ }
+        @media (prefers-color-scheme: dark) { :root { /* dark theme vars */ } }
     </style>
 </head>
 <body>
@@ -69,24 +88,47 @@ Produce a single HTML file following this structure:
         if (typeof IndigoAPI !== "undefined" && IndigoAPI.isConfigured()) {
             startDashboard();
         } else {
-            showConfigForm();  // browser fallback — prompt for server URL + API key
+            showConfigForm();  // browser fallback
         }
     </script>
 </body>
 </html>
 ```
 
-**Critical**: All device commands go to `POST /v2/api/command` — consult `/indigo:api` skill docs (`docs/api/device-commands.md`) for the command reference. Do not guess command formats.
+**Generation rules:**
+- Load `indigo-api.js` via `<script src="../js/indigo-api.js"></script>` (sibling directory)
+- Check `typeof IndigoAPI !== "undefined"` before use — the script tag fails silently when opened as a local file
+- Include a `showConfigForm()` fallback that prompts for server URL and API key (see `examples/active-devices.html` for the pattern)
+- Use CSS custom properties for theming — see `references/design-guidelines.md` for the full theme template
+- Debounce slider inputs at 300ms to avoid command spam
+- Disable toggle controls briefly (500ms) after a command to prevent double-taps
+- Escape all device names with a text-node approach before rendering as HTML
+
+**Critical**: All device commands use `POST /v2/api/command` — consult `/indigo:api` skill docs (`docs/api/device-commands.md`) for the full command reference. Do not guess command formats.
 
 ### Phase 4: DEPLOY
 
 Offer deployment options based on how the page will be used:
 
 **Option A — Serve from an Indigo plugin** (recommended for app integration):
-Copy to any plugin's `Contents/Resources/static/pages/` directory and restart the plugin. The page is then accessible at `https://{server}:8176/{bundleID}/static/pages/page.html`. Apps like Domio discover pages via the plugin's `/pages/` manifest endpoint.
+Copy to any plugin's `Contents/Resources/static/pages/` directory and restart the plugin via MCP. The page is then accessible at `https://{server}:8176/{bundleID}/static/pages/page.html`. Apps that support the `/pages/` manifest endpoint discover pages automatically.
 
 **Option B — Browser-only**:
 Save the HTML file anywhere. Open it directly in a browser — the page shows a connection form prompting for the Indigo server URL and API key. No plugin deployment needed. Good for quick testing or standalone dashboards on a wall-mounted tablet.
+
+## Device Classification
+
+When building pages that show mixed device types, classify devices by their `class` field:
+
+| Class contains | Category | Controls |
+|----------------|----------|----------|
+| `DimmerDevice` | Lights | Toggle + brightness slider |
+| `RelayDevice` | Switches (or Lights if name contains light/lamp) | Toggle |
+| `ThermostatDevice` | Thermostats | Heat/cool setpoints, mode |
+| `SensorDevice` | Sensors | Display-only (sensorValue, onState) |
+| Other | Other | Toggle if `onState` exists |
+
+Check `onState === true` to determine if a device is active. For dimmers, also check `brightness > 0`.
 
 ## Quick API Reference
 
@@ -95,7 +137,10 @@ const indigo = new IndigoAPI();
 await indigo.getDevices();                  // fetch all devices
 await indigo.toggle(deviceId);              // toggle on/off
 await indigo.setBrightness(deviceId, 75);   // dimmer 0-100
+await indigo.setHeatSetpoint(deviceId, 21); // thermostat
+await indigo.executeActionGroup(id);        // run a scene
 indigo.observeAll(callback, 5000);          // poll every 5s, call back on change
+indigo.observe(deviceId, callback, 5000);   // poll single device
 ```
 
 ## Additional Resources
@@ -103,14 +148,14 @@ indigo.observeAll(callback, 5000);          // poll every 5s, call back on chang
 ### Reference Files
 
 For detailed API and design documentation, consult:
-- **`references/indigo-api-js.md`** — Full indigo-api.js V1 API reference, device properties, error handling
+- **`references/indigo-api-js.md`** — Full indigo-api.js V1 API reference, device properties, error handling, command transport
 - **`references/design-guidelines.md`** — CSS theme template, SF Symbol icons, interactive control patterns, responsive layout, deployment paths
 
 ### Example Files
 
-- **`examples/active-devices.html`** — Working example page showing active devices with toggle controls, dark mode, and browser connection form fallback
+- **`examples/active-devices.html`** — Complete working page: active devices with toggle controls, dark mode, browser connection form fallback. Copy and adapt as a starting point.
 
 ### Related Skills
 
-- **`/indigo:api`** — Indigo REST and WebSocket API reference (device commands, authentication)
+- **`/indigo:api`** — Indigo REST and WebSocket API reference (device commands, authentication). **Always consult before writing command code.**
 - **`/indigo:control-pages`** — XML-based Indigo control pages (alternative to HTML pages)

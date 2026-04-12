@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <meta name="domio-page-name" content="Active Devices">
-    <meta name="domio-page-icon" content="bolt.fill">
-    <meta name="domio-page-description" content="Devices currently on with toggle controls">
+    <meta name="indigo-page-name" content="Active Devices">
+    <meta name="indigo-page-icon" content="bolt.fill">
+    <meta name="indigo-page-description" content="Devices currently on with toggle controls">
     <title>Active Devices</title>
     <style>
         :root {
@@ -136,12 +136,25 @@
 
             // Dynamically load indigo-api.js if it wasn't available
             if (typeof IndigoAPI === "undefined") {
-                const script = document.createElement("script");
-                script.src = baseURL + "/com.simons-plugins.domio/static/js/indigo-api.js";
-                script.onload = () => startDashboard();
-                script.onerror = () => {
-                    // Fall back to inline fetch — indigo-api.js not available on this server
-                    alert("Could not load indigo-api.js from server. Ensure a plugin with indigo-api.js is installed.");
+                // indigo-api.js wasn't loaded from a sibling path — provide inline API
+                window.IndigoAPI = class {
+                    constructor() {
+                        const cfg = window.INDIGO_CONFIG;
+                        this._base = cfg.baseURL.replace(/\/+$/, "");
+                        this._key = cfg.apiKey;
+                    }
+                    async _fetch(path, opts = {}) {
+                        const h = { Authorization: "Bearer " + this._key, Accept: "application/json", ...opts.headers };
+                        const r = await fetch(this._base + path, { ...opts, headers: h });
+                        if (!r.ok) throw new Error("HTTP " + r.status);
+                        const ct = r.headers.get("Content-Type") || "";
+                        return ct.includes("json") ? r.json() : null;
+                    }
+                    async getDevices() { return this._fetch("/v2/api/indigo.devices"); }
+                    async getDevice(id) { return this._fetch("/v2/api/indigo.devices/" + id); }
+                    async toggle(id) { return this._fetch("/v2/api/command", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: "indigo.device.toggle", objectId: id }) }); }
+                    observeAll(cb, ms = 5000) { let last = ""; const poll = async () => { try { const d = await this.getDevices(); const j = JSON.stringify(d); if (j !== last) { last = j; cb(d); } } catch(e) {} }; poll(); const t = setInterval(poll, ms); return { stop: () => clearInterval(t) }; }
+                    static isConfigured() { const c = window.INDIGO_CONFIG; return !!(c && c.baseURL && c.apiKey); }
                 };
                 document.head.appendChild(script);
             } else {

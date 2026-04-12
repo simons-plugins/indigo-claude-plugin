@@ -8,7 +8,7 @@ Client-side JavaScript library for Indigo REST API access from HTML pages.
 <script src="../js/indigo-api.js"></script>
 ```
 
-The library reads credentials from `window.INDIGO_CONFIG` (injected by the Domio iOS app) or from `?api-key=` URL query parameter (browser testing fallback).
+The library reads credentials from `window.INDIGO_CONFIG` (injected by compatible iOS apps via WKWebView, or set manually) or from `?api-key=` URL query parameter (browser fallback).
 
 ## API
 
