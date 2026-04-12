@@ -57,6 +57,20 @@ Determine layout, device selection, and interactivity:
 - **Full control** — toggles + brightness sliders + thermostat setpoints
 - **Action buttons** — execute action groups (scenes)
 
+**Capability coverage — CRITICAL:**
+Show controls for EVERY capability a device supports by default. Never silently skip capabilities for layout reasons. If a dimmer has colour temperature support (`supportsWhiteTemperature === true`), its card must include a colour temp slider — even in small/half-width cards. Layout constraints are your problem to solve, not a reason to hide functionality.
+
+If layout genuinely cannot fit all controls, explicitly ask the user before omitting anything:
+> "The [device] supports brightness, colour temperature, and RGB. A small card will be cramped with all three — would you like to skip colour or use a full-width card?"
+
+Detect capabilities from the device object at render time:
+- `dev.supportsOnState` — toggle
+- `dev.brightness != null` / class contains `Dimmer` — brightness slider
+- `dev.supportsWhiteTemperature` — colour temp slider
+- `dev.supportsRGB` — RGB picker
+- `dev.supportsHeatSetpoint` — thermostat setpoint
+- `dev.supportsCoolSetpoint` — cool setpoint
+
 **Polling interval:**
 - Default: 5 seconds (`observeAll(callback, 5000)`)
 - Fast (2s): for security or time-sensitive pages
