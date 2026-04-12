@@ -43,8 +43,9 @@ Produce a single self-contained HTML file. Refer to `references/indigo-api-js.md
 **Requirements:**
 - `indigo-page-*` meta tags for app discovery
 - Inline CSS with `prefers-color-scheme` dark mode support
-- Load `indigo-api.js` via `<script src="../js/indigo-api.js"></script>`
+- **Inline `indigo-api.js`** — paste the full `IndigoAPI` class into a `<script>` block. Pages must be self-contained. Read the class source from `references/indigo-api-js.md`.
 - Use `observeAll()` or `observe(deviceId)` for live polling
+- Guard with `typeof IndigoAPI !== "undefined"` before use
 - Debounce slider inputs (300ms)
 - Handle errors gracefully
 
