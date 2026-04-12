@@ -108,3 +108,99 @@ All commands are sent via `POST /v2/api/command` with JSON body:
 ```
 
 Refer to `/indigo:api` skill documentation (`docs/api/device-commands.md`) for the full command reference.
+
+## Capability Detection
+
+Always render controls based on the device's actual capability flags, not on assumptions about device type. A device can be a "dimmer" but also support colour temperature and RGB — all three need controls.
+
+| Capability flag | Control to render |
+|-----------------|-------------------|
+| `dev.supportsOnState === true` | Toggle switch |
+| `dev.class` contains `"Dimmer"` or `dev.brightness != null` | Brightness slider |
+| `dev.supportsWhiteTemperature === true` | Colour temperature slider |
+| `dev.supportsRGB === true` | RGB colour picker |
+| `dev.supportsHeatSetpoint === true` | Heat setpoint control |
+| `dev.supportsCoolSetpoint === true` | Cool setpoint control |
+
+**Rule:** Never hide a supported capability for layout reasons without asking the user first.
+
+## Thermostat Display Rules
+
+For TRVs and thermostats, show heating indicators only when actually heating:
+- **Flame/heat icon:** Only when `hvacHeaterIsOn === true` AND `valve-position > 0`
+- **Valve position at 0%** means the valve is fully closed regardless of `hvacHeaterIsOn` — no flame
+- **Setpoint below ~15°C** usually indicates the zone is off / frost protection mode
+
+## History Endpoint (Domio Plugin)
+
+The Domio plugin exposes a history endpoint backed by Indigo's SQL Logger:
+
+```
+GET /message/com.simons-plugins.domio/history/?device_id={id}&column={name}&range={range}&max_points=200
+```
+
+**Valid `range` values (strict):** `1h`, `6h`, `24h`, `7d`, `30d` — any other value returns 400.
+
+**Parameters:**
+- `device_id` (required) — numeric device ID
+- `column` (optional) — state column to query (e.g. `temperatureInput1`); if omitted, uses first numeric column
+- `range` — time window (strictly one of the allowed values above)
+- `max_points` — downsample target (default 300)
+
+**Response:**
+```json
+{
+  "success": true,
+  "device_id": 123,
+  "column": "temperatureInput1",
+  "range": "24h",
+  "type": "float",
+  "points": [[timestamp, value], ...],
+  "min": 18.2,
+  "max": 22.1,
+  "current": 20.5
+}
+```
+
+**Usage in pages:**
+```javascript
+const data = await indigo._fetch(
+    `/message/com.simons-plugins.domio/history/?device_id=${id}&column=temperatureInput1&range=24h&max_points=200`
+);
+```
+
+## Error Visibility
+
+Silent error handling hides real problems. Every fetch that can fail should display the error on the page, not just `console.warn`. Pattern:
+
+```javascript
+async function loadHistory() {
+    try {
+        const data = await indigo._fetch(path);
+        if (data?.success && data.points?.length > 0) {
+            render(data);
+        } else {
+            showChartMessage(data?.error || "No data available");
+        }
+    } catch (e) {
+        showChartMessage("Error: " + e.message);
+    }
+}
+
+function showChartMessage(msg) {
+    // Write the message into the chart area so the user sees it
+    const el = document.getElementById("chart");
+    if (el) el.innerHTML = `<text>${msg}</text>`;
+}
+```
+
+A page with an invisible 400 error looks identical to a page that's working but has no data. Always surface the difference.
+
+## Script Structure
+
+Use **two separate `<script>` blocks** in the HTML page:
+
+1. **First block** — contains only the `IndigoAPI` class definition
+2. **Second block** — contains all page logic, rendering, event handlers
+
+This means a syntax error or runtime error in the page logic doesn't prevent the API class from being defined, and makes the failure mode more predictable.
