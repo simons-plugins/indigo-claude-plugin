@@ -95,6 +95,14 @@ Produce a single HTML file. Follow this template structure:
 </html>
 ```
 
+**Sizing rules** (pages are primarily viewed on iPhones and iPads):
+- Design mobile-first at 375px width (iPhone SE), scale up to 1180px (iPad landscape)
+- Minimum 44x44pt touch targets for all interactive elements (Apple HIG requirement)
+- Minimum 13px font size — smaller is unreadable on phones
+- Use `env(safe-area-inset-*)` padding to avoid navigation/tab bar clipping
+- Use CSS Grid with `auto-fill, minmax(160px, 1fr)` for responsive card layouts
+- See `references/design-guidelines.md` for full device width table, spacing scale, and scroll behaviour
+
 **Generation rules:**
 - Load `indigo-api.js` via `<script src="../js/indigo-api.js"></script>` (sibling directory)
 - Check `typeof IndigoAPI !== "undefined"` before use — the script tag fails silently when opened as a local file
