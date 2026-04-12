@@ -1,6 +1,6 @@
 {
   "name": "indigo",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Indigo home automation development toolkit \u2014 plugin development, API integration, and control page building",
   "repository": "https://github.com/simons-plugins/indigo-claude-plugin"
 }

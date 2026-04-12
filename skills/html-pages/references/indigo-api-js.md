@@ -127,9 +127,11 @@ Always render controls based on the device's actual capability flags, not on ass
 ## Thermostat Display Rules
 
 For TRVs and thermostats, show heating indicators only when actually heating:
-- **Flame/heat icon:** Only when `hvacHeaterIsOn === true` AND `valve-position > 0`
+- **Flame/heat icon:** Only when `hvacHeaterIsOn === true` AND `dev.states["valve-position"] > 0`
 - **Valve position at 0%** means the valve is fully closed regardless of `hvacHeaterIsOn` — no flame
 - **Setpoint below ~15°C** usually indicates the zone is off / frost protection mode
+
+**Important:** Some Indigo state keys use hyphens (e.g. `valve-position`, `onOffState.ui`). These can only be accessed via **bracket notation** in JavaScript — `dev.states["valve-position"]` — never dot notation, because `dev.states.valve-position` is parsed as a subtraction. Also clamp the returned value: some firmware reports sentinel values (e.g. `-99`) for unknown states.
 
 ## History Endpoint (Domio Plugin)
 
@@ -188,11 +190,15 @@ async function loadHistory() {
 }
 
 function showChartMessage(msg) {
-    // Write the message into the chart area so the user sees it
-    const el = document.getElementById("chart");
-    if (el) el.innerHTML = `<text>${msg}</text>`;
+    // Write the message into the chart area so the user sees it.
+    // Use textContent (not innerHTML) — error messages may come from the
+    // server and must never be interpolated as HTML.
+    const el = document.getElementById("chart-message");
+    if (el) el.textContent = msg;
 }
 ```
+
+For SVG chart containers, either use a dedicated non-SVG overlay element for messages (simpler), or construct an SVG `<text>` element with `document.createElementNS()` and set its `textContent`. Do **not** build HTML strings from error messages — server responses and caught exceptions can contain arbitrary content.
 
 A page with an invisible 400 error looks identical to a page that's working but has no data. Always surface the difference.
 
