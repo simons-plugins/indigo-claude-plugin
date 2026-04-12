@@ -83,7 +83,11 @@ Produce a single HTML file. Follow this template structure:
 </head>
 <body>
     <div id="content"></div>
-    <script src="../js/indigo-api.js"></script>
+    <script>
+    // ── indigo-api.js V1 (MUST be inlined — see references/indigo-api-js.md) ──
+    // Paste the full IndigoAPI class and IndigoAPIError class here.
+    // Do NOT use <script src="../js/indigo-api.js"> — it fails in WKWebView.
+    </script>
     <script>
         if (typeof IndigoAPI !== "undefined" && IndigoAPI.isConfigured()) {
             startDashboard();
@@ -103,10 +107,14 @@ Produce a single HTML file. Follow this template structure:
 - Use CSS Grid with `auto-fill, minmax(160px, 1fr)` for responsive card layouts
 - See `references/design-guidelines.md` for full device width table, spacing scale, and scroll behaviour
 
+**Script loading:**
+- Inline the `IndigoAPI` class directly in the page's `<script>` block — pages must be self-contained with no external script dependencies
+- Read the full API class from `references/indigo-api-js.md` and include it in the generated page
+- See `references/design-guidelines.md` "Script Loading" section for the pattern
+
 **Generation rules:**
-- Load `indigo-api.js` via `<script src="../js/indigo-api.js"></script>` (sibling directory)
-- Check `typeof IndigoAPI !== "undefined"` before use — the script tag fails silently when opened as a local file
-- Include a `showConfigForm()` fallback that prompts for server URL and API key (see `examples/active-devices.html` for the pattern)
+- Check `typeof IndigoAPI !== "undefined"` before use — defensive guard in case of unexpected loading issues
+- Include a `showConfigForm()` fallback that prompts for server URL and API key when `INDIGO_CONFIG` is not available (see `examples/active-devices.html` for the pattern)
 - Use CSS custom properties for theming — see `references/design-guidelines.md` for the full theme template
 - Debounce slider inputs at 300ms to avoid command spam
 - Disable toggle controls briefly (500ms) after a command to prevent double-taps

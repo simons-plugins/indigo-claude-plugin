@@ -91,6 +91,27 @@ await indigo.setHeatSetpoint(deviceId, 21);
 await indigo.setCoolSetpoint(deviceId, 24);
 ```
 
+## Script Loading
+
+Pages must be self-contained — inline all JavaScript including the `IndigoAPI` class. Do not use external `<script src>` references. Indigo pages are served from authenticated directories and external script requests may not carry credentials in all client environments.
+
+**Pattern:**
+```html
+<script>
+// ── indigo-api.js V1 (inlined) ──
+class IndigoAPI { ... }
+class IndigoAPIError extends Error { ... }
+</script>
+<script>
+if (typeof IndigoAPI !== "undefined" && IndigoAPI.isConfigured()) {
+    const indigo = new IndigoAPI();
+    indigo.observeAll(render, 5000);
+}
+</script>
+```
+
+For the full `IndigoAPI` class source, see `references/indigo-api-js.md`.
+
 ## Sizing and Responsive Layout
 
 Pages are primarily viewed on iPhones of various sizes and iPads. Design mobile-first and scale up.
