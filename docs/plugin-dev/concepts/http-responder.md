@@ -66,9 +66,9 @@ def api(self, action, dev=None, caller_waiting_for_result=None):
 ## Content Types
 
 ```python
-# JSON
+# JSON (use JSONDateEncoder to serialize Indigo objects and datetimes)
 reply["headers"]["Content-Type"] = "application/json"
-reply["content"] = json.dumps(data)
+reply["content"] = json.dumps(data, cls=indigo.utils.JSONDateEncoder)
 
 # HTML
 reply["headers"]["Content-Type"] = "text/html"
@@ -81,7 +81,7 @@ reply["content"] = "<response><status>ok</status></response>"
 
 ## Jinja2 Templates
 
-Use Jinja2 for HTML templating. Templates live in `Contents/Resources/templates/`:
+Use Jinja2 for HTML templating. Templates live in `Contents/Resources/templates/`. Note the loader path is relative to `Contents/Server Plugin/` (the plugin's working directory), so `"../Resources/templates"` resolves to `Contents/Resources/templates/`:
 
 ```python
 import jinja2
