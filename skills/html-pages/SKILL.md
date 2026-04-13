@@ -138,13 +138,29 @@ Produce a single HTML file. Follow this template structure:
 
 ### Phase 4: DEPLOY
 
-Offer deployment options based on how the page will be used:
+**Critical:** Never deploy user pages into a plugin's `Contents/Resources/` directory. Plugin bundles are replaced on every update/reinstall, so any files dropped there will be wiped when the plugin next releases. Plugin folders are for plugin-shipped demo content only.
 
-**Option A — Serve from an Indigo plugin** (recommended for app integration):
-Copy to any plugin's `Contents/Resources/static/pages/` directory and restart the plugin via MCP. The page is then accessible at `https://{server}:8176/{bundleID}/static/pages/page.html`. Apps that support the `/pages/` manifest endpoint discover pages automatically.
+Deployment options for user-owned pages:
 
-**Option B — Browser-only**:
-Save the HTML file anywhere. Open it directly in a browser — the page shows a connection form prompting for the Indigo server URL and API key. No plugin deployment needed. Good for quick testing or standalone dashboards on a wall-mounted tablet.
+**Option A — Indigo Web Assets folder** (recommended for persistent pages):
+
+Copy to `{IndigoInstallFolder}/Web Assets/static/pages/`. This folder lives outside any plugin bundle and survives plugin updates, reinstalls, and Indigo upgrades.
+
+```bash
+cp "page-name.html" "/Library/Application Support/Perceptive Automation/Indigo {VERSION}/Web Assets/static/pages/"
+```
+
+Access via: `https://{server}:8176/static/pages/page-name.html?api-key=KEY`
+
+If the Domio plugin (or any compatible plugin) is installed, it will scan this folder and expose the pages through its `/pages/` manifest endpoint — so pages appear automatically in the Domio iOS app's Pages tab, tagged with `source: "user"`.
+
+**Option B — Browser-only / standalone**:
+
+Save the HTML file anywhere (Desktop, project folder, etc.). Open it directly in a browser — the page shows a connection form prompting for the Indigo server URL and API key. No server deployment needed. Good for development, quick testing, or wall-mounted kiosk tablets opened from a local file path.
+
+**Option C — Shipping a demo page as part of a plugin** (plugin authors only):
+
+Only if you're building a plugin and want to ship a built-in sample page. Commit the HTML file to the plugin's git repo at `Contents/Resources/static/pages/` so it's included in every release build. **Never drop files into a running plugin's Resources folder at deploy time — they'll be wiped on the next update.**
 
 ## Device Classification
 

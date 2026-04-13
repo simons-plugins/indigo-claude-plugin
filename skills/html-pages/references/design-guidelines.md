@@ -251,25 +251,78 @@ When developing pages, test at these minimum widths in browser dev tools:
 4. **820px** — iPad portrait
 5. **1180px** — iPad landscape
 
+## Page Manifest (Domio Plugin)
+
+The Domio plugin exposes a manifest endpoint that lists all HTML pages available on the server, scanned from two locations:
+
+```
+GET /message/com.simons-plugins.domio/pages/
+```
+
+**Response:**
+```json
+{
+  "pages": [
+    {
+      "id": "home-summary",
+      "name": "Home Summary",
+      "icon": "house.fill",
+      "description": "Device counts and active device controls",
+      "path": "home-summary.html",
+      "source": "plugin"
+    },
+    {
+      "id": "dining-room",
+      "name": "Dining Room",
+      "icon": "fork.knife",
+      "description": "Dining room lights, heating and temperature chart",
+      "path": "dining-room.html",
+      "source": "user"
+    }
+  ]
+}
+```
+
+**The `source` field** determines which URL serves the page:
+
+| Source | Location | URL pattern |
+|--------|----------|-------------|
+| `plugin` | `Domio.indigoPlugin/Contents/Resources/static/pages/` | `{base}/com.simons-plugins.domio/static/pages/{path}` |
+| `user` | `Web Assets/static/pages/` | `{base}/static/pages/{path}` |
+
+Pages metadata is parsed from `<meta name="indigo-page-*">` tags in each HTML file's `<head>`:
+
+```html
+<meta name="indigo-page-name" content="Dining Room">
+<meta name="indigo-page-icon" content="fork.knife">
+<meta name="indigo-page-description" content="Lights and heating controls">
+```
+
 ## Deployment Options
 
-### Serve from an Indigo Plugin
+### Indigo Web Assets Folder (recommended)
 
-Copy to any plugin's `Contents/Resources/static/pages/` directory and restart:
+User-owned pages belong in Indigo's `Web Assets/static/pages/` folder. This location lives outside any plugin bundle and survives plugin updates, reinstalls, and Indigo upgrades.
+
 ```bash
-cp "page.html" "/Volumes/Macintosh HD-1/Library/Application Support/Perceptive Automation/Indigo 2025.1/Plugins/{PluginName}.indigoPlugin/Contents/Resources/static/pages/"
+cp "page.html" "/Library/Application Support/Perceptive Automation/Indigo {VERSION}/Web Assets/static/pages/"
 ```
-Then restart: `mcp__indigo__restart_plugin(plugin_id="{plugin.bundle.id}")`
 
-Access via: `https://{server}:8176/{bundleID}/static/pages/page.html?api-key=KEY`
+Access via: `https://{server}:8176/static/pages/page.html?api-key=KEY`
 
-The `?api-key=` parameter authenticates with IWS and provides credentials to `indigo-api.js`.
+The `?api-key=` query parameter authenticates with IWS for the page load. Inside the page, `indigo-api.js` reads the API key from the URL (or from `window.INDIGO_CONFIG` if injected by a compatible iOS app) and uses it as a Bearer token for REST API calls.
 
-### Browser-Only (No Plugin)
+**Discovery by the Domio app:** If the Domio plugin is installed, it automatically scans `Web Assets/static/pages/` and exposes the files via its `/message/com.simons-plugins.domio/pages/` manifest endpoint. The Domio iOS app reads this manifest and shows user pages in its Pages tab, tagged with `source: "user"`.
 
-Save the HTML file anywhere and open directly in a browser. Pages should detect when `INDIGO_CONFIG` is missing and show a connection form prompting for the server URL and API key. See `examples/active-devices.html` for the fallback pattern.
+### Warning: Do NOT deploy to a plugin's Resources folder
 
-This approach works for:
+Plugin bundles (`PluginName.indigoPlugin/Contents/Resources/`) are **wiped and replaced on every plugin update**. Any files you drop into a running plugin's `Resources/static/pages/` folder will be destroyed the next time the plugin is updated. This folder is only for content that's committed to the plugin's source repo and shipped in every release build.
+
+### Browser-Only (No Server Deployment)
+
+Save the HTML file anywhere (Desktop, local project, etc.) and open directly in a browser. Pages should detect when `INDIGO_CONFIG` is missing and show a connection form prompting for the server URL and API key. See `examples/active-devices.html` for the fallback pattern.
+
+Good for:
 - Quick testing during development
-- Standalone dashboards on wall-mounted tablets
+- Standalone dashboards on wall-mounted tablets opened from a local file
 - Users without any specific plugin installed
