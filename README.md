@@ -1,6 +1,6 @@
 # Indigo Claude Code Plugin
 
-Claude Code plugin for [Indigo](https://www.indigodomo.com) home automation development. Provides three capabilities as both commands (explicit invocation) and skills (auto-activation).
+Claude Code plugin for [Indigo](https://www.indigodomo.com) home automation development. Provides commands (explicit invocation) and skills (auto-activation) for plugin development, API integration, page building, and server maintenance.
 
 ## Commands
 
@@ -9,6 +9,8 @@ Claude Code plugin for [Indigo](https://www.indigodomo.com) home automation deve
 | `/indigo:dev` | Plugin development — SDK docs, examples, lifecycle, IOM reference |
 | `/indigo:api` | API integration — WebSocket and HTTP APIs for client apps |
 | `/indigo:control-pages` | Control page builder — guided XML generation with wireframes |
+| `/indigo:html-pages` | HTML dashboard builder — self-contained pages with live device controls |
+| `/indigo:update-plugins` | Bulk plugin updater — diff installed plugins against GitHub releases and the Indigo store, then apply upgrades with confirmation |
 
 ## Skills (Auto-Activation)
 
