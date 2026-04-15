@@ -43,20 +43,17 @@ Call `mcp__indigo__list_plugins` with its default parameters (disabled plugins a
 
 ### Phase 2 — RESOLVE UPGRADE SOURCE
 
-For each installed plugin, determine where to check for updates. See `references/discovery.md` for the full logic. Summary:
+For each installed plugin, determine where to check for updates. See `references/discovery.md` for the full logic. Summary (three sources in priority order):
 
-1. Read `<path>/Contents/Info.plist` via `/usr/libexec/PlistBuddy` and look for a `GithubInfo` dict with `GithubUser` + `GithubRepo` keys.
-2. If present → source is **GitHub**. Query `gh api /repos/<user>/<repo>/releases/latest`.
-3. If absent → source is **store**. Look up the bundle ID in the store cache (Phase 3).
-4. If neither yields a result → source is **unresolved**.
+1. **Local `GithubInfo`** — read `<path>/Contents/Info.plist` via `/usr/libexec/PlistBuddy`. If `GithubInfo.GithubUser` + `GithubInfo.GithubRepo` are present → query `gh api /repos/<user>/<repo>/releases/latest`.
+2. **Bundled registry** — look up the bundle ID in `$CLAUDE_PLUGIN_ROOT/data/plugin-source-registry.json`. Entries have either a `github` slug (→ GitHub releases) or a `store_url` (→ fetch the store detail page for version + download). No runtime scraping for plugins in the registry.
+3. **Store scraping fallback** — for plugins in neither Info.plist nor the registry. See `references/store-scraping.md`. Rare; suggest a PR adding the plugin to the registry when it triggers.
+
+If none resolve → mark unresolved and continue.
 
 Parallelise across plugins — a 30-plugin serial pass over the network is painfully slow.
 
-### Phase 3 — MAINTAIN STORE CACHE
-
-Cache lives at `$HOME/.claude/indigo-plugin-store-cache.json`. Refresh when missing, older than 24 hours, or on user request. Before trusting a freshly refreshed cache, run the parse self-test in `references/store-scraping.md` — if the HTML has drifted, bail with a clear error rather than silently producing wrong results.
-
-### Phase 4 — DIFF
+### Phase 3 — DIFF
 
 For every plugin with a resolved source, compare installed version to latest. Strip leading `v`. Prefer `python3 -c 'from packaging.version import parse as p; ...'` when Python is available; fall back to split-on-`.` numeric-or-string segment compare. Handles `2026.4.1`, `1.0.3`, and `v1.0-beta`.
 
@@ -66,7 +63,7 @@ Build an upgrade report grouped into three sections:
 - **Up to date** — informational
 - **Unresolved** — plugins where no upstream source was found (bottom of the report, never an error)
 
-### Phase 5 — CONFIRM
+### Phase 4 — CONFIRM
 
 Render the report. Wait for explicit user go-ahead. Accept:
 
@@ -77,13 +74,13 @@ Render the report. Wait for explicit user go-ahead. Accept:
 
 Do not interpret ambiguous replies as consent. When in doubt, ask again.
 
-### Phase 6 — APPLY (per plugin, one at a time)
+### Phase 5 — APPLY (per plugin, one at a time)
 
 Follow `references/install-workflow.md` for the exact sequence. Every step — download, unzip-before-copy, verify bundle ID, rsync over the installed `Contents/`, restart via MCP, verify startup — is documented there with the commands to run. Don't reinvent the sequence here.
 
 Report pass/fail per plugin. On failure of one plugin, continue to the next — don't halt the whole batch unless the failure indicates something systemic (filesystem unwritable, MCP unreachable, network dead).
 
-### Phase 7 — SUMMARY
+### Phase 6 — SUMMARY
 
 Report three sections:
 
