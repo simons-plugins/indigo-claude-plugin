@@ -1,22 +1,18 @@
 # Plugin Install Workflow
 
-The mechanical sequence for applying a single plugin upgrade. This is the most safety-critical part of the skill — it writes to the running Indigo install.
+The mechanical sequence for applying a single plugin upgrade. Safety-critical — writes to the running Indigo install.
+
+First installs must go through Indigo's UI (double-click registers the bundle with the server). This workflow only handles updates to already-registered bundles: rsync over the existing `Contents/` and the Indigo server picks up the new code on restart.
 
 ## Prerequisites
 
-Before calling into this workflow for any plugin, the following must be true:
-- `mcp__indigo__list_plugins` has already returned an entry for the target bundle ID (we only update plugins that are already installed)
-- Phase 2 resolved an upstream source (GitHub or store) and captured a `download_url`
-- Phase 4 confirmed the installed version is strictly less than the advertised upstream version
-- Phase 5 — the user explicitly confirmed this specific plugin or "all"
+Before calling this workflow:
+- `mcp__indigo__list_plugins` has returned an entry for the target bundle ID (updates only)
+- Phase 2 resolved an upstream source (GitHub or store) with a `download_url`
+- Phase 4 confirmed installed version is strictly less than upstream
+- Phase 5 — user explicitly confirmed this plugin or `all`
 
-If any of those aren't true, this workflow must not run.
-
-## Why copying works for updates but not first installs
-
-Indigo installs a plugin the first time via a double-click in the Finder, which triggers the Indigo app to register the bundle with the server. Once registered, subsequent updates to that same bundle can be applied by overwriting the bundle contents in the `Plugins/` directory — no re-registration is needed. This is an explicit rule in the workspace CLAUDE.md and has been confirmed empirically with netro, reflector-logs, and others.
-
-**Consequence for this skill**: never create a new `<Name>.indigoPlugin/` directory that didn't exist before. If we're about to rsync into a path that doesn't already hold a registered plugin, stop and tell the user to install it manually via Indigo.
+If any of those aren't true, do not run.
 
 ## Step-by-step sequence
 
@@ -29,44 +25,46 @@ STAGE_DIR="$TMPDIR/stage"
 mkdir -p "$DOWNLOAD_DIR" "$STAGE_DIR"
 ```
 
-Track `$TMPDIR` for cleanup in step 8 — always clean up, even on failure.
+Track `$TMPDIR` for cleanup in step 9.
 
 ### 2. Download the bundle
 
 **GitHub source:**
 
 ```bash
-gh release download <tag> \
-    --repo <user>/<repo> \
+gh release download "$TAG" \
+    --repo "$USER/$REPO" \
     --pattern '*.indigoPlugin.zip' \
     --dir "$DOWNLOAD_DIR"
 ```
 
-If `<tag>` is omitted, `gh` downloads the latest release. For this skill, pass the tag explicitly to guard against the release being updated mid-run.
+Pass the tag explicitly (don't omit it) so the release can't be updated mid-run under our feet. Note: if the repo has no published releases, `gh api` in Phase 2 returns 404; the plugin should already have been classified as unresolved before we got here.
 
 **Store source:**
 
 ```bash
-curl -L -f -o "$DOWNLOAD_DIR/bundle.zip" <download_url>
+curl -L -f -o "$DOWNLOAD_DIR/bundle.zip" "$DOWNLOAD_URL"
 ```
 
-Use `-f` so `curl` exits non-zero on HTTP errors (401/403/404/5xx). `-L` follows redirects — GitHub release asset URLs redirect through a CDN.
+`-f` → exit non-zero on HTTP errors (401/403/404/5xx). `-L` → follow redirects (GitHub release assets redirect through a CDN).
 
-Both paths must end with exactly one `.zip` file in `$DOWNLOAD_DIR`. Assert that and fail this plugin's upgrade otherwise.
+Assert exactly one `.zip` landed in `$DOWNLOAD_DIR`:
+
+```bash
+ZIP_COUNT=$(find "$DOWNLOAD_DIR" -maxdepth 1 -name '*.zip' | wc -l | tr -d ' ')
+[ "$ZIP_COUNT" = "1" ] || { echo "expected 1 zip, got $ZIP_COUNT"; exit 1; }
+ZIP_PATH=$(find "$DOWNLOAD_DIR" -maxdepth 1 -name '*.zip' | head -1)
+```
 
 ### 3. Unzip into staging
 
 ```bash
-unzip -q -o "$DOWNLOAD_DIR"/*.zip -d "$STAGE_DIR"
-```
-
-Expect a single `<PluginName>.indigoPlugin/` directory at the top level of `$STAGE_DIR`. Find it:
-
-```bash
+unzip -q -o "$ZIP_PATH" -d "$STAGE_DIR"
 STAGED_BUNDLE=$(find "$STAGE_DIR" -maxdepth 1 -name '*.indigoPlugin' -type d | head -1)
+[ -n "$STAGED_BUNDLE" ] || { echo "no .indigoPlugin bundle in zip"; exit 1; }
 ```
 
-If nothing is found, or more than one bundle is present, fail this plugin's upgrade.
+If no bundle is found at the top level of `$STAGE_DIR`, fail this plugin — treat as a corrupted or wrong-artifact download.
 
 ### 4. Verify bundle identifier (critical safety check)
 
@@ -74,14 +72,14 @@ If nothing is found, or more than one bundle is present, fail this plugin's upgr
 STAGED_BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$STAGED_BUNDLE/Contents/Info.plist")
 ```
 
-Assert `STAGED_BUNDLE_ID == <expected bundle ID from MCP>`. If it doesn't match:
+Assert `STAGED_BUNDLE_ID == $EXPECTED_BUNDLE_ID` (from `mcp__indigo__list_plugins`). If it doesn't match:
 
-- Log the mismatch at error level with both IDs
-- Do **not** proceed to rsync
+- Log the mismatch with both IDs
+- Do **not** rsync
 - Mark this plugin's upgrade as failed
-- Continue to the next plugin in the batch
+- Continue to the next plugin
 
-This check protects against wrong-bundle substitution — a scenario where a download URL points at a different plugin than expected (store misconfiguration, typo in the cache, malicious upstream, etc.). Without this check, rsync would happily replace a totally unrelated plugin's files.
+This check guards against wrong-bundle substitution — a download URL pointing at a different plugin than expected (cache typo, store misconfiguration, upstream compromise). Without it, rsync would silently replace a totally unrelated plugin.
 
 ### 5. Verify version (soft check)
 
@@ -89,59 +87,54 @@ This check protects against wrong-bundle substitution — a scenario where a dow
 STAGED_VERSION=$(/usr/libexec/PlistBuddy -c "Print :PluginVersion" "$STAGED_BUNDLE/Contents/Info.plist")
 ```
 
-Assert `STAGED_VERSION` matches what the upstream source advertised. If it doesn't:
-
-- Log a warning (the upstream may have published a new release between check and apply, which is fine)
-- Do not fail — continue to rsync
-
-The user will see the actual installed version in Phase 7.
+Compare `STAGED_VERSION` to what the upstream source advertised. Mismatch → log a warning and continue (upstream may have published a new release between check and apply — not a hard fail). The final installed version shows up in Phase 7.
 
 ### 6. Deploy via rsync
 
-The destination is the `path` field from `mcp__indigo__list_plugins` / `mcp__indigo__get_plugin_by_id`. **Do not hardcode** a destination path — always use what MCP reports. This is what makes the skill portable across different Indigo installs.
+Destination is the `path` field from `mcp__indigo__list_plugins` or `mcp__indigo__get_plugin_by_id`. **Do not hardcode** — always read from MCP. This is what makes the skill portable across different Indigo installs.
 
 ```bash
-rsync -av --delete "$STAGED_BUNDLE/Contents/" "<installed_path>/Contents/"
+rsync -av --delete "$STAGED_BUNDLE/Contents/" "$INSTALLED_PATH/Contents/"
 ```
 
-Notes:
-- Trailing slashes matter: `.../Contents/` → `.../Contents/` copies contents rather than nesting
-- `--delete` removes files present in the old bundle but not the new one — important for clean upgrades where a file was removed upstream
-- If rsync fails (permission denied, disk full, target not found), fail this plugin and continue
+Trailing slashes matter: `.../Contents/` → `.../Contents/` copies contents rather than nesting. `--delete` removes files present in the old bundle but not the new one, so removed-upstream files don't linger.
 
-**Do not try to sudo.** If rsync fails on permissions, the Indigo server isn't running under a user that owns the Plugins folder, and the user needs to resolve that themselves — don't escalate silently.
+If rsync fails (permission denied, disk full, target not found), fail this plugin and continue. **Do not sudo.** If the user running this skill doesn't own the Plugins folder, the Indigo server is running as a different user and the permissions need to be resolved manually.
 
 ### 7. Restart the plugin
 
 ```text
-mcp__indigo__restart_plugin(plugin_id=<bundle_id>)
+mcp__indigo__restart_plugin(plugin_id=$BUNDLE_ID)
 ```
 
 ### 8. Verify startup
 
-Two concurrent checks, both must pass within ~15 seconds:
+Two checks. The **version check is the primary success signal**; the log check is a secondary sanity pass because the exact `TypeVal` severity mapping isn't well-documented and shouldn't be the sole oracle.
 
-**Version check:**
+**Version check (primary):**
 
 ```text
-mcp__indigo__get_plugin_by_id(plugin_id=<bundle_id>)
+mcp__indigo__get_plugin_by_id(plugin_id=$BUNDLE_ID)
 ```
 
-Keep polling until the returned version string matches the new upstream version (or a short timeout). Be lenient on exact match — Indigo's `version` field sometimes returns `CFBundleVersion` (e.g. `2.0.0`) rather than `PluginVersion`. If the field format is ambiguous, fall back to reading `<path>/Contents/Info.plist` directly and compare `PluginVersion`.
+Poll until the returned `version` field matches the new upstream version (with a ~15s timeout). Be lenient: `get_plugin_by_id` can return `CFBundleVersion` (e.g. `2.0.0`) rather than `PluginVersion` depending on the plugin. If there's ambiguity, read `$INSTALLED_PATH/Contents/Info.plist` directly via `/usr/libexec/PlistBuddy -c "Print :PluginVersion"` and compare.
 
-**Log check:**
+If the polled version never matches within the timeout → treat as a failed upgrade.
+
+**Log check (secondary):**
 
 ```text
 mcp__indigo__query_event_log(line_count=50)
 ```
 
-Scan the entries for:
-- A recent `"Started plugin \"<displayName> <version>\""` line — success marker
-- Any `TypeStr` equal to the plugin's display name with `TypeVal` indicating error (1, 2, or 3) in the window since the restart — failure marker
+Each entry has `Message`, `TypeVal`, `TypeStr`, `TimeStamp`. Scan for:
 
-If the success marker is present and no errors are seen, mark this plugin's upgrade as successful.
+- Success marker: a recent `Application`-type entry (`TypeStr="Application"`) with `Message` starting `"Started plugin \"<name> <version>\""` that references this bundle's display name
+- Potential failure: any entry whose `TypeStr` starts with `"Web Server Warning"` or contains the word `"Error"`, or any entry whose `TypeStr` matches the plugin's display name and whose message contains `error`/`exception`/`traceback`
 
-If errors appear, the upgrade rsync'd cleanly but the new code is misbehaving. Report the failure but **do not try to roll back** — rollback is out of scope for v1, and the user needs to decide whether to revert manually or fix the issue.
+Treat missing success marker as inconclusive, not failed, if the version check already passed. Treat a version-check failure as a failed upgrade regardless of what the log says.
+
+If the upgrade rsync'd cleanly but the new code throws errors after restart, report the failure. **Do not roll back** — rollback is out of scope for v1; let the user decide whether to revert.
 
 ### 9. Cleanup
 
@@ -149,23 +142,15 @@ If errors appear, the upgrade rsync'd cleanly but the new code is misbehaving. R
 rm -rf "$TMPDIR"
 ```
 
-Always run this, even on failure, to avoid leaving stale temp dirs around.
+Always run this, even on failure.
 
 ## What can go wrong
 
 | Failure mode | Where | Recovery |
 |--------------|-------|----------|
-| 404 downloading asset | Step 2 | Upstream release was deleted or URL changed; refresh store cache or recheck GitHub releases |
-| Zip has no `.indigoPlugin` directory | Step 3 | Treat as corrupted or wrong-artifact download; fail this plugin |
-| Bundle identifier mismatch | Step 4 | Cached metadata is wrong; don't rsync, fail this plugin, suggest manual inspection |
+| 404 downloading asset | Step 2 | Upstream release deleted or URL changed; refresh store cache or recheck GitHub releases |
+| Zip has no `.indigoPlugin` directory | Step 3 | Corrupted or wrong-artifact download; fail this plugin |
+| Bundle identifier mismatch | Step 4 | Cached metadata wrong; don't rsync, fail this plugin |
 | rsync permission denied | Step 6 | Indigo filesystem perms problem — user must resolve manually; continue with other plugins |
-| Plugin restart hangs | Step 7 | MCP `restart_plugin` has its own timeout; if it never returns, fall back to reporting "restart uncertain" and let the user check Indigo's UI |
-| Log shows errors after restart | Step 8 | Upgrade is applied but the new code doesn't work on this setup; mark failed, suggest the user check the plugin's release notes for config migration steps |
-
-## What must NOT happen
-
-- **No hardcoded paths.** Every destination comes from MCP. If the MCP call fails, the whole Phase 6 fails for that plugin — do not fall back to guessing.
-- **No downgrades.** If the user asks for a specific version that's older than installed, refuse and explain.
-- **No first installs.** If the target bundle doesn't already exist at `<installed_path>`, stop and tell the user to install via Indigo UI.
-- **No batched rsync.** Each plugin is handled and verified independently before moving to the next. This keeps failures isolated.
-- **No skipping the bundle-ID safety check.** It exists to prevent catastrophic wrong-bundle replacement.
+| Plugin restart hangs | Step 7 | MCP `restart_plugin` has its own timeout; if it never returns, report "restart uncertain" and let the user check Indigo's UI |
+| Log shows errors after restart | Step 8 | Upgrade is applied but new code misbehaves; mark failed, suggest checking release notes for config migration steps |

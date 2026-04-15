@@ -1,52 +1,49 @@
 # Indigo Plugin Store Scraping
 
-How to extract plugin metadata from https://www.indigodomo.com/pluginstore/ when a plugin doesn't declare a GitHub source in its Info.plist.
+Last-resort fallback for plugins that don't declare `GithubInfo` in their Info.plist. Prefer Source 1 (local GithubInfo) whenever possible — see `discovery.md`.
 
-## Why scrape
+**Everything in this file is a hypothesis until verified against real store HTML.** The parse rules below are sketched from reading one sample detail page. They will need empirical refinement on first implementation, and the self-test at the end is designed to fail loudly if the HTML drifts away from what's documented here.
 
-The Indigo plugin store has no documented JSON/RSS/API feed. Detail pages are server-rendered static HTML — fully parseable with `WebFetch` without needing a JavaScript runtime. This is a pragmatic fallback only; **prefer GitHub releases when the plugin declares `GithubInfo`** (see `discovery.md`).
+## What the store does and doesn't guarantee
 
-## Fields to extract
+The Indigo plugin store has no documented JSON/RSS/API feed. Detail pages appear to be server-rendered static HTML readable by `WebFetch` without JavaScript.
 
-Every store detail page should expose these five fields. Extract them all when building the cache:
+The fields below are what we *hope* to extract. The one with the highest rot/availability risk is the **bundle identifier** — it is the match key for the whole fallback path, and it is not guaranteed to be rendered in human-readable form on every detail page. If a given plugin's detail page doesn't expose the bundle ID, we cannot match it to an installed plugin and the fallback collapses for that plugin.
 
-| Field | Purpose | Typical location |
-|-------|---------|------------------|
-| Bundle identifier | Match key — links store entry to installed plugin | Visible on the page as "Bundle Identifier: ..." text or data attribute |
-| Latest version | Compared against installed version | "Latest Version: vX.Y.Z" text |
-| Download URL | Target for `curl` in the apply phase | Anchor pointing at a `.zip` (often `github.com/.../releases/download/...`) |
-| GitHub URL | Optional source-code link, good release notes fallback | Anchor pointing at `github.com/<user>/<repo>` |
+## Fields to extract (hypothesised)
+
+| Field | Purpose | Availability |
+|-------|---------|--------------|
+| Bundle identifier | Match key against installed plugins | **Uncertain** — not visible on every store page; verify empirically |
+| Latest version | Version comparison | Likely visible as "Latest Version: vX.Y.Z" |
+| Download URL | Target for `curl` in apply phase | Anchor pointing at a `.zip` (often `github.com/.../releases/download/...`) |
+| GitHub URL | Release notes fallback | Anchor pointing at `github.com/<user>/<repo>` |
 | Plugin name + author | Display | Page heading + "Author: ..." text |
 
-If any of the first three are missing for a plugin you expected to find, treat that plugin as unresolved rather than trying to proceed with partial data.
+**If the bundle identifier isn't extractable for a plugin, skip it in the cache rather than persist a partial record.** Reporting no-upstream is better than wrong-upstream.
 
 ## Listing discovery
 
-The store doesn't publish a sitemap or API index, so we have to enumerate detail pages ourselves. Two viable strategies:
+The store doesn't publish a sitemap. Two strategies, try A first:
 
 ### Strategy A — Landing page crawl (preferred)
 
 1. Fetch `https://www.indigodomo.com/pluginstore/`
-2. Parse every anchor pointing at a detail page (URL pattern: `https://www.indigodomo.com/pluginstore/<N>/` where `<N>` is a small integer)
-3. Deduplicate and sort
-4. Fetch each detail page, parse, store in cache
-
-Pros: no enumeration gaps, no dependency on sequential IDs, robust to store deletions.
-Cons: landing page may not list every plugin if there's pagination or category navigation. Check for category/pagination links and follow them too.
+2. Parse anchors pointing at detail pages (URL pattern: `https://www.indigodomo.com/pluginstore/<N>/` where `<N>` is a small integer)
+3. Follow category/pagination links if present
+4. Deduplicate, fetch each detail page, parse, store in cache
 
 ### Strategy B — Sequential ID enumeration (fallback)
 
-If the landing page doesn't yield a full list, walk integer IDs from 1 upward until you see a run of consecutive 404s (say, 20 in a row). This is how a few home-automation communities discover scraped catalogs. Empirically the store has fewer than 500 plugins total, so this caps at a few hundred fetches.
+If the landing page demonstrably misses plugins: walk integer IDs from 1 upward until you hit a run of ~20 consecutive 404s. Don't run both strategies — it's wasted requests.
 
-Only use this if Strategy A demonstrably misses plugins. Don't use both unconditionally — it's wasted requests.
+## Parse rules (hypotheses — refine on first run)
 
-## Parse rules
+Keep all selectors in this one file. When the store HTML drifts, this should be the only file that needs updating.
 
-**Do not** hardcode CSS selectors in code scattered across the skill. Keep them all in this file. When the store HTML drifts, updating this file should be the only fix needed.
+Use defensive parsing: one CSS/structural selector and a regex fallback for each field, so a single DOM change doesn't take everything out at once.
 
-As of the initial implementation, the store uses static HTML that WebFetch reads without difficulty. Use defensive parsing: BeautifulSoup-style with specific selectors *and* a regex fallback for each field, so a single selector change doesn't break everything at once.
-
-Recommended anchors (to be refined empirically on first implementation):
+Starting anchors:
 
 ```text
 Bundle identifier: text matching /Bundle Identifier[:\s]+([a-z0-9._-]+)/i
@@ -57,33 +54,37 @@ Name:              <h1> or <title> text, stripped of the site suffix
 Author:            text matching /Author[:\s]+([^\n]+)/i
 ```
 
-If any field extraction returns None, log a warning with the detail page URL and skip that plugin in the cache (rather than persisting a partial record).
+If any field extraction returns None for a detail page, log a warning with the URL and skip that plugin.
 
 ## Parse self-test
 
-Before writing a freshly-built cache to disk, verify the parser still works against a known-good reference plugin. Pick one that has been on the store for a long time and is unlikely to disappear — e.g. **Indigo Domotics Hue Lights**. Fetch its detail page and assert all five required fields extract successfully.
+Before writing a freshly-built cache to disk, verify the parser still works against a pinned reference URL with pinned expected values. Use a URL, not just a plugin name — plugin names can be renamed or removed, but the detail URL + expected bundle ID are the actual contract:
 
-If the self-test fails:
-- Do not write the cache
-- Report to the user: "Indigo plugin store HTML has drifted — store-sourced upgrade detection is disabled until `references/store-scraping.md` is updated with fresh parse rules"
-- Continue with GitHub-sourced plugins (Phase 2 still works for those)
+- Reference URL: `https://www.indigodomo.com/pluginstore/196/`
+- Expected bundle ID: `pro.sleepers.indigoplugin.8channel-relay`
+- Expected name substring: `8 Channel`
 
-This prevents a silent rot where the scraper keeps producing empty results after a store redesign.
+Fetch the URL, run the parser, assert all five required fields extract and that bundle ID + name match. If any assertion fails:
+
+- Do **not** write the cache
+- Report: "Indigo plugin store HTML has drifted — store-sourced upgrade detection is disabled until `references/store-scraping.md` is updated with fresh parse rules"
+- Continue with Source 1 (GithubInfo-backed plugins still work)
+
+This guards against silent rot where the scraper keeps producing empty results after a store redesign.
 
 ## Politeness
 
-Scraping is unmetered by the store but good-citizen limits still apply:
 - Cap concurrent detail-page fetches at 4-6
 - Add a small inter-request delay (100-250ms) between batches
-- Set a descriptive User-Agent: `indigo-claude-plugin/<version> (update-plugins skill)`
-- Cache aggressively (24h by default) so a typical user hits the store at most once per day
+- User-Agent: `indigo-claude-plugin/<version> (update-plugins skill)`
+- Cache aggressively (24h default) so a typical user hits the store at most once per day
 
-## Download URLs from the store
+## Download URL preference
 
-Many store detail pages link their download directly to a GitHub release asset. When that's the case, use the GitHub URL as the `download_url` in the cache — it's stable, tagged, and often has a release notes page attached. Only fall back to store-hosted downloads when the store page doesn't offer a GitHub asset URL.
+When the store's download anchor already points at a GitHub release asset, use that URL directly — it's tagged, stable, and carries release notes. Only fall back to store-hosted downloads when no GitHub asset URL is linked.
 
 If the store's download URL is relative (e.g. `/pluginstore/download/...`), resolve it against `https://www.indigodomo.com/` before caching.
 
-## When the store is the wrong answer
+## Store older than installed
 
-If a plugin's store entry lists a version that is *older* than the installed version, that means the user is running a newer dev build or beta that isn't on the store yet. Report this as "installed is newer than store" and do not offer a downgrade. The user can manually revert if they want to.
+If the store lists an older version than what's installed, the user is running a dev/beta that isn't on the store yet. Report as "installed is newer than store" and do not offer a downgrade.

@@ -14,16 +14,18 @@ Checks every installed Indigo plugin against its upstream source (GitHub release
 
 **What it does NOT do:**
 - Install plugins that aren't already present (first installs still require a double-click via Indigo's UI)
+- Update disabled plugins (restarting a disabled plugin could re-enable it unexpectedly)
 - Roll back on failure
 - Handle paid / authenticated store downloads
 - Run non-interactively — you always confirm before anything is deployed
 
 ## On Command Load
 
-1. Read `skills/update-plugins/references/discovery.md` — how to find the upstream source for each installed plugin
-2. Read `skills/update-plugins/references/store-scraping.md` — parse rules for Indigo plugin store detail pages
-3. Read `skills/update-plugins/references/install-workflow.md` — download → verify → rsync → restart sequence
-4. Begin the phased workflow below
+1. Read `skills/update-plugins/SKILL.md` — top-level workflow
+2. Read `skills/update-plugins/references/discovery.md` — how to find the upstream source for each installed plugin
+3. Read `skills/update-plugins/references/store-scraping.md` — parse rules for the store fallback
+4. Read `skills/update-plugins/references/install-workflow.md` — the detailed download → verify → rsync → restart sequence
+5. Begin the workflow below
 
 ## Workflow
 
@@ -31,55 +33,43 @@ Follow every phase in order. Do not skip ahead to apply without showing the repo
 
 ### Phase 1 — DISCOVER
 
-Call `mcp__indigo__list_plugins` to get every installed plugin. For each entry, capture:
-- `id` (bundle identifier — the match key)
-- `displayName`
-- `version` (installed version)
-- `path` (bundle path on the Indigo server — used later for both reading Info.plist and for the deploy target)
-- `enabled`
+Call `mcp__indigo__list_plugins` with its default parameters (disabled plugins are excluded automatically — that's what we want). For each returned entry, capture:
 
-**No filtering.** Every installed plugin is a candidate regardless of author.
+- `id` (bundle identifier — the match key)
+- `name` (display name)
+- `version` (installed version)
+- `path` (bundle path on the Indigo server — used for reading Info.plist and as the deploy destination)
+- `enabled`
 
 ### Phase 2 — RESOLVE UPGRADE SOURCE
 
 For each installed plugin, determine where to check for updates. See `references/discovery.md` for the full logic. Summary:
 
-1. Read `<path>/Contents/Info.plist` and look for a `GithubInfo` dict with `GithubUser` + `GithubRepo` keys.
-2. If present → source is **GitHub**. Query `gh api /repos/<user>/<repo>/releases/latest` and record tag, version, asset URL, release notes URL.
+1. Read `<path>/Contents/Info.plist` via `/usr/libexec/PlistBuddy` and look for a `GithubInfo` dict with `GithubUser` + `GithubRepo` keys.
+2. If present → source is **GitHub**. Query `gh api /repos/<user>/<repo>/releases/latest`.
 3. If absent → source is **store**. Look up the bundle ID in the store cache (Phase 3).
-4. If neither yields a result → source is **unresolved**. Record it but don't block anything else.
+4. If neither yields a result → source is **unresolved**.
 
-Parallelise across plugins. Don't process them one at a time — a 30-plugin serial pass over the network is painfully slow.
+Parallelise across plugins — a 30-plugin serial pass over the network is painfully slow.
 
 ### Phase 3 — MAINTAIN STORE CACHE
 
-Store-sourced plugins need a `bundle_id → {name, latest_version, detail_url, download_url, github_url}` map. Cache it at `~/.claude/indigo-plugin-store-cache.json`.
-
-Refresh the cache when:
-- It doesn't exist
-- It is older than 24 hours
-- The user passes a refresh flag (`/indigo:update-plugins refresh`)
-
-Before trusting a freshly refreshed cache, run the parse self-test described in `references/store-scraping.md` — if the HTML has drifted and any of the five required fields are missing for the reference plugin, bail with a clear error rather than silently producing wrong results.
+Cache lives at `$HOME/.claude/indigo-plugin-store-cache.json`. Refresh when missing, older than 24 hours, or on user request. Before trusting a freshly refreshed cache, run the parse self-test in `references/store-scraping.md` — if the HTML has drifted, bail with a clear error rather than silently producing wrong results.
 
 ### Phase 4 — DIFF
 
-For every plugin with a resolved source, compare installed version to latest:
-- Use `packaging.version.parse` where possible
-- Fall back to lexicographic comparison for version strings that don't parse cleanly
-- Strip leading `v` before comparing (`v1.0.3` vs `1.0.3`)
-- Treat `YYYY.R.P`, semver, and prereleases as upgrades when the parsed version is strictly greater
+For every plugin with a resolved source, compare installed version to latest. Strip leading `v`. Prefer `python3 -c 'from packaging.version import parse as p; ...'` when Python is available; fall back to split-on-`.` numeric-or-string segment compare. Handles `2026.4.1`, `1.0.3`, and `v1.0-beta`.
 
-Build an upgrade report with columns: `name`, `bundle_id`, `installed → latest`, `source`, `release notes`.
+Build an upgrade report grouped into three sections:
 
-Group the report into three sections:
 - **Upgrades available** — actionable items
 - **Up to date** — informational
-- **Unresolved** — plugins where no upstream source was found (show at the bottom, never treat as an error)
+- **Unresolved** — plugins where no upstream source was found (bottom of the report, never an error)
 
 ### Phase 5 — CONFIRM
 
-Render the report as a markdown table. Wait for explicit user go-ahead. Accept:
+Render the report. Wait for explicit user go-ahead. Accept:
+
 - `all` → apply every upgrade in the "Upgrades available" section
 - `all except <name>` / `all except <names>` → apply all but the excluded ones
 - A specific plugin name or bundle ID → apply just that one
@@ -89,30 +79,20 @@ Do not interpret ambiguous replies as consent. When in doubt, ask again.
 
 ### Phase 6 — APPLY (per plugin, one at a time)
 
-For each plugin the user confirmed, follow the sequence in `references/install-workflow.md`. Summary:
+Follow `references/install-workflow.md` for the exact sequence. Every step — download, unzip-before-copy, verify bundle ID, rsync over the installed `Contents/`, restart via MCP, verify startup — is documented there with the commands to run. Don't reinvent the sequence here.
 
-1. Download the `.indigoPlugin.zip` (`gh release download` for GitHub, `curl` for store)
-2. Unzip to a temp staging dir
-3. **Safety check**: the staged bundle's `Info.plist` must have the same `CFBundleIdentifier` as the installed plugin and a version matching what the upstream source advertised. If either check fails, abort this plugin's upgrade and continue to the next.
-4. `rsync -av --delete` the staged `Contents/` over the live plugin's `Contents/` (use the `path` returned by MCP — never hardcode a deploy path)
-5. `mcp__indigo__restart_plugin(plugin_id=<bundle_id>)`
-6. Verify: `mcp__indigo__get_plugin_by_id` returns the new version; `mcp__indigo__query_event_log` shows a clean startup (look for the "Started plugin" line and the absence of error lines in the seconds after restart)
-7. Clean up the temp staging dir
-
-Report pass/fail for each plugin. On failure of one plugin, continue to the next — don't halt the whole batch unless the failure indicates something systemic (filesystem unwritable, MCP unreachable).
+Report pass/fail per plugin. On failure of one plugin, continue to the next — don't halt the whole batch unless the failure indicates something systemic (filesystem unwritable, MCP unreachable, network dead).
 
 ### Phase 7 — SUMMARY
 
-Report:
-- ✅ Successful upgrades (name, old → new version)
-- ❌ Failed upgrades (name, error, any manual recovery steps)
-- ℹ️ Unresolved plugins (name, reason — no `GithubInfo`, not in store, etc.)
+Report three sections:
 
-If any plugin failed, suggest a manual next step (check the bundle path, try a manual download, file an issue).
+- **Upgraded** — name, old → new version
+- **Failed** — name, error, a one-line manual recovery hint
+- **Unresolved** — name, reason (no GithubInfo, not in store, etc.)
+
+If any plugin failed, suggest a concrete manual next step (check the bundle path, try a manual download, file an issue with the plugin author).
 
 ## Safety
 
-- **Never install a new plugin** via this command. If `mcp__indigo__list_plugins` doesn't know about a bundle ID, it's out of scope — the user must double-click install it via Indigo's UI first.
-- **Always verify bundle ID before rsync**. A download from an unexpected source must not clobber a different plugin.
-- **Interactive only**. No cron, no hooks, no silent application. The user always sees the report and types their confirmation.
-- **Use the MCP-reported `path`** for the deploy target, not a hardcoded value. This is how the command works for any user of the marketplace, not just the author.
+All safety rules live in `SKILL.md` and `references/install-workflow.md`. Highlights: updates-only (never first-install), verify bundle ID before rsync, MCP-reported path as deploy destination (never hardcoded), interactive-only, one plugin at a time, disabled plugins skipped.
