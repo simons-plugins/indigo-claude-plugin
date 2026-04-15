@@ -25,37 +25,15 @@ Call `mcp__indigo__list_plugins` (default `include_disabled=false`). For each re
 
 ### Phase 2 — RESOLVE UPGRADE SOURCE
 
-For each plugin, see `references/discovery.md`. Short version:
+Three sources checked in priority order. Full details in `references/discovery.md`. Short version:
 
-1. **Try GitHub** — read `<path>/Contents/Info.plist` for `GithubInfo.GithubUser` + `GithubInfo.GithubRepo`. If present → `gh api /repos/<user>/<repo>/releases/latest` → capture `tag_name`, `html_url`, and any asset ending in `.indigoPlugin.zip`.
-2. **Try store** — no GithubInfo → look up the bundle ID in the store cache (Phase 3).
-3. **Unresolved** — neither source resolves → record and continue.
+1. **Local `GithubInfo`** — read `<path>/Contents/Info.plist` for `GithubInfo.GithubUser` + `GithubInfo.GithubRepo`. If present → `gh api /repos/<user>/<repo>/releases/latest`.
+2. **Bundled registry** (`$CLAUDE_PLUGIN_ROOT/data/plugin-source-registry.json`) — a static `bundle_id → upstream` map that ships with this marketplace plugin. If the bundle ID is in the registry, use its `github` slug (preferred) or fetch its `store_url` (fallback for store-only plugins). **No runtime scraping for plugins in the registry** — it's a file read.
+3. **Store scraping fallback** — for plugins in neither Info.plist nor the registry. Rare. See `references/store-scraping.md`. Suggest the user open a PR adding an entry to the registry when this path triggers.
 
-Parallelise. See `references/discovery.md` for the cap and concurrency notes.
+Parallelise. See `references/discovery.md` for concurrency notes.
 
-### Phase 3 — MAINTAIN STORE CACHE
-
-Cache at `$HOME/.claude/indigo-plugin-store-cache.json`. Schema:
-
-```json
-{
-  "fetched_at": "2026-04-15T12:00:00Z",
-  "listing_etag": "...",
-  "plugins": {
-    "pro.sleepers.indigoplugin.8channel-relay": {
-      "name": "8 Channel Network Relay",
-      "latest_version": "2.0.1",
-      "detail_url": "https://www.indigodomo.com/pluginstore/196/",
-      "download_url": "https://github.com/IndigoDomotics/indigo-8channel-relay/releases/download/v2.0.1/8chRelay.indigoPlugin.zip",
-      "github_url": "https://github.com/IndigoDomotics/indigo-8channel-relay"
-    }
-  }
-}
-```
-
-Refresh when: file missing, older than 24h, or the user asks. Full refresh procedure, parse rules, and the self-test that guards against HTML drift: see `references/store-scraping.md`.
-
-### Phase 4 — DIFF
+### Phase 3 — DIFF
 
 For each plugin with a resolved upstream, compare installed version to latest. Strip a leading `v`. Prefer `python3 -c 'from packaging.version import parse as p; ...'` if Python is available in the runtime; otherwise split on `.` and compare numeric segments, falling back to string compare if a segment isn't an integer. `2026.4.1`, `1.0.3`, `v1.0-beta` should all work.
 
@@ -78,7 +56,7 @@ Produce a grouped report:
 |--------|-----------|-------|
 ```
 
-### Phase 5 — CONFIRM
+### Phase 4 — CONFIRM
 
 Print the report. Wait for the user. Accepted replies:
 
@@ -89,11 +67,11 @@ Print the report. Wait for the user. Accepted replies:
 
 Anything ambiguous → ask again.
 
-### Phase 6 — APPLY
+### Phase 5 — APPLY
 
 Follow `references/install-workflow.md` per plugin, one at a time. That file is the authoritative sequence; do not reinvent it here.
 
-### Phase 7 — SUMMARY
+### Phase 6 — SUMMARY
 
 Print three sections: **Upgraded** (name, old → new version), **Failed** (name, reason, one-line manual recovery hint), **Unresolved** (name, why no source was found).
 

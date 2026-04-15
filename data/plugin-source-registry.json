@@ -1,0 +1,860 @@
+{
+  "updated_at": "2026-04-15",
+  "note": "Static bundle_id \u2192 upstream map for Indigo plugins. Entries with `github` point at a github.com/user/repo slug (preferred upstream \u2014 use GitHub releases). Entries with `store_url` are Indigo store-hosted; the skill must fetch the store detail page at runtime to get the latest version and download URL.",
+  "source": "Scraped from https://www.indigodomo.com/pluginstore/ detail pages on 2026-04-15. Contribute additions or corrections via PR to simons-plugins/indigo-claude-plugin.",
+  "plugins": {
+    "com.GlennNZ.indigoplugin.ActronQUE": {
+      "name": "Actron QUE AC",
+      "github": "ghawken/ActronQue-IndigoPlugin"
+    },
+    "com.GlennNZ.indigoplugin.BlueIris": {
+      "name": "BlueIris Plugin",
+      "github": "ghawken/IndigoPlugin-BlueIris"
+    },
+    "com.GlennNZ.indigoplugin.DeepQuestAI": {
+      "name": "DeepQuestAI Plugin",
+      "github": "ghawken/DeepQuestAI"
+    },
+    "com.GlennNZ.indigoplugin.ESPhome4indigo": {
+      "name": "ESPHome Indigo Plugin",
+      "github": "ghawken/ESPHome_IndigoPlugin"
+    },
+    "com.GlennNZ.indigoplugin.EmbyPlugin": {
+      "name": "Emby Plugin",
+      "github": "ghawken/EmbyPlugin.indigoPlugin"
+    },
+    "com.GlennNZ.indigoplugin.EnphaseEnvoy": {
+      "name": "Enphase Envoy Plugin",
+      "github": "Ghawken/IndigoEnphaseEnvoy"
+    },
+    "com.GlennNZ.indigoplugin.FindFriendsMini": {
+      "name": "FindFriendsMini",
+      "github": "ghawken/IndigoPlugin-iFindFriendMini"
+    },
+    "com.GlennNZ.indigoplugin.HomeKitLink-Siri": {
+      "name": "HomeKitLink Siri",
+      "github": "Ghawken/HomeKitLink-Siri"
+    },
+    "com.GlennNZ.indigoplugin.ParadoxAlarm": {
+      "name": "Paradox Alarm",
+      "github": "ghawken/SpectrumIndigo"
+    },
+    "com.GlennNZ.indigoplugin.SimpleLED": {
+      "name": "LED Simple Effects",
+      "github": "ghawken/Indigo-SimpleLED"
+    },
+    "com.GlennNZ.indigoplugin.SolarSmart": {
+      "name": "SolarSmart",
+      "github": "ghawken/SolarSmartPlugin"
+    },
+    "com.GlennNZ.indigoplugin.SunRise": {
+      "name": "SunRise Device Plugin",
+      "github": "ghawken/Indigo-Sunrise-Plugin"
+    },
+    "com.GlennNZ.indigoplugin.TeslaBattery": {
+      "name": "Tesla Battery",
+      "github": "ghawken/TeslaBatteryPlugin"
+    },
+    "com.GlennNZ.indigoplugin.WinRemote": {
+      "name": "WinRemote Plugin",
+      "github": "Ghawken/IndigoPlugin-WinRemote"
+    },
+    "com.GlennNZ.indigoplugin.appleTV": {
+      "name": "appleTV Plugin",
+      "github": "Ghawken/appleTV-indigoPlugin"
+    },
+    "com.GlennNZ.indigoplugin.deluxeGraphing": {
+      "name": "Deluxe Graphing",
+      "github": "ghawken/DeluxeGraphing"
+    },
+    "com.GlennNZ.indigoplugin.device-timer": {
+      "name": "Device Timer",
+      "github": "ghawken/Device_Timer_Plugin"
+    },
+    "com.GlennNZ.indigoplugin.dreame_vacuum": {
+      "name": "Dreame Vacuum Plugin",
+      "github": "ghawken/Dreame-Indigo"
+    },
+    "com.GlennNZ.indigoplugin.evsemaster": {
+      "name": "EVSE Master Charger",
+      "github": "ghawken/EVSEMaster-Plugin"
+    },
+    "com.GlennNZ.indigoplugin.geckoSpa": {
+      "name": "Gecko inTouch Spa Plugin",
+      "github": "ghawken/Indigo-GeckoSPA"
+    },
+    "com.GlennNZ.indigoplugin.holiday": {
+      "name": "Holiday",
+      "github": "Ghawken/Holiday"
+    },
+    "com.GlennNZ.indigoplugin.iMessage": {
+      "name": "iMessage Plugin",
+      "github": "Ghawken/iMessagePlugin"
+    },
+    "com.GlennNZ.indigoplugin.irobot": {
+      "name": "iRobot-Roomba",
+      "github": "ghawken/Indigo-iRobotRoomba"
+    },
+    "com.GlennNZ.indigoplugin.mammotion": {
+      "name": "Mammotion Mower",
+      "github": "ghawken/MammotionPlugin"
+    },
+    "com.JohnBurgess.indigoplugin.TP-Link-Device": {
+      "name": "TP-Link Device",
+      "github": "jtburgess/indigo-TP-Link"
+    },
+    "com.anyone.indigoplugin.apc-pdu-control": {
+      "name": "APC PDU Control",
+      "github": "anyone2/IndigoPlugin-APC-PDU-Control"
+    },
+    "com.anyone.indigoplugin.voice-monkey": {
+      "name": "Voice Monkey",
+      "github": "anyone2/IndigoPlugin-Voice-Monkey"
+    },
+    "com.autologplugin.awtrix3": {
+      "name": "AWTRIX 3",
+      "github": "autolog/AWTRIX"
+    },
+    "com.autologplugin.indigoplugin.dynamicviewcontroller": {
+      "name": "Dynamic View Controller",
+      "github": "autolog/Dynamic_View_Controller"
+    },
+    "com.autologplugin.indigoplugin.foscamhdcontroller": {
+      "name": "Foscam HD Controller",
+      "github": "autolog/Foscam_HD_Controller"
+    },
+    "com.autologplugin.indigoplugin.hubitat": {
+      "name": "Hubitat Bridge",
+      "github": "Autolog/Hubitat_Bridge"
+    },
+    "com.autologplugin.indigoplugin.lifxcontroller": {
+      "name": "LIFX",
+      "github": "autolog/LIFX_Controller"
+    },
+    "com.autologplugin.indigoplugin.nanoleafcontroller": {
+      "name": "Nanoleaf",
+      "github": "autolog/nanoleaf_Controller"
+    },
+    "com.autologplugin.indigoplugin.rooncontroller": {
+      "name": "Roon",
+      "github": "autolog/Roon_Controller"
+    },
+    "com.autologplugin.indigoplugin.smappeecontroller": {
+      "name": "Smappee",
+      "github": "autolog/Smappee"
+    },
+    "com.autologplugin.indigoplugin.starlingBridge": {
+      "name": "Starling Bridge",
+      "github": "autolog/Starling_Bridge"
+    },
+    "com.autologplugin.indigoplugin.trvcontroller": {
+      "name": "TRV",
+      "github": "autolog/TRV_Controller"
+    },
+    "com.autologplugin.indigoplugin.zigbee2mqtt": {
+      "name": "Zigbee2mqtt Bridge",
+      "github": "autolog/zigbee2mqtt_Bridge"
+    },
+    "com.autologplugin.indigoplugin.zwaveinterpreter": {
+      "name": "Z-Wave Interpreter",
+      "github": "autolog/Z-Wave_Interpreter"
+    },
+    "com.barn.indigoplugin.Daikin-Wifi": {
+      "name": "Daikin Wifi Controller",
+      "github": "neilkplugins/Daikin-Wifi-indigo-plugin"
+    },
+    "com.barn.indigoplugin.GlowmarktCAD": {
+      "name": "GlowmarktCAD",
+      "github": "neilkplugins/Glow-IHD-CAD-indigo-plugin"
+    },
+    "com.barn.indigoplugin.Honeywell_Evohome": {
+      "name": "Evohome",
+      "github": "neilkplugins/evohome-indigo-plugin"
+    },
+    "com.barn.indigoplugin.Solcast": {
+      "name": "Solcast",
+      "github": "neilkplugins/Solcast-indigo-plugin"
+    },
+    "com.barn.indigoplugin.VeluxActive": {
+      "name": "Velux Active",
+      "github": "neilkplugins/VeluxActive-indigo-plugin"
+    },
+    "com.barn.indigoplugin.WLED": {
+      "name": "WLED",
+      "github": "neilkplugins/WLED-indigo-plugin"
+    },
+    "com.berkinet.ad2usb": {
+      "name": "AD2USB Alarm Interface",
+      "github": "bla260/ad2usb"
+    },
+    "com.boisypitre.vss": {
+      "name": "VSS - Virtual Security System",
+      "github": "boisy/VSS"
+    },
+    "com.drjason.temp-adapter": {
+      "name": "Adapters",
+      "github": "IndigoDomotics/adapters"
+    },
+    "com.duncanware.daytonAudioController": {
+      "name": "Dayton Audio Controller",
+      "github": "RogueProeliator/indigo-plugins-dayton-audio"
+    },
+    "com.duncanware.domoPadMobileClient": {
+      "name": "Domotics Pad Mobile Client",
+      "github": "RogueProeliator/indigo-plugins-googleclients"
+    },
+    "com.duncanware.nilesAudioReceiver": {
+      "name": "Niles Audio Receiver Plugin",
+      "github": "RogueProeliator/indigo-plugins-nilesaudio"
+    },
+    "com.duncanware.onkyoNetworkRemote": {
+      "name": "Onkyo Network Remote Plugin",
+      "github": "RogueProeliator/indigo-plugins-onkyo-receiver"
+    },
+    "com.duncanware.plexMediaServerManager": {
+      "name": "Plex Media Server Manager",
+      "github": "RogueProeliator/indigo-plugins-plex-server-manager"
+    },
+    "com.duncanware.rokuNetworkRemote": {
+      "name": "Roku Network Remote",
+      "github": "RogueProeliator/indigo-plugins-roku"
+    },
+    "com.duncanware.sharpTvNetworkRemote": {
+      "name": "Sharp TV Network Remote Plugin",
+      "github": "RogueProeliator/IndigoPlugins-Sharp-TV-Network-Remote"
+    },
+    "com.durosity.indigoplugin.lighttools": {
+      "name": "LightTools",
+      "github": "durosity/Indigo-LightTools"
+    },
+    "com.durosity.indigoplugin.renault": {
+      "name": "Renault Car",
+      "github": "Durosity/Indigo-Renault-Car"
+    },
+    "com.flyingdiver.indigoplugin.bondhome": {
+      "name": "Bond Home",
+      "github": "FlyingDiver/Indigo-BondHome"
+    },
+    "com.flyingdiver.indigoplugin.camect": {
+      "name": "Camect",
+      "github": "FlyingDiver/Indigo-Camect"
+    },
+    "com.flyingdiver.indigoplugin.ecobee": {
+      "name": "Ecobee 2",
+      "github": "FlyingDiver/Indigo-Ecobee-2"
+    },
+    "com.flyingdiver.indigoplugin.fireboard": {
+      "name": "Fireboard",
+      "github": "FlyingDiver/Indigo-FireBoard"
+    },
+    "com.flyingdiver.indigoplugin.ftp": {
+      "name": "FTP",
+      "github": "FlyingDiver/Indigo-FTP"
+    },
+    "com.flyingdiver.indigoplugin.harmonyhub": {
+      "name": "Harmony Hub",
+      "github": "FlyingDiver/Indigo-Harmony"
+    },
+    "com.flyingdiver.indigoplugin.httpd2": {
+      "name": "HTTPd 2",
+      "github": "FlyingDiver/Indigo-HTTPd-2"
+    },
+    "com.flyingdiver.indigoplugin.lifxbridge": {
+      "name": "LIFX Bridge",
+      "github": "FlyingDiver/Indigo-lifx-bridge"
+    },
+    "com.flyingdiver.indigoplugin.lutron-leap": {
+      "name": "Lutron Leap",
+      "github": "FlyingDiver/Indigo-Lutron-Leap"
+    },
+    "com.flyingdiver.indigoplugin.masquerade": {
+      "name": "Masquerade",
+      "github": "FlyingDiver/Indigo-Masquerade"
+    },
+    "com.flyingdiver.indigoplugin.miniPurple": {
+      "name": "miniPurple",
+      "github": "FlyingDiver/Indigo-miniPurple"
+    },
+    "com.flyingdiver.indigoplugin.miniUniFi": {
+      "name": "miniUniFi",
+      "github": "FlyingDiver/Indigo-miniUniFi"
+    },
+    "com.flyingdiver.indigoplugin.miniserial": {
+      "name": "miniSerial",
+      "github": "FlyingDiver/Indigo-miniSerial"
+    },
+    "com.flyingdiver.indigoplugin.mqtt": {
+      "name": "MQTT Connector",
+      "github": "FlyingDiver/Indigo-MQTT"
+    },
+    "com.flyingdiver.indigoplugin.mqtt-broker": {
+      "name": "MQTT Broker",
+      "github": "FlyingDiver/Indigo-MQTT-Broker"
+    },
+    "com.flyingdiver.indigoplugin.occupatum": {
+      "name": "Occupatum",
+      "github": "FlyingDiver/Indigo-Occupatum"
+    },
+    "com.flyingdiver.indigoplugin.pushsafer": {
+      "name": "Pushsafer",
+      "github": "IndigoDomotics/indigo-pushsafer"
+    },
+    "com.flyingdiver.indigoplugin.ratgdo": {
+      "name": "ratgdo GDO Controller",
+      "github": "FlyingDiver/Indigo-ratgdo"
+    },
+    "com.flyingdiver.indigoplugin.schlageencode": {
+      "name": "Schlage Encode",
+      "github": "FlyingDiver/Indigo-Schlage"
+    },
+    "com.flyingdiver.indigoplugin.shims": {
+      "name": "MQTT Shims",
+      "github": "FlyingDiver/Indigo-Shims"
+    },
+    "com.flyingdiver.indigoplugin.slack": {
+      "name": "Slack 2",
+      "github": "FlyingDiver/Indigo-Slack2"
+    },
+    "com.flyingdiver.indigoplugin.smtpd": {
+      "name": "SMTPd",
+      "github": "FlyingDiver/Indigo-SMTPd"
+    },
+    "com.flyingdiver.indigoplugin.tankutility": {
+      "name": "TankUtility",
+      "github": "FlyingDiver/Indigo-TankUtility"
+    },
+    "com.flyingdiver.indigoplugin.trane-nexia": {
+      "name": "Trane Home",
+      "github": "FlyingDiver/Indigo-Trane-Nexia"
+    },
+    "com.flyingdiver.indigoplugin.twilio": {
+      "name": "Twilio",
+      "github": "FlyingDiver/Indigo-Twilio"
+    },
+    "com.flyingdiver.indigoplugin.weatherlink-live": {
+      "name": "WeatherLink Live",
+      "github": "FlyingDiver/Indigo-WeatherLinkLive"
+    },
+    "com.fogbert.indigoplugin.GhostXML": {
+      "name": "GhostXML",
+      "github": "IndigoDomotics/GhostXML"
+    },
+    "com.fogbert.indigoplugin.OWServer": {
+      "name": "OWServer",
+      "github": "DaveL17/OWServer"
+    },
+    "com.fogbert.indigoplugin.announcements": {
+      "name": "Announcements",
+      "github": "DaveL17/Announcements"
+    },
+    "com.fogbert.indigoplugin.bikeShare": {
+      "name": "Bike Share",
+      "github": "DaveL17/BikeShare"
+    },
+    "com.fogbert.indigoplugin.fantasticwWeather": {
+      "name": "Fantastic Weather",
+      "github": "DaveL17/Fantastic-Weather"
+    },
+    "com.fogbert.indigoplugin.matplotlib": {
+      "name": "Matplotlib",
+      "github": "DaveL17/matplotlib"
+    },
+    "com.fogbert.indigoplugin.multitool": {
+      "name": "Multitool",
+      "github": "DaveL17/Multitool"
+    },
+    "com.frightideas.indigoplugin.dscAlarm": {
+      "name": "DSC Alarm",
+      "github": "IndigoDomotics/DSC-Alarm"
+    },
+    "com.github.wonderslug.hassbridge": {
+      "name": "HassBridge",
+      "github": "IndigoDomotics/hassbridge"
+    },
+    "com.heddings.indigo.prowl": {
+      "name": "Prowl",
+      "github": "jheddings/indigo-prowl"
+    },
+    "com.howartp.clockdisplay": {
+      "name": "Clock Display",
+      "github": "howartp84/ClockDisplay"
+    },
+    "com.howartp.lockmanager": {
+      "name": "Z-Wave Lock Manager",
+      "github": "howartp84/ZWaveLockManager"
+    },
+    "com.howartp.neoblinds": {
+      "name": "Neo Blinds",
+      "github": "howartp84/NeoSmartBlinds"
+    },
+    "com.howartp.scenecontrol": {
+      "name": "Z-Wave Scene Controller",
+      "github": "howartp84/ZWaveSceneController"
+    },
+    "com.howartp.sense": {
+      "name": "Sense",
+      "github": "howartp84/Sense"
+    },
+    "com.howartp.teslacontrol": {
+      "name": "Tesla EV Control",
+      "github": "howartp84/TeslaControl"
+    },
+    "com.howartp.variabledevice": {
+      "name": "Variable Devices",
+      "github": "howartp84/VariableDevice"
+    },
+    "com.howartp.verisurev2": {
+      "name": "Verisure v2",
+      "github": "howartp84/verisure"
+    },
+    "com.howartp.windowcontrol": {
+      "name": "Z-Wave Window Controller",
+      "github": "howartp84/ZWaveWindowController"
+    },
+    "com.howartp.zwavesensorlogger": {
+      "name": "Z-Wave Sensor Logger",
+      "github": "howartp84/ZWaveSensorLogger"
+    },
+    "com.howartp.zwavewatcher": {
+      "name": "Z-Wave Watcher",
+      "github": "howartp84/ZWaveWatcher"
+    },
+    "com.indigodomo.indigoplugin.autologsqueezeboxcontroller": {
+      "name": "Squeezebox",
+      "github": "autolog/Squeezebox_Controller"
+    },
+    "com.indigodomo.opensource.rachio": {
+      "name": "Rachio Sprinklers",
+      "github": "IndigoDomotics/rachio-indigo"
+    },
+    "com.jeremyswancoat.indigoplugin.nuvograndconcerto": {
+      "name": "NuVo Grand Concerto",
+      "github": "Monstergerm/Indigo-NuvoGrandConcerto"
+    },
+    "com.jeremyswancoat.indigoplugin.pentairpool": {
+      "name": "Pentair Pool",
+      "github": "FlyingDiver/Indigo-Pentair"
+    },
+    "com.jimandnoreen.indigoplugin.lutron-radiora2": {
+      "name": "Lutron RRA2/Cas\u00e9ta",
+      "github": "FlyingDiver/Indigo-radiora2"
+    },
+    "com.karlwachs.INDIGOplotD": {
+      "name": "INDIGOplotD",
+      "github": "kw123/indigoplotd"
+    },
+    "com.karlwachs.VoiceReceiver": {
+      "name": "VoiceReceiver",
+      "github": "kw123/VoiceReceiver"
+    },
+    "com.karlwachs.arduino": {
+      "name": "arduino",
+      "github": "kw123/arduino"
+    },
+    "com.karlwachs.fingscan": {
+      "name": "fingscan",
+      "github": "kw123/fingscan"
+    },
+    "com.karlwachs.homematic": {
+      "name": "homematic",
+      "github": "kw123/homematic"
+    },
+    "com.karlwachs.minMax": {
+      "name": "minMax",
+      "github": "kw123/minMax"
+    },
+    "com.karlwachs.networkscanner": {
+      "name": "Network Scanner",
+      "store_url": "https://www.indigodomo.com/pluginstore/326/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.karlwachs/com.karlwachs.networkscanner/2025.0.2/NetworkScanner.indigoPlugin.zip"
+    },
+    "com.karlwachs.piBeacon": {
+      "name": "piBeacon",
+      "github": "kw123/pibeacon"
+    },
+    "com.karlwachs.secondsSinceLastChange": {
+      "name": "secondsSinceLastChange",
+      "github": "kw123/secondssincelastchnage"
+    },
+    "com.karlwachs.shelly": {
+      "name": "shelly",
+      "github": "kw123/SHELLY"
+    },
+    "com.karlwachs.shutdownAction": {
+      "name": "shutdownAction",
+      "github": "kw123/shutdown-action"
+    },
+    "com.karlwachs.startupAction": {
+      "name": "startupAction",
+      "github": "kw123/startupAction"
+    },
+    "com.karlwachs.uniFiAP": {
+      "name": "uniFiAP",
+      "github": "kw123/unifi"
+    },
+    "com.karlwachs.utilities": {
+      "name": "utilities",
+      "github": "kw123/indigoUtilities"
+    },
+    "com.lionsheeptechnology.ShellyMQTT": {
+      "name": "ShellyMQTT",
+      "github": "AaronLionsheep/ShellyMQTT"
+    },
+    "com.lionsheeptechnology.ShellyNGMQTT": {
+      "name": "ShellyNGMQTT",
+      "github": "AaronLionsheep/ShellyNGMQTT"
+    },
+    "com.lionsheeptechnology.SmartRent": {
+      "name": "SmartRent",
+      "github": "AaronLionsheep/SmartRent"
+    },
+    "com.marcus.indigoplugin.yamaharxaus": {
+      "name": "Yamaha RX Receiver AUS",
+      "store_url": "https://www.indigodomo.com/pluginstore/287/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.marcus/com.marcus.indigoplugin.yamaharxaus/2022.2.1/yamaharx_AUS.indigoPlugin.zip"
+    },
+    "com.mkuchnic.indigoplugin.schluter": {
+      "name": "Schluter Thermostat",
+      "github": "MKuchnic/Indigo-Schluter-1"
+    },
+    "com.morris.confirmed-lock": {
+      "name": "Confirmed Lock",
+      "github": "kmarkley/Indigo-Confirmed-Lock"
+    },
+    "com.morris.default-dimmer-level": {
+      "name": "Default Dimmer Level",
+      "github": "kmarkley/Indigo-Default-Dimmer"
+    },
+    "com.morris.fan-group": {
+      "name": "Fan Group",
+      "github": "kmarkley/Indigo-Fan-Group"
+    },
+    "com.morris.google-calendar": {
+      "name": "Google Calendar",
+      "github": "kmarkley/Indigo-Google-Calendar"
+    },
+    "com.morris.group-change-listener": {
+      "name": "Group Change Listener",
+      "github": "kmarkley/Indigo-Group-Change-Listener"
+    },
+    "com.morris.itunes-local-control": {
+      "name": "iTunes Local Control",
+      "github": "kmarkley/Indigo-iTunes-Local-Control"
+    },
+    "com.morris.lock-group": {
+      "name": "Lock Group",
+      "github": "kmarkley/Indigo-Lock-Group"
+    },
+    "com.morris.mac-apps": {
+      "name": "Mac Apps",
+      "github": "kmarkley/Indigo-Mac-Apps"
+    },
+    "com.morris.neato-botvac": {
+      "name": "Neato Botvac",
+      "github": "kmarkley/Indigo-Neato-Botvac"
+    },
+    "com.morris.online-sensor": {
+      "name": "Online Sensor",
+      "github": "kmarkley/Indigo-Online-Sensor"
+    },
+    "com.morris.over-auto": {
+      "name": "Over Auto",
+      "github": "kmarkley/Indigo-Over-Auto"
+    },
+    "com.morris.realistic-random": {
+      "name": "Realistic Random",
+      "github": "kmarkley/Indigo-Realistic-Random"
+    },
+    "com.morris.sensor-stats": {
+      "name": "Sensor Stats",
+      "github": "kmarkley/Indigo-Sensor-Stats"
+    },
+    "com.morris.state-tree-actions": {
+      "name": "State Tree Actions",
+      "github": "kmarkley/Indigo-State-Tree-Actions"
+    },
+    "com.morris.timed-devices": {
+      "name": "Timed Devices",
+      "github": "kmarkley/Indigo-Timed-Devices"
+    },
+    "com.morris.unistat": {
+      "name": "Unistat",
+      "github": "kmarkley/Indigo-Unistat"
+    },
+    "com.nathansheldon.indigoplugin.HueLights": {
+      "name": "Hue Lights",
+      "github": "kw123/Hue-Lights-Indigo-plugin"
+    },
+    "com.nathansheldon.indigoplugin.PioneerReceiver": {
+      "name": "Pioneer Receiver",
+      "github": "IndigoDomotics/Pioneer-Receiver-Indigo-Plugin"
+    },
+    "com.nathansheldon.indigoplugin.sleepybed-iq": {
+      "name": "SleepyBed IQ",
+      "github": "IndigoDomotics/SleepyBed-IQ-Indigo-Plugin"
+    },
+    "com.nathanw.IndigoPlugin.ESPHomeClimate": {
+      "name": "ESPHome Climate",
+      "github": "nathanjw/ESPHomeClimate-indigo-plugin"
+    },
+    "com.pennypacker.indigoplugin.weatherflow": {
+      "name": "WeatherFlow Smart Weather",
+      "github": "bpennypacker/WeatherFlow-Indigo-Plugin"
+    },
+    "com.perceptiveautomation.indigoplugin.directvdvrcontrol": {
+      "name": "DIRECTV DVR Control",
+      "github": "IndigoDomotics/directv-dvr-control"
+    },
+    "com.perceptiveautomation.indigoplugin.user-scripts": {
+      "name": "User Scripts",
+      "github": "IndigoDomotics/indigo-user-scripts"
+    },
+    "com.pluginfactory.indigoplugin.rainmachine2": {
+      "name": "RainMachine2",
+      "github": "geoffsharris/RainMachine2"
+    },
+    "com.racarter.indigoplugin.blink": {
+      "name": "Blink",
+      "store_url": "https://www.indigodomo.com/pluginstore/273/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.racarter/com.racarter.indigoplugin.blink/2025.1.1/HeatmiserNeo.IndigoPlugin.zip"
+    },
+    "com.racarter.indigoplugin.heatmiser-neo": {
+      "name": "Heatmiser Neo",
+      "store_url": "https://www.indigodomo.com/pluginstore/176/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.racarter/com.racarter.indigoplugin.heatmiser-neo/2025.1.1/HeatmiserNeo.IndigoPlugin.zip"
+    },
+    "com.racarter.indigoplugin.jlr": {
+      "name": "JLR",
+      "store_url": "https://www.indigodomo.com/pluginstore/285/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.racarter/com.racarter.indigoplugin.jlr/2024.0.0/JLR.IndigoPlugin.zip"
+    },
+    "com.racarter.indigoplugin.netatmo-welcome": {
+      "name": "Netatmo Multi",
+      "store_url": "https://www.indigodomo.com/pluginstore/177/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.racarter/com.racarter.indigoplugin.netatmo-welcome/2025.0.3/NetatmoWelcome.IndigoPlugin.zip"
+    },
+    "com.racarter.indigoplugin.ohme": {
+      "name": "Ohme",
+      "store_url": "https://www.indigodomo.com/pluginstore/307/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.racarter/com.racarter.indigoplugin.ohme/2025.0.3/Ohme.IndigoPlugin.zip"
+    },
+    "com.racarter.indigoplugin.sunsynk": {
+      "name": "Sunsynk",
+      "store_url": "https://www.indigodomo.com/pluginstore/276/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.racarter/com.racarter.indigoplugin.sunsynk/2023.0.0/Sunsynk.IndigoPlugin.zip"
+    },
+    "com.racarter.indigoplugin.tapo": {
+      "name": "Tapo",
+      "store_url": "https://www.indigodomo.com/pluginstore/274/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.racarter/com.racarter.indigoplugin.tapo/2023.0.0/Tapo.IndigoPlugin.zip"
+    },
+    "com.racarter.indigoplugin.texecom": {
+      "name": "Texecom",
+      "store_url": "https://www.indigodomo.com/pluginstore/175/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.racarter/com.racarter.indigoplugin.texecom/2022.0.2/Texecom.indigoPlugin.zip"
+    },
+    "com.racarter.indigoplugin.tuya": {
+      "name": "Tuya",
+      "store_url": "https://www.indigodomo.com/pluginstore/279/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.racarter/com.racarter.indigoplugin.tuya/2025.2.1/Tuya.IndigoPlugin.zip"
+    },
+    "com.racarter.indigoplugin.watchdog": {
+      "name": "Watchdog",
+      "store_url": "https://www.indigodomo.com/pluginstore/174/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.racarter/com.racarter.indigoplugin.watchdog/2022.0.0/Watchdog.IndigoPlugin.zip"
+    },
+    "com.ramias.indigo.plugins.pihole": {
+      "name": "Pi Hole DNS Controller",
+      "github": "Ramias1/indigo-pi-hole"
+    },
+    "com.ryanbuckner.indigoplugin.life360": {
+      "name": "Life360",
+      "github": "ryanbuckner/life360-plugin"
+    },
+    "com.schollnick.indigoplugin.BatteryMonitor": {
+      "name": "UPS and Battery Monitor",
+      "github": "FlyingDiver/Indigo-UPS-Battery-Plugin"
+    },
+    "com.sherwinsound.anthemrs232": {
+      "name": "Anthem RS232",
+      "github": "Koreysherwin/indigo-anthem-rs232"
+    },
+    "com.sherwinsound.spotifycontrol": {
+      "name": "Spotify Control",
+      "github": "Koreysherwin/indigo-spotify-control"
+    },
+    "com.sherwinsound.viewsonicprojector": {
+      "name": "ViewSonic Projector",
+      "github": "Koreysherwin/indigo-ViewSonicProjector"
+    },
+    "com.simons-plugins.UKTrains": {
+      "name": "UK Trains",
+      "github": "simons-plugins/indigo-UKTrains"
+    },
+    "com.simons-plugins.domio": {
+      "name": "Domio",
+      "github": "simons-plugins/indigo-domio-plugin"
+    },
+    "com.simons-plugins.logs-over-reflector": {
+      "name": "LogsOverReflector",
+      "github": "simons-plugins/logs-over-reflector"
+    },
+    "com.simons-plugins.netro": {
+      "name": "Netro Sprinklers",
+      "github": "simons-plugins/netro-indigo"
+    },
+    "com.simons-plugins.sofabaton": {
+      "name": "Sofabaton",
+      "github": "simons-plugins/indigo-sofabaton"
+    },
+    "com.smurfless.indigoplugin.json1": {
+      "name": "JSON Broadcast Plugin",
+      "github": "smurfless1/indigo-json-broadcaster"
+    },
+    "com.ssi.indigoplugin.Sonos": {
+      "name": "Sonos",
+      "github": "IndigoDomotics/Sonos"
+    },
+    "com.vtmikel.augusthome": {
+      "name": "August Home",
+      "github": "mlamoure/Indigo-August-Home"
+    },
+    "com.vtmikel.autofan": {
+      "name": "Auto Fan",
+      "github": "mlamoure/indigo-auto-fan-plugin"
+    },
+    "com.vtmikel.autolights": {
+      "name": "Auto Lights",
+      "github": "mlamoure/indigo-auto-lights"
+    },
+    "com.vtmikel.grafana": {
+      "name": "Grafana Home Dashboard",
+      "github": "mlamoure/indigo-grafana-dashboard"
+    },
+    "com.vtmikel.mcp_server": {
+      "name": "MCP Server",
+      "github": "mlamoure/indigo-mcp-server"
+    },
+    "com.vtmikel.securityspyimage": {
+      "name": "Image downloader and SecuritySpy helper",
+      "github": "mlamoure/indigo-securityspy-image-downloader"
+    },
+    "com.weathersnoop.indigoplugin": {
+      "name": "WeatherSnoop",
+      "github": "fluentweather/weathersnoop-indigoplugin"
+    },
+    "com.webdeck.indigoplugin.bafcontrol": {
+      "name": "BAF/Haiku",
+      "github": "webdeck/Indigo-BAF-Control"
+    },
+    "com.whmoorejr.my-people": {
+      "name": "My People",
+      "github": "whmoorejr/My-People"
+    },
+    "com.woodsmachine.indigoplugins.LightScenes": {
+      "name": "Light Scenes",
+      "github": "rbdubz3/light-scenes-indigo"
+    },
+    "com.woodsmachine.indigoplugins.SmartSetpoints": {
+      "name": "Smart Setpoints",
+      "github": "rbdubz3/smart-setpoints-indigo"
+    },
+    "com.woodsmachine.indigoplugins.SylvaniaLightify": {
+      "name": "Sylvania Lightify",
+      "github": "rbdubz3/sylvania-lightify-indigo"
+    },
+    "io.thechad.indigoplugin.pushover": {
+      "name": "Pushover",
+      "github": "IndigoDomotics/indigo-pushover"
+    },
+    "io.thechad.indigoplugin.yamaharx": {
+      "name": "Yamaha RX Receiver",
+      "github": "IndigoDomotics/indigo-yamaharx"
+    },
+    "net.dowles.doorbird": {
+      "name": "DoorBird",
+      "github": "kwijibo007/DoorBird"
+    },
+    "net.dowles.monoprice6zoneamp": {
+      "name": "Monoprice 6 Zone Amp",
+      "github": "kwijibo007/Monoprice-6-Zone-Amp"
+    },
+    "net.papamac.indigoplugin.virtualgaragedoor": {
+      "name": "Virtual Garage Door",
+      "github": "papamac/VirtualGarageDoor"
+    },
+    "net.zengers.weerlive": {
+      "name": "WeerLive",
+      "github": "idurz/indigo-Weerlive"
+    },
+    "nl.rjdekok.indigoplugin.RFXCOM": {
+      "name": "RFXCOM",
+      "github": "IndigoDomotics/rfxcom-plugin"
+    },
+    "no.homeassistant.plugin": {
+      "name": "Home Assistant Agent",
+      "github": "FlyingDiver/Indigo-HA-Agent"
+    },
+    "org.cynic.indigo.behaviors": {
+      "name": "Cynical Behaviors",
+      "store_url": "https://www.indigodomo.com/pluginstore/112/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/org.cynic/org.cynic.indigo.behaviors/3.2.0/behaviors-3.2.0.zip"
+    },
+    "org.cynic.indigo.carrier.sam": {
+      "name": "Cynical Infinity",
+      "store_url": "https://www.indigodomo.com/pluginstore/301/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/org.cynic/org.cynic.indigo.carrier.sam/3.2.0/sam-3.2.0.zip"
+    },
+    "org.cynic.indigo.denon-av": {
+      "name": "Cynical Denon",
+      "store_url": "https://www.indigodomo.com/pluginstore/115/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/org.cynic/org.cynic.indigo.denon-av/3.2.0/denon-av-3.2.0.zip"
+    },
+    "org.cynic.indigo.gcnet": {
+      "name": "Cynical Cach\u00e9",
+      "store_url": "https://www.indigodomo.com/pluginstore/113/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/org.cynic/org.cynic.indigo.gcnet/3.2.2/gcnet-3.2.2.zip"
+    },
+    "org.cynic.indigo.honey": {
+      "name": "Cynical Honey",
+      "store_url": "https://www.indigodomo.com/pluginstore/116/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/org.cynic/org.cynic.indigo.honey/3.2.0/honey-3.2.0.zip"
+    },
+    "org.cynic.indigo.lutron": {
+      "name": "Cynical Lutron",
+      "store_url": "https://www.indigodomo.com/pluginstore/117/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/org.cynic/org.cynic.indigo.lutron/3.2.0/lutron-3.2.0.zip"
+    },
+    "org.cynic.indigo.network": {
+      "name": "Cynical Network",
+      "store_url": "https://www.indigodomo.com/pluginstore/118/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/org.cynic/org.cynic.indigo.network/3.2.0/network-3.2.0.zip"
+    },
+    "org.cynic.indigo.securityspy": {
+      "name": "Cynical SecuritySpy",
+      "store_url": "https://www.indigodomo.com/pluginstore/119/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/org.cynic/org.cynic.indigo.securityspy/3.2.0/securityspy-3.2.0.zip"
+    },
+    "org.cynic.indigo.weather": {
+      "name": "Cynical Weather",
+      "store_url": "https://www.indigodomo.com/pluginstore/120/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/org.cynic/org.cynic.indigo.weather/3.5.5/weather-3.5.5.zip"
+    },
+    "pro.sleepers.indigoplugin.8channel-relay": {
+      "name": "8 Channel Network Relay",
+      "github": "IndigoDomotics/indigo-8channel-relay"
+    },
+    "se.cobmedia.indigoplugin.virtualenergymeter": {
+      "name": "Virtual Energy Meter",
+      "github": "IndigoDomotics/Indigo-VirtualEnergyMeter"
+    },
+    "se.furtenbach.indigo.plugin.beacon": {
+      "name": "GeoFence",
+      "github": "FlyingDiver/Indigo-GeoFence"
+    },
+    "uk.co.greensky.flux": {
+      "name": "Flux LED",
+      "github": "IndigoDomotics/IndigoFluxLED"
+    }
+  }
+}

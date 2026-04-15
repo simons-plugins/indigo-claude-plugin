@@ -1,90 +1,83 @@
-# Indigo Plugin Store Scraping
+# Indigo Plugin Store Scraping (rare path)
 
-Last-resort fallback for plugins that don't declare `GithubInfo` in their Info.plist. Prefer Source 1 (local GithubInfo) whenever possible — see `discovery.md`.
+Runtime scraping of the Indigo plugin store. Called in two situations:
 
-**Everything in this file is a hypothesis until verified against real store HTML.** The parse rules below are sketched from reading one sample detail page. They will need empirical refinement on first implementation, and the self-test at the end is designed to fail loudly if the HTML drifts away from what's documented here.
+1. **Store-only registry entries** — a plugin is in `data/plugin-source-registry.json` with a `store_url` (not a `github` slug). The registry tells us the exact detail page URL; we fetch it and parse to get the latest version and download URL. One HTTP GET per store-only plugin per run.
+2. **Unknown plugin fallback** — a plugin is installed locally but not in Info.plist AND not in the bundled registry. We don't know its detail URL, so we need to enumerate and match. This path should be rare once the registry is seeded; treat it as a recovery mode and suggest the user open a PR adding a registry entry when it triggers.
 
-## What the store does and doesn't guarantee
+The second path is expensive and lossy. The first path is cheap and deterministic. **Prefer the first whenever possible.**
 
-The Indigo plugin store has no documented JSON/RSS/API feed. Detail pages appear to be server-rendered static HTML readable by `WebFetch` without JavaScript.
+## What the store exposes
 
-The fields below are what we *hope* to extract. The one with the highest rot/availability risk is the **bundle identifier** — it is the match key for the whole fallback path, and it is not guaranteed to be rendered in human-readable form on every detail page. If a given plugin's detail page doesn't expose the bundle ID, we cannot match it to an installed plugin and the fallback collapses for that plugin.
+The store has no documented JSON/RSS/API feed. Detail pages are server-rendered static HTML readable by `WebFetch` without JavaScript. Empirically (from the initial seed scrape of ~210 detail pages), every page reliably exposes:
 
-## Fields to extract (hypothesised)
+- Plugin name (heading)
+- Latest version string (as "Latest Version: vX.Y.Z")
+- Download URL (anchor pointing at either a github.com release asset or a `downloads.indigodomo.com/...` URL)
 
-| Field | Purpose | Availability |
-|-------|---------|--------------|
-| Bundle identifier | Match key against installed plugins | **Uncertain** — not visible on every store page; verify empirically |
-| Latest version | Version comparison | Likely visible as "Latest Version: vX.Y.Z" |
-| Download URL | Target for `curl` in apply phase | Anchor pointing at a `.zip` (often `github.com/.../releases/download/...`) |
-| GitHub URL | Release notes fallback | Anchor pointing at `github.com/<user>/<repo>` |
-| Plugin name + author | Display | Page heading + "Author: ..." text |
+The **bundle identifier** is hit-or-miss — some pages expose it in the visible text, others don't. For store-only registry entries this isn't a problem (we already know the bundle ID from the registry), but it's why the unknown-plugin fallback path is unreliable for bulk discovery.
 
-**If the bundle identifier isn't extractable for a plugin, skip it in the cache rather than persist a partial record.** Reporting no-upstream is better than wrong-upstream.
+## Path 1: Store-only registry entry (preferred runtime use)
 
-## Listing discovery
+The registry entry already contains:
+- `store_url` — the detail page URL
+- `store_download` (optional) — a previously-seen download URL, may be stale
 
-The store doesn't publish a sitemap. Two strategies, try A first:
+Fetch the detail page, parse it, extract:
+- `latest_version` — for the version diff
+- `download_url` — the current download URL (use this; don't trust the cached `store_download` field which may be stale)
 
-### Strategy A — Landing page crawl (preferred)
+Single fetch. No enumeration, no cache.
 
-1. Fetch `https://www.indigodomo.com/pluginstore/`
-2. Parse anchors pointing at detail pages (URL pattern: `https://www.indigodomo.com/pluginstore/<N>/` where `<N>` is a small integer)
-3. Follow category/pagination links if present
-4. Deduplicate, fetch each detail page, parse, store in cache
+## Path 2: Unknown plugin fallback (recovery mode)
 
-### Strategy B — Sequential ID enumeration (fallback)
+A plugin is installed, has no `GithubInfo`, and isn't in the registry. We have the bundle ID from MCP but no way to map it to a detail page directly.
 
-If the landing page demonstrably misses plugins: walk integer IDs from 1 upward until you hit a run of ~20 consecutive 404s. Don't run both strategies — it's wasted requests.
+Procedure:
+1. Fetch `https://www.indigodomo.com/pluginstore/` to enumerate all detail page URLs
+2. Fetch each one (parallelise, cap 4-6 concurrent)
+3. Parse each for bundle ID
+4. Match on bundle ID → found the detail page → treat as Path 1 from here
 
-## Parse rules (hypotheses — refine on first run)
+This is slow (~200 fetches). Cache the results for 24h in `$HOME/.claude/indigo-plugin-store-cache.json` as a `bundle_id → detail_url` map so subsequent runs within the cache window don't re-enumerate. When this path succeeds, tell the user: "This plugin isn't in the bundled registry yet. Consider opening a PR at `simons-plugins/indigo-claude-plugin` to add it, so future users don't need the fallback scrape."
 
-Keep all selectors in this one file. When the store HTML drifts, this should be the only file that needs updating.
+If the fallback fails to find a matching bundle ID → mark the plugin unresolved.
 
-Use defensive parsing: one CSS/structural selector and a regex fallback for each field, so a single DOM change doesn't take everything out at once.
+## Parse rules
 
-Starting anchors:
+Defensive parsing: CSS selector OR regex fallback for each field, so a single DOM change doesn't break everything. Keep every selector/regex in this file so HTML drift can be fixed in one place.
+
+Starting anchors (refine empirically as the store HTML changes):
 
 ```text
 Bundle identifier: text matching /Bundle Identifier[:\s]+([a-z0-9._-]+)/i
+                   (not always present — fine for Path 1, critical for Path 2)
 Latest version:    text matching /Latest Version[:\s]+v?([0-9][0-9a-z.+\-]*)/i
 Download URL:      any <a href> ending in `.indigoPlugin.zip` or `.zip`
 GitHub URL:        any <a href> matching `github.com/<user>/<repo>` (no trailing path)
 Name:              <h1> or <title> text, stripped of the site suffix
-Author:            text matching /Author[:\s]+([^\n]+)/i
 ```
 
-If any field extraction returns None for a detail page, log a warning with the URL and skip that plugin.
+If a field extraction returns None for a detail page in Path 1, log a warning and report the plugin as unresolved for this run.
 
 ## Parse self-test
 
-Before writing a freshly-built cache to disk, verify the parser still works against a pinned reference URL with pinned expected values. Use a URL, not just a plugin name — plugin names can be renamed or removed, but the detail URL + expected bundle ID are the actual contract:
+Before trusting any parse result, run the self-test against a pinned reference URL:
 
 - Reference URL: `https://www.indigodomo.com/pluginstore/196/`
 - Expected bundle ID: `pro.sleepers.indigoplugin.8channel-relay`
 - Expected name substring: `8 Channel`
 
-Fetch the URL, run the parser, assert all five required fields extract and that bundle ID + name match. If any assertion fails:
-
-- Do **not** write the cache
-- Report: "Indigo plugin store HTML has drifted — store-sourced upgrade detection is disabled until `references/store-scraping.md` is updated with fresh parse rules"
-- Continue with Source 1 (GithubInfo-backed plugins still work)
-
-This guards against silent rot where the scraper keeps producing empty results after a store redesign.
+If the assertions fail, the store HTML has drifted. Report: "Indigo plugin store HTML has drifted — store-based upgrade detection is temporarily disabled. Update `skills/update-plugins/references/store-scraping.md` with fresh parse rules, or skip affected plugins for this run." Continue with Source 1 (Info.plist GithubInfo) and Source 2 github-backed registry entries — those paths don't depend on store HTML.
 
 ## Politeness
 
-- Cap concurrent detail-page fetches at 4-6
+- Cap concurrent detail-page fetches at 4-6 during Path 2 enumeration
 - Add a small inter-request delay (100-250ms) between batches
 - User-Agent: `indigo-claude-plugin/<version> (update-plugins skill)`
-- Cache aggressively (24h default) so a typical user hits the store at most once per day
+- Aggressively cache (24h) Path 2 results
 
-## Download URL preference
+## Store newer than registry, registry newer than installed
 
-When the store's download anchor already points at a GitHub release asset, use that URL directly — it's tagged, stable, and carries release notes. Only fall back to store-hosted downloads when no GitHub asset URL is linked.
-
-If the store's download URL is relative (e.g. `/pluginstore/download/...`), resolve it against `https://www.indigodomo.com/` before caching.
-
-## Store older than installed
-
-If the store lists an older version than what's installed, the user is running a dev/beta that isn't on the store yet. Report as "installed is newer than store" and do not offer a downgrade.
+- If the store lists a version older than what's installed → the user is running a dev/beta. Report as "installed is newer than store" and don't offer a downgrade.
+- If the bundled registry points at a `store_url` but the store now links to a GitHub release → the plugin author has moved to GitHub. The registry is out of date; suggest a PR updating the entry to use a `github` slug instead.
