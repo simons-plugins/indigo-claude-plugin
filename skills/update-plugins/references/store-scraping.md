@@ -48,7 +48,7 @@ As of the initial implementation, the store uses static HTML that WebFetch reads
 
 Recommended anchors (to be refined empirically on first implementation):
 
-```
+```text
 Bundle identifier: text matching /Bundle Identifier[:\s]+([a-z0-9._-]+)/i
 Latest version:    text matching /Latest Version[:\s]+v?([0-9][0-9a-z.+\-]*)/i
 Download URL:      any <a href> ending in `.indigoPlugin.zip` or `.zip`

@@ -63,7 +63,7 @@ unzip -q -o "$DOWNLOAD_DIR"/*.zip -d "$STAGE_DIR"
 Expect a single `<PluginName>.indigoPlugin/` directory at the top level of `$STAGE_DIR`. Find it:
 
 ```bash
-STAGED_BUNDLE=$(find "$STAGE_DIR" -maxdepth 2 -name '*.indigoPlugin' -type d | head -1)
+STAGED_BUNDLE=$(find "$STAGE_DIR" -maxdepth 1 -name '*.indigoPlugin' -type d | head -1)
 ```
 
 If nothing is found, or more than one bundle is present, fail this plugin's upgrade.
@@ -113,7 +113,7 @@ Notes:
 
 ### 7. Restart the plugin
 
-```
+```text
 mcp__indigo__restart_plugin(plugin_id=<bundle_id>)
 ```
 
@@ -123,7 +123,7 @@ Two concurrent checks, both must pass within ~15 seconds:
 
 **Version check:**
 
-```
+```text
 mcp__indigo__get_plugin_by_id(plugin_id=<bundle_id>)
 ```
 
@@ -131,7 +131,7 @@ Keep polling until the returned version string matches the new upstream version 
 
 **Log check:**
 
-```
+```text
 mcp__indigo__query_event_log(line_count=50)
 ```
 

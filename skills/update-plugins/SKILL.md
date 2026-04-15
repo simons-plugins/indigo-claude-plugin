@@ -32,7 +32,7 @@ Follow all phases in order. The `/indigo:update-plugins` command file summarises
 
 ### Phase 1 — DISCOVER
 
-```
+```text
 mcp__indigo__list_plugins
 ```
 
@@ -52,7 +52,7 @@ Parallelise heavily. GitHub calls are independent; do them concurrently via suba
 
 The cache file lives at `~/.claude/indigo-plugin-store-cache.json`. This is a generic user path — **do not** hardcode to a specific workspace or user directory. Use `$HOME`.
 
-Cache schema:
+Cache schema (example):
 
 ```json
 {
@@ -86,7 +86,7 @@ For each plugin with a resolved upstream, parse both version strings. Prefer `pa
 
 Produce a grouped report:
 
-```
+```markdown
 ## Upgrades available
 
 | Plugin | Bundle ID | Installed → Latest | Source | Release Notes |
@@ -135,7 +135,7 @@ Record per-plugin status and continue to the next. Only halt on systemic failure
 
 ### Phase 7 — SUMMARY
 
-```
+```markdown
 ## Update summary
 
 **Upgraded** (3):
