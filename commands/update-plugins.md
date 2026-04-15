@@ -37,19 +37,36 @@ Call `mcp__indigo__list_plugins` with its default parameters (disabled plugins a
 
 - `id` (bundle identifier — the match key)
 - `name` (display name)
-- `version` (installed version)
 - `path` (bundle path on the Indigo server — used for reading Info.plist and as the deploy destination)
 - `enabled`
+
+**Read the real installed version directly from Info.plist**, not from MCP's `version` field:
+
+```bash
+PLUGIN_PATH="..."  # `path` from mcp__indigo__list_plugins (mount-prefixed if needed)
+/usr/libexec/PlistBuddy -c "Print :PluginVersion" "$PLUGIN_PATH/Contents/Info.plist"
+```
+
+The `version` field from MCP returns `CFBundleVersion` (rarely updated) rather than `PluginVersion` — useless for diffs.
+
+**Cross-mount note**: if the MCP-reported path isn't directly accessible (Indigo runs on a different Mac than this skill), apply a mount prefix. See `references/install-workflow.md` "Deploy path portability" section.
 
 ### Phase 2 — RESOLVE UPGRADE SOURCE
 
 For each installed plugin, determine where to check for updates. See `references/discovery.md` for the full logic. Summary (three sources in priority order):
 
-1. **Local `GithubInfo`** — read `<path>/Contents/Info.plist` via `/usr/libexec/PlistBuddy`. If `GithubInfo.GithubUser` + `GithubInfo.GithubRepo` are present → query `gh api /repos/<user>/<repo>/releases/latest`.
-2. **Bundled registry** — look up the bundle ID in `$CLAUDE_PLUGIN_ROOT/data/plugin-source-registry.json`. Entries have either a `github` slug (→ GitHub releases) or a `store_url` (→ fetch the store detail page for version + download). No runtime scraping for plugins in the registry.
+1. **Local `GithubInfo`** — read `<path>/Contents/Info.plist` via `/usr/libexec/PlistBuddy`. If `GithubInfo.GithubUser` + `GithubInfo.GithubRepo` are present → query `gh api /repos/<user>/<repo>/releases/latest`. **On gh-api 404 or error, fall through to Source 2** — local metadata can be stale.
+2. **Bundled registry** — look up the bundle ID in `$CLAUDE_PLUGIN_ROOT/data/plugin-source-registry.json`. Entries carry any of `github` / `store_url` / `store_download`. Resolver prefers `github` (→ `gh api releases/latest` → `.indigoPlugin.zip` asset → zipball fallback → `store_download` fallback). Store-only entries fetch the `store_url` detail page at runtime. No listing-enumeration sweeps for plugins in the registry.
 3. **Store scraping fallback** — for plugins in neither Info.plist nor the registry. See `references/store-scraping.md`. Rare; suggest a PR adding the plugin to the registry when it triggers.
 
-If none resolve → mark unresolved and continue.
+Before loading the bundled registry, check for a **live overlay** at `$HOME/.claude/indigo-plugin-source-registry-live.json`:
+- If present and younger than 6 hours, use it directly
+- Otherwise, fetch `https://raw.githubusercontent.com/simons-plugins/indigo-claude-plugin/main/data/plugin-source-registry.json`, validate, write atomically, use
+- On fetch failure, fall back to the bundled copy
+
+This lets contributors' PRs take effect immediately without waiting for a marketplace release. `/indigo:update-plugins refresh` forces a cache bust.
+
+If none of the three sources resolve → mark unresolved and continue.
 
 Parallelise across plugins — a 30-plugin serial pass over the network is painfully slow.
 
@@ -76,17 +93,20 @@ Do not interpret ambiguous replies as consent. When in doubt, ask again.
 
 ### Phase 5 — APPLY (per plugin, one at a time)
 
-Follow `references/install-workflow.md` for the exact sequence. Every step — download, unzip-before-copy, verify bundle ID, rsync over the installed `Contents/`, restart via MCP, verify startup — is documented there with the commands to run. Don't reinvent the sequence here.
+Follow `references/install-workflow.md` for the exact sequence. Every step — download (with asset → zipball → store_download fallback chain), unzip with nested-bundle support, verify bundle ID, stop plugin, rsync, start plugin, verify startup — is documented there with the commands to run. Don't reinvent the sequence here.
+
+**Hard limitation**: if the batch includes `com.vtmikel.mcp_server`, treat it specially. Restarting the MCP server kills this skill's own connection. Either skip with a manual-instruction message, or deploy-without-restart and tell the user exactly which `mcp__indigo__restart_plugin(...)` call to run from a fresh session. See the "Hard limitations" section in `install-workflow.md`.
 
 Report pass/fail per plugin. On failure of one plugin, continue to the next — don't halt the whole batch unless the failure indicates something systemic (filesystem unwritable, MCP unreachable, network dead).
 
 ### Phase 6 — SUMMARY
 
-Report three sections:
+Report these sections:
 
 - **Upgraded** — name, old → new version
 - **Failed** — name, error, a one-line manual recovery hint
-- **Unresolved** — name, reason (no GithubInfo, not in store, etc.)
+- **Deferred** — any plugins held for manual handling (MCP Server, user-excluded, etc.), with the exact manual steps
+- **Unresolved** — name, reason (no GithubInfo, not in registry, etc.)
 
 If any plugin failed, suggest a concrete manual next step (check the bundle path, try a manual download, file an issue with the plugin author).
 

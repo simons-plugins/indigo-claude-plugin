@@ -1,10 +1,10 @@
 # Upgrade Source Discovery
 
-How to find the upstream source for an installed Indigo plugin. Three sources, checked in priority order; fall through on miss.
+How to find the upstream source for an installed Indigo plugin. Sources are checked in priority order; on miss, fall through.
 
-## Source 1: `Info.plist` `GithubInfo` (preferred)
+## Source 1: `Info.plist` `GithubInfo` (fastest when it works)
 
-Plugins that ship via GitHub often embed a `GithubInfo` dict in `Contents/Info.plist`. When present, it gives us the repo coordinates with zero guessing and works for every install of that plugin without needing any shared data.
+Plugins that ship via GitHub often embed a `GithubInfo` dict in `Contents/Info.plist`. When present and correct, it gives us the repo coordinates per-install with zero shared data needed.
 
 Example:
 
@@ -20,11 +20,11 @@ Example:
 
 ### Reading GithubInfo
 
-The bundle path comes from `mcp__indigo__list_plugins` (the `path` field). Use the absolute `PlistBuddy` path so this works on any macOS without relying on `$PATH`:
+The bundle path comes from `mcp__indigo__list_plugins` (the `path` field, captured into `$PLUGIN_PATH`). Use the absolute `PlistBuddy` binary path so this works on any macOS without relying on the system `$PATH` variable:
 
 ```bash
-/usr/libexec/PlistBuddy -c "Print :GithubInfo:GithubUser" "$PATH/Contents/Info.plist" 2>/dev/null
-/usr/libexec/PlistBuddy -c "Print :GithubInfo:GithubRepo" "$PATH/Contents/Info.plist" 2>/dev/null
+/usr/libexec/PlistBuddy -c "Print :GithubInfo:GithubUser" "$PLUGIN_PATH/Contents/Info.plist" 2>/dev/null
+/usr/libexec/PlistBuddy -c "Print :GithubInfo:GithubRepo" "$PLUGIN_PATH/Contents/Info.plist" 2>/dev/null
 ```
 
 Non-zero exit → no GitHub source declared → fall through to Source 2.
@@ -35,43 +35,57 @@ Non-zero exit → no GitHub source declared → fall through to Source 2.
 gh api /repos/$USER/$REPO/releases/latest
 ```
 
-Capture:
+Capture from the JSON response:
 - `tag_name` — release tag (strip leading `v` before version compare)
 - `html_url` — release page, used as release notes link
-- `assets[*]` — find the entry whose `name` ends in `.indigoPlugin.zip`; record its `browser_download_url`. If no such asset exists, mark the plugin as unresolved (upstream exists but doesn't publish a downloadable bundle)
+- `assets[*]` — find the entry whose `name` ends in `.indigoPlugin.zip`; record its `browser_download_url`. **If no such asset exists, do not mark the plugin unresolved yet** — fall back to the zipball URL `https://api.github.com/repos/$USER/$REPO/zipball/$TAG`, which downloads the repo source snapshot at that tag. Some authors ship plugins as a source-only release where the `.indigoPlugin/` bundle is embedded in the repo tree; the install workflow knows how to handle that layout (see `install-workflow.md` step 3).
 
-`gh api` returns 404 if the repo has no releases yet, or if it's private and the user's token lacks access. Both cases → mark the plugin as unresolved with a short reason string so the user knows why.
+### Fall-through on gh-api failure
+
+**Important**: if `gh api` returns 404 or any other error for this `GithubInfo`, do not mark the plugin unresolved. Instead fall through to Source 2 (the bundled registry). The local `GithubInfo` is sometimes stale or wrong — a plugin author may have moved the repo, typo'd the slug, or published a new release path. The registry is curated and often has a working slug for plugins whose local metadata is bad.
+
+Common stale-local cases observed in the wild:
+- `simons-plugins/UKTrains` (local) vs `simons-plugins/indigo-UKTrains` (registry)
+- `FlyingDiver/Indigo-Harmony` (local) vs the actual published repo name in the registry
+- `Ghawken/iMessagePlugin` (local) 404s; registry may have a different slug
+
+### Private repos
+
+If `gh api` returns 404 *and* the registry also has no entry, the repo may be private and the user's token lacks access. Report the plugin as unresolved with a "private repository or missing GithubInfo" hint.
 
 ## Source 2: Bundled plugin source registry
 
-`data/plugin-source-registry.json` at the root of this marketplace plugin is a pre-populated map of `bundle_id → upstream`. Ships as static data so there is **zero runtime scraping** for plugins in the registry — it's a file read, not a network request. Fresh registry updates arrive via `/plugin marketplace update`, the same mechanism users already use to get new skill code.
+`$CLAUDE_PLUGIN_ROOT/data/plugin-source-registry.json` — a pre-populated map of `bundle_id → upstream` that ships with this marketplace plugin. Zero runtime scraping for plugins in the registry — it's a file read.
 
-### Registry schema
+### Registry schema (v2)
 
 ```json
 {
   "updated_at": "2026-04-15",
-  "note": "...",
-  "source": "...",
+  "schema_version": 2,
   "plugins": {
     "<bundle_id>": {
       "name": "Human-readable name",
-      "github": "user/repo"
-    },
-    "<other_bundle_id>": {
-      "name": "Human-readable name",
+      "github": "user/repo",
       "store_url": "https://www.indigodomo.com/pluginstore/N/",
-      "store_download": "https://downloads.indigodomo.com/pluginstore/.../plugin.indigoPlugin.zip"
+      "store_download": "https://downloads.indigodomo.com/.../plugin.indigoPlugin.zip"
     }
   }
 }
 ```
 
-Entries come in two shapes:
+**Field semantics** (each optional except `name`):
 
-**GitHub-backed** — has a `github` field (`user/repo` slug). Resolution is identical to Source 1: query `gh api /repos/<github>/releases/latest` and use the tag + asset URL. This is the overwhelming majority of entries (~90% after the initial seed).
+- `name` — display name. Always present.
+- `github` — `user/repo` slug. If present, prefer GitHub releases for version tracking.
+- `store_url` — Indigo store detail page URL. Used as a release-notes link and as a runtime fetch target for store-only plugins (see below).
+- `store_download` — direct download URL from the store page. Used as a **download fallback** when the GitHub release has no `.indigoPlugin.zip` asset AND the zipball fallback doesn't work. Always preserved when scraping, even for GitHub-backed entries, so there's something to fall back to.
 
-**Store-only** — has `store_url` and optionally `store_download`. The plugin is published via Indigo's store with no GitHub mirror, so we still need a lightweight runtime fetch to get the latest version. Fetch the `store_url` detail page, parse it per `store-scraping.md`, and extract the latest version and download URL. This is one HTTP GET per store-only plugin per run (no listing enumeration, no cache-build sweep).
+Entries come in three shapes in practice:
+
+1. **GitHub-backed with fallback** (most common, ~187/208): `github` + `store_download`. Version tracking via `gh api releases/latest`, download asset fallback via `store_download` if the release doesn't publish a `.indigoPlugin.zip`.
+2. **Store-only** (~21/208): `store_url` + `store_download` only, no `github`. Version tracking requires fetching `store_url` at runtime and parsing the detail page. Download via `store_download`.
+3. **GitHub-only** (rare): `github` with no store fields. Fine — upstream never got indexed on the store, or the scrape missed it.
 
 ### Loading the registry
 
@@ -79,7 +93,7 @@ Entries come in two shapes:
 REGISTRY="$CLAUDE_PLUGIN_ROOT/data/plugin-source-registry.json"
 ```
 
-`$CLAUDE_PLUGIN_ROOT` is set by Claude Code to the root of this marketplace plugin. Read the JSON, look up the installed bundle ID under `.plugins`:
+`$CLAUDE_PLUGIN_ROOT` is set by Claude Code to the root of this marketplace plugin. Read the JSON, look up by bundle ID:
 
 ```bash
 jq -e ".plugins[\"$BUNDLE_ID\"]" "$REGISTRY"
@@ -87,31 +101,41 @@ jq -e ".plugins[\"$BUNDLE_ID\"]" "$REGISTRY"
 
 Non-zero exit → not in the registry → fall through to Source 3.
 
+### Live overlay (optional, short-circuits release cycle)
+
+The bundled registry updates only when a new version of `indigo-claude-plugin` is pulled via `/plugin marketplace update`. To let registry contributors see their additions take effect immediately without waiting for a release, the skill also looks for a live overlay at `$HOME/.claude/indigo-plugin-source-registry-live.json`.
+
+Resolution order:
+
+1. If the live overlay exists AND is younger than 6 hours, use it.
+2. If the live overlay exists AND is older than 6 hours, OR doesn't exist, fetch `https://raw.githubusercontent.com/simons-plugins/indigo-claude-plugin/main/data/plugin-source-registry.json`, validate it parses as JSON with the expected schema (has `plugins` key with a dict value), write it to the live overlay path atomically, use it.
+3. If the fetch fails (offline, GitHub down, rate-limited), fall back to the bundled `$CLAUDE_PLUGIN_ROOT/data/plugin-source-registry.json`.
+
+`/indigo:update-plugins refresh` as a user-facing refresh: delete the live overlay file and re-fetch.
+
+This means: contributors PR a new entry → merge to `main` → live within 6 hours for everyone running the skill, no release needed.
+
 ### Contributing to the registry
 
-Users who discover a plugin not in the registry — or a GitHub URL the registry doesn't know about — are expected to open a PR against `simons-plugins/indigo-claude-plugin` adding or updating an entry. The registry is a flat JSON file, easy to edit, and the next marketplace update pushes the change to everyone.
-
-Keep entries minimal. No versions, no dates, no dependency info — the whole file is just a routing table from bundle ID to upstream.
+Users who discover a plugin not in the registry — or notice a stale `github` slug — open a PR against `simons-plugins/indigo-claude-plugin` adding or updating an entry in `data/plugin-source-registry.json`. CI should skip the version-bump check for PRs whose diff is entirely under `data/`, so registry-only PRs don't bump the plugin version.
 
 ## Source 3: Store scraping fallback (rare)
 
-For installed plugins that are in neither the local Info.plist nor the bundled registry. See `store-scraping.md`. This path is now expected to be unusual — the bundled registry covers the common case, so store scraping only kicks in when a user has installed a plugin the registry author hasn't seen yet.
-
-When this path triggers, suggest to the user that they open a PR to add the plugin to the bundled registry so future users don't need to re-scrape.
+For installed plugins that are in neither the local Info.plist nor the registry. See `store-scraping.md`. Suggest the user open a PR adding the plugin to the registry when this path triggers.
 
 ## Unresolved
 
-Plugins that didn't resolve through any of the three sources. Informational, not an error. Common reasons:
+Plugins that didn't resolve through any source. Informational, not an error. Common reasons:
 
+- Built-in Indigo plugins (Airfoil Pro, Alexa, Email+, Virtual Devices, SQL Logger, Timers and Pesters, Global Property Manager) — ship with Indigo itself, not from GitHub or a public store entry
 - Sideloaded from a private `.indigoPlugin.zip`
-- Lives on GitHub but neither the Info.plist nor the registry knows the repo
+- GitHub-hosted but neither Info.plist nor registry knows the repo
 - Author distributes via their own website
-- Plugin was never fully set up
 
-Manual remediation hint: "check the plugin's documentation or contact the author for update instructions, then consider adding an entry to `data/plugin-source-registry.json`."
+Manual remediation hint: "check the plugin's documentation, or add an entry to `data/plugin-source-registry.json` if you know the source."
 
 ## Parallelisation
 
-Phase 2 is per-plugin independent. Run it concurrently with background bash — `gh api` calls, `PlistBuddy` reads, and registry lookups are all independent. Cap concurrency at ~8 to be polite to GitHub and the user's network. For small plugin counts (<10) serial is fine.
+Phase 2 is per-plugin independent. Run concurrently with background bash. `gh api` calls, `PlistBuddy` reads, and registry lookups are all independent. Cap concurrency at ~8. For small plugin counts (<10) serial is fine.
 
-Don't persist per-plugin Phase 2 results across runs — GitHub releases change and a stale per-plugin cache produces wrong diffs. The registry is the only persistent data; live version checks against GitHub or store are always fresh.
+Don't persist per-plugin Phase 2 results across runs — GitHub releases change and a stale per-plugin cache produces wrong diffs. The registry (bundled + live overlay) is the only persistent data; live version checks against GitHub or store are always fresh.

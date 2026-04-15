@@ -1,467 +1,698 @@
 {
   "updated_at": "2026-04-15",
-  "note": "Static bundle_id \u2192 upstream map for Indigo plugins. Entries with `github` point at a github.com/user/repo slug (preferred upstream \u2014 use GitHub releases). Entries with `store_url` are Indigo store-hosted; the skill must fetch the store detail page at runtime to get the latest version and download URL.",
+  "schema_version": 2,
+  "note": "Static bundle_id \u2192 upstream map for Indigo plugins. Every entry has `name`. Entries may carry `github` (user/repo slug \u2014 preferred upstream), `store_url` (Indigo plugin store detail page), and/or `store_download` (direct download URL from the store, useful as a fallback when the GitHub release has no .indigoPlugin.zip asset).",
   "source": "Scraped from https://www.indigodomo.com/pluginstore/ detail pages on 2026-04-15. Contribute additions or corrections via PR to simons-plugins/indigo-claude-plugin.",
   "plugins": {
     "com.GlennNZ.indigoplugin.ActronQUE": {
       "name": "Actron QUE AC",
-      "github": "ghawken/ActronQue-IndigoPlugin"
+      "github": "ghawken/ActronQue-IndigoPlugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/234/",
+      "store_download": "https://api.github.com/repos/Ghawken/ActronQue-IndigoPlugin/zipball/0.6.35"
     },
     "com.GlennNZ.indigoplugin.BlueIris": {
       "name": "BlueIris Plugin",
-      "github": "ghawken/IndigoPlugin-BlueIris"
+      "github": "ghawken/IndigoPlugin-BlueIris",
+      "store_url": "https://www.indigodomo.com/pluginstore/149/",
+      "store_download": "https://api.github.com/repos/Ghawken/IndigoPlugin-BlueIris/zipball/1.3.11"
     },
     "com.GlennNZ.indigoplugin.DeepQuestAI": {
       "name": "DeepQuestAI Plugin",
-      "github": "ghawken/DeepQuestAI"
+      "github": "ghawken/DeepQuestAI",
+      "store_url": "https://www.indigodomo.com/pluginstore/247/",
+      "store_download": "https://api.github.com/repos/Ghawken/DeepQuestAI/zipball/0.8.0"
     },
     "com.GlennNZ.indigoplugin.ESPhome4indigo": {
       "name": "ESPHome Indigo Plugin",
-      "github": "ghawken/ESPHome_IndigoPlugin"
+      "github": "ghawken/ESPHome_IndigoPlugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/293/",
+      "store_download": "https://api.github.com/repos/Ghawken/ESPHome_IndigoPlugin/zipball/0.1.25"
     },
     "com.GlennNZ.indigoplugin.EmbyPlugin": {
       "name": "Emby Plugin",
-      "github": "ghawken/EmbyPlugin.indigoPlugin"
+      "github": "ghawken/EmbyPlugin.indigoPlugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/123/",
+      "store_download": "https://github.com/Ghawken/EmbyPlugin.indigoPlugin/releases/download/0.1.5/EmbyPlugin.indigoPlugin.zip"
     },
     "com.GlennNZ.indigoplugin.EnphaseEnvoy": {
       "name": "Enphase Envoy Plugin",
-      "github": "Ghawken/IndigoEnphaseEnvoy"
+      "github": "Ghawken/IndigoEnphaseEnvoy",
+      "store_url": "https://www.indigodomo.com/pluginstore/105/",
+      "store_download": "https://api.github.com/repos/Ghawken/IndigoEnphaseEnvoy/zipball/1.0.01"
     },
     "com.GlennNZ.indigoplugin.FindFriendsMini": {
       "name": "FindFriendsMini",
-      "github": "ghawken/IndigoPlugin-iFindFriendMini"
+      "github": "ghawken/IndigoPlugin-iFindFriendMini",
+      "store_url": "https://www.indigodomo.com/pluginstore/139/",
+      "store_download": "https://api.github.com/repos/Ghawken/IndigoPlugin-iFindFriendMini/zipball/1.7.20"
     },
     "com.GlennNZ.indigoplugin.HomeKitLink-Siri": {
       "name": "HomeKitLink Siri",
-      "github": "Ghawken/HomeKitLink-Siri"
+      "github": "Ghawken/HomeKitLink-Siri",
+      "store_url": "https://www.indigodomo.com/pluginstore/270/",
+      "store_download": "https://api.github.com/repos/Ghawken/HomeKitLink-Siri/zipball/0.8.05"
     },
     "com.GlennNZ.indigoplugin.ParadoxAlarm": {
       "name": "Paradox Alarm",
-      "github": "ghawken/SpectrumIndigo"
+      "github": "ghawken/SpectrumIndigo",
+      "store_url": "https://www.indigodomo.com/pluginstore/235/",
+      "store_download": "https://api.github.com/repos/Ghawken/SpectrumIndigo/zipball/0.3.2"
     },
     "com.GlennNZ.indigoplugin.SimpleLED": {
       "name": "LED Simple Effects",
-      "github": "ghawken/Indigo-SimpleLED"
+      "github": "ghawken/Indigo-SimpleLED",
+      "store_url": "https://www.indigodomo.com/pluginstore/131/",
+      "store_download": "https://api.github.com/repos/Ghawken/Indigo-SimpleLED/zipball/0.3.0"
     },
     "com.GlennNZ.indigoplugin.SolarSmart": {
       "name": "SolarSmart",
-      "github": "ghawken/SolarSmartPlugin"
+      "github": "ghawken/SolarSmartPlugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/304/",
+      "store_download": "https://api.github.com/repos/Ghawken/SolarSmartPlugin/zipball/1.0.82"
     },
     "com.GlennNZ.indigoplugin.SunRise": {
       "name": "SunRise Device Plugin",
-      "github": "ghawken/Indigo-Sunrise-Plugin"
+      "github": "ghawken/Indigo-Sunrise-Plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/257/",
+      "store_download": "https://api.github.com/repos/Ghawken/Indigo-Sunrise-Plugin/zipball/0.1.0"
     },
     "com.GlennNZ.indigoplugin.TeslaBattery": {
       "name": "Tesla Battery",
-      "github": "ghawken/TeslaBatteryPlugin"
+      "github": "ghawken/TeslaBatteryPlugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/170/",
+      "store_download": "https://api.github.com/repos/Ghawken/TeslaBatteryPlugin/zipball/1.0.16"
     },
     "com.GlennNZ.indigoplugin.WinRemote": {
       "name": "WinRemote Plugin",
-      "github": "Ghawken/IndigoPlugin-WinRemote"
+      "github": "Ghawken/IndigoPlugin-WinRemote",
+      "store_url": "https://www.indigodomo.com/pluginstore/160/",
+      "store_download": "https://api.github.com/repos/Ghawken/IndigoPlugin-WinRemote/zipball/0.9.16"
     },
     "com.GlennNZ.indigoplugin.appleTV": {
       "name": "appleTV Plugin",
-      "github": "Ghawken/appleTV-indigoPlugin"
+      "github": "Ghawken/appleTV-indigoPlugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/283/",
+      "store_download": "https://api.github.com/repos/Ghawken/appleTV-indigoPlugin/zipball/1.7.10"
     },
     "com.GlennNZ.indigoplugin.deluxeGraphing": {
       "name": "Deluxe Graphing",
-      "github": "ghawken/DeluxeGraphing"
+      "github": "ghawken/DeluxeGraphing",
+      "store_url": "https://www.indigodomo.com/pluginstore/315/",
+      "store_download": "https://api.github.com/repos/Ghawken/DeluxeGraphing/zipball/1.1.20"
     },
     "com.GlennNZ.indigoplugin.device-timer": {
       "name": "Device Timer",
-      "github": "ghawken/Device_Timer_Plugin"
+      "github": "ghawken/Device_Timer_Plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/302/",
+      "store_download": "https://api.github.com/repos/Ghawken/Device_Timer_Plugin/zipball/2025.1.70"
     },
     "com.GlennNZ.indigoplugin.dreame_vacuum": {
       "name": "Dreame Vacuum Plugin",
-      "github": "ghawken/Dreame-Indigo"
+      "github": "ghawken/Dreame-Indigo",
+      "store_url": "https://www.indigodomo.com/pluginstore/311/",
+      "store_download": "https://api.github.com/repos/Ghawken/Dreame-Indigo/zipball/2025.1.35"
     },
     "com.GlennNZ.indigoplugin.evsemaster": {
       "name": "EVSE Master Charger",
-      "github": "ghawken/EVSEMaster-Plugin"
+      "github": "ghawken/EVSEMaster-Plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/308/",
+      "store_download": "https://api.github.com/repos/Ghawken/EVSEMaster-Plugin/zipball/2025.1.8"
     },
     "com.GlennNZ.indigoplugin.geckoSpa": {
       "name": "Gecko inTouch Spa Plugin",
-      "github": "ghawken/Indigo-GeckoSPA"
+      "github": "ghawken/Indigo-GeckoSPA",
+      "store_url": "https://www.indigodomo.com/pluginstore/272/",
+      "store_download": "https://api.github.com/repos/Ghawken/Indigo-GeckoSPA/zipball/0.1.44"
     },
     "com.GlennNZ.indigoplugin.holiday": {
       "name": "Holiday",
-      "github": "Ghawken/Holiday"
+      "github": "Ghawken/Holiday",
+      "store_url": "https://www.indigodomo.com/pluginstore/297/",
+      "store_download": "https://api.github.com/repos/Ghawken/Holiday/zipball/0.1.12"
     },
     "com.GlennNZ.indigoplugin.iMessage": {
       "name": "iMessage Plugin",
-      "github": "Ghawken/iMessagePlugin"
+      "github": "Ghawken/iMessagePlugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/195/",
+      "store_download": "https://api.github.com/repos/Ghawken/iMessagePlugin/zipball/0.7.27"
     },
     "com.GlennNZ.indigoplugin.irobot": {
       "name": "iRobot-Roomba",
-      "github": "ghawken/Indigo-iRobotRoomba"
+      "github": "ghawken/Indigo-iRobotRoomba",
+      "store_url": "https://www.indigodomo.com/pluginstore/132/",
+      "store_download": "https://api.github.com/repos/Ghawken/Indigo-iRobotRoomba/zipball/0.10.02"
     },
     "com.GlennNZ.indigoplugin.mammotion": {
       "name": "Mammotion Mower",
-      "github": "ghawken/MammotionPlugin"
+      "github": "ghawken/MammotionPlugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/309/",
+      "store_download": "https://api.github.com/repos/Ghawken/MammotionPlugin/zipball/2025.1.50"
     },
     "com.JohnBurgess.indigoplugin.TP-Link-Device": {
       "name": "TP-Link Device",
-      "github": "jtburgess/indigo-TP-Link"
+      "github": "jtburgess/indigo-TP-Link",
+      "store_url": "https://www.indigodomo.com/pluginstore/188/",
+      "store_download": "https://github.com/jtburgess/indigo-TP-LInk/releases/download/1.0.1/TP-Link-Device.indigoPlugin.zip"
     },
     "com.anyone.indigoplugin.apc-pdu-control": {
       "name": "APC PDU Control",
-      "github": "anyone2/IndigoPlugin-APC-PDU-Control"
+      "github": "anyone2/IndigoPlugin-APC-PDU-Control",
+      "store_url": "https://www.indigodomo.com/pluginstore/271/",
+      "store_download": "https://github.com/anyone2/IndigoPlugin-APC-PDU-Control/releases/download/2022.1.0/APC.PDU.Control.indigoPlugin.zip"
     },
     "com.anyone.indigoplugin.voice-monkey": {
       "name": "Voice Monkey",
-      "github": "anyone2/IndigoPlugin-Voice-Monkey"
+      "github": "anyone2/IndigoPlugin-Voice-Monkey",
+      "store_url": "https://www.indigodomo.com/pluginstore/280/",
+      "store_download": "https://github.com/anyone2/IndigoPlugin-Voice-Monkey/releases/download/2022.1.7/Voice.Monkey.indigoPlugin.zip"
     },
     "com.autologplugin.awtrix3": {
       "name": "AWTRIX 3",
-      "github": "autolog/AWTRIX"
+      "github": "autolog/AWTRIX",
+      "store_url": "https://www.indigodomo.com/pluginstore/318/",
+      "store_download": "https://github.com/autolog/AWTRIX/releases/download/v2026.0.2/AWTRIX.indigoPlugin.zip"
     },
     "com.autologplugin.indigoplugin.dynamicviewcontroller": {
       "name": "Dynamic View Controller",
-      "github": "autolog/Dynamic_View_Controller"
+      "github": "autolog/Dynamic_View_Controller",
+      "store_url": "https://www.indigodomo.com/pluginstore/56/",
+      "store_download": "https://github.com/autolog/Dynamic_View_Controller/releases/download/2023.0.4/dynamicView.indigoPlugin.zip"
     },
     "com.autologplugin.indigoplugin.foscamhdcontroller": {
       "name": "Foscam HD Controller",
-      "github": "autolog/Foscam_HD_Controller"
+      "github": "autolog/Foscam_HD_Controller",
+      "store_url": "https://www.indigodomo.com/pluginstore/53/",
+      "store_download": "https://github.com/autolog/Foscam_HD_Controller/releases/download/2023.0.4/foscamHD.indigoPlugin.zip"
     },
     "com.autologplugin.indigoplugin.hubitat": {
       "name": "Hubitat Bridge",
-      "github": "Autolog/Hubitat_Bridge"
+      "github": "Autolog/Hubitat_Bridge",
+      "store_url": "https://www.indigodomo.com/pluginstore/252/",
+      "store_download": "https://github.com/autolog/Hubitat_Bridge/releases/download/2024.0.3/Hubitat.indigoPlugin.zip"
     },
     "com.autologplugin.indigoplugin.lifxcontroller": {
       "name": "LIFX",
-      "github": "autolog/LIFX_Controller"
+      "github": "autolog/LIFX_Controller",
+      "store_url": "https://www.indigodomo.com/pluginstore/28/",
+      "store_download": "https://github.com/autolog/LIFX_Controller/releases/download/2026.0.1/LIFX.indigoPlugin.zip"
     },
     "com.autologplugin.indigoplugin.nanoleafcontroller": {
       "name": "Nanoleaf",
-      "github": "autolog/nanoleaf_Controller"
+      "github": "autolog/nanoleaf_Controller",
+      "store_url": "https://www.indigodomo.com/pluginstore/29/",
+      "store_download": "https://github.com/autolog/nanoleaf_Controller/releases/download/2022.0.4/nanoleaf.indigoPlugin.zip"
     },
     "com.autologplugin.indigoplugin.rooncontroller": {
       "name": "Roon",
-      "github": "autolog/Roon_Controller"
+      "github": "autolog/Roon_Controller",
+      "store_url": "https://www.indigodomo.com/pluginstore/220/",
+      "store_download": "https://github.com/autolog/Roon_Controller/releases/download/2022.0.0/Roon.indigoPlugin.zip"
     },
     "com.autologplugin.indigoplugin.smappeecontroller": {
       "name": "Smappee",
-      "github": "autolog/Smappee"
+      "github": "autolog/Smappee",
+      "store_url": "https://www.indigodomo.com/pluginstore/52/",
+      "store_download": "https://github.com/autolog/Smappee/releases/download/2023.0.4/Smappee.indigoPlugin.zip"
     },
     "com.autologplugin.indigoplugin.starlingBridge": {
       "name": "Starling Bridge",
-      "github": "autolog/Starling_Bridge"
+      "github": "autolog/Starling_Bridge",
+      "store_url": "https://www.indigodomo.com/pluginstore/275/",
+      "store_download": "https://github.com/autolog/Starling_Bridge/releases/download/2024.0.1/Starling.indigoPlugin.zip"
     },
     "com.autologplugin.indigoplugin.trvcontroller": {
       "name": "TRV",
-      "github": "autolog/TRV_Controller"
+      "github": "autolog/TRV_Controller",
+      "store_url": "https://www.indigodomo.com/pluginstore/201/",
+      "store_download": "https://github.com/autolog/TRV_Controller/releases/download/2022.0.12/TRV.indigoPlugin.zip"
     },
     "com.autologplugin.indigoplugin.zigbee2mqtt": {
       "name": "Zigbee2mqtt Bridge",
-      "github": "autolog/zigbee2mqtt_Bridge"
+      "github": "autolog/zigbee2mqtt_Bridge",
+      "store_url": "https://www.indigodomo.com/pluginstore/281/",
+      "store_download": "https://github.com/autolog/zigbee2mqtt_Bridge/releases/download/2026.0.2/zigbee2mqtt.indigoPlugin.zip"
     },
     "com.autologplugin.indigoplugin.zwaveinterpreter": {
       "name": "Z-Wave Interpreter",
-      "github": "autolog/Z-Wave_Interpreter"
+      "github": "autolog/Z-Wave_Interpreter",
+      "store_url": "https://www.indigodomo.com/pluginstore/253/",
+      "store_download": "https://github.com/autolog/Z-Wave_Interpreter/releases/download/2022.0.0/Z-Wave_Interpreter.indigoPlugin.zip"
     },
     "com.barn.indigoplugin.Daikin-Wifi": {
       "name": "Daikin Wifi Controller",
-      "github": "neilkplugins/Daikin-Wifi-indigo-plugin"
+      "github": "neilkplugins/Daikin-Wifi-indigo-plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/264/",
+      "store_download": "https://github.com/neilkplugins/Daikin-Wifi-indigo-plugin/releases/download/2022.0.1/Daikin.Wifi.indigoPlugin.zip"
     },
     "com.barn.indigoplugin.GlowmarktCAD": {
       "name": "GlowmarktCAD",
-      "github": "neilkplugins/Glow-IHD-CAD-indigo-plugin"
+      "github": "neilkplugins/Glow-IHD-CAD-indigo-plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/238/",
+      "store_download": "https://github.com/neilkplugins/Glow-IHD-CAD-indigo-plugin/releases/download/2022.0.1/GlowmarktCAD.indigoPlugin.zip"
     },
     "com.barn.indigoplugin.Honeywell_Evohome": {
       "name": "Evohome",
-      "github": "neilkplugins/evohome-indigo-plugin"
+      "github": "neilkplugins/evohome-indigo-plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/294/",
+      "store_download": "https://github.com/neilkplugins/evohome-indigo-plugin/releases/download/2023.0.2/Honeywell_Evohome.indigoPlugin.zip"
     },
     "com.barn.indigoplugin.Solcast": {
       "name": "Solcast",
-      "github": "neilkplugins/Solcast-indigo-plugin"
+      "github": "neilkplugins/Solcast-indigo-plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/265/",
+      "store_download": "https://github.com/neilkplugins/Solcast-indigo-plugin/releases/download/2022.0.2/Solcast.indigoPlugin.zip"
     },
     "com.barn.indigoplugin.VeluxActive": {
       "name": "Velux Active",
-      "github": "neilkplugins/VeluxActive-indigo-plugin"
+      "github": "neilkplugins/VeluxActive-indigo-plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/288/",
+      "store_download": "https://github.com/neilkplugins/VeluxActive-indigo-plugin/releases/download/2023.0.5/VeluxActive.indigoPlugin.zip"
     },
     "com.barn.indigoplugin.WLED": {
       "name": "WLED",
-      "github": "neilkplugins/WLED-indigo-plugin"
+      "github": "neilkplugins/WLED-indigo-plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/214/",
+      "store_download": "https://github.com/neilkplugins/WLED-indigo-plugin/releases/download/2023.0.1/WLED.indigoPlugin.zip"
     },
     "com.berkinet.ad2usb": {
       "name": "AD2USB Alarm Interface",
-      "github": "bla260/ad2usb"
+      "github": "bla260/ad2usb",
+      "store_url": "https://www.indigodomo.com/pluginstore/87/",
+      "store_download": "https://github.com/bla260/ad2usb/releases/download/3.4.2/ad2usb.indigoPlugin.zip"
     },
     "com.boisypitre.vss": {
       "name": "VSS - Virtual Security System",
-      "github": "boisy/VSS"
+      "github": "boisy/VSS",
+      "store_url": "https://www.indigodomo.com/pluginstore/266/",
+      "store_download": "https://api.github.com/repos/boisy/VSS/zipball/2022.1.0"
     },
     "com.drjason.temp-adapter": {
       "name": "Adapters",
-      "github": "IndigoDomotics/adapters"
+      "github": "IndigoDomotics/adapters",
+      "store_url": "https://www.indigodomo.com/pluginstore/100/",
+      "store_download": "https://github.com/IndigoDomotics/adapters/releases/download/2023.2.0/Adapters.indigoPlugin.zip"
     },
     "com.duncanware.daytonAudioController": {
       "name": "Dayton Audio Controller",
-      "github": "RogueProeliator/indigo-plugins-dayton-audio"
+      "github": "RogueProeliator/indigo-plugins-dayton-audio",
+      "store_url": "https://www.indigodomo.com/pluginstore/291/",
+      "store_download": "https://github.com/RogueProeliator/indigo-plugins-dayton-audio/releases/download/v2026.1.0/Dayton.Audio.Controller.indigoPlugin.zip"
     },
     "com.duncanware.domoPadMobileClient": {
       "name": "Domotics Pad Mobile Client",
-      "github": "RogueProeliator/indigo-plugins-googleclients"
+      "github": "RogueProeliator/indigo-plugins-googleclients",
+      "store_url": "https://www.indigodomo.com/pluginstore/204/",
+      "store_download": "https://github.com/RogueProeliator/indigo-plugins-googleclients/releases/download/v2024.3.0/DomoPad.Mobile.Client.Plugin.indigoPlugin.zip"
     },
     "com.duncanware.nilesAudioReceiver": {
       "name": "Niles Audio Receiver Plugin",
-      "github": "RogueProeliator/indigo-plugins-nilesaudio"
+      "github": "RogueProeliator/indigo-plugins-nilesaudio",
+      "store_url": "https://www.indigodomo.com/pluginstore/205/",
+      "store_download": "https://github.com/RogueProeliator/indigo-plugins-nilesaudio/releases/download/v2026.1.0/Niles.Audio.Receiver.indigoPlugin.zip"
     },
     "com.duncanware.onkyoNetworkRemote": {
       "name": "Onkyo Network Remote Plugin",
-      "github": "RogueProeliator/indigo-plugins-onkyo-receiver"
+      "github": "RogueProeliator/indigo-plugins-onkyo-receiver",
+      "store_url": "https://www.indigodomo.com/pluginstore/104/",
+      "store_download": "https://github.com/RogueProeliator/indigo-plugins-onkyo-receiver/releases/download/v2024.6.1/Onkyo.Network.Remote.indigoPlugin.zip"
     },
     "com.duncanware.plexMediaServerManager": {
       "name": "Plex Media Server Manager",
-      "github": "RogueProeliator/indigo-plugins-plex-server-manager"
+      "github": "RogueProeliator/indigo-plugins-plex-server-manager",
+      "store_url": "https://www.indigodomo.com/pluginstore/106/",
+      "store_download": "https://github.com/RogueProeliator/indigo-plugins-plex-server-manager/releases/download/v2026.1.0/Plex.Media.Server.Manager.indigoPlugin.zip"
     },
     "com.duncanware.rokuNetworkRemote": {
       "name": "Roku Network Remote",
-      "github": "RogueProeliator/indigo-plugins-roku"
+      "github": "RogueProeliator/indigo-plugins-roku",
+      "store_url": "https://www.indigodomo.com/pluginstore/50/",
+      "store_download": "https://github.com/RogueProeliator/indigo-plugins-roku/releases/download/v2026.1.0/Roku.Network.Remote.indigoPlugin.zip"
     },
     "com.duncanware.sharpTvNetworkRemote": {
       "name": "Sharp TV Network Remote Plugin",
-      "github": "RogueProeliator/IndigoPlugins-Sharp-TV-Network-Remote"
+      "github": "RogueProeliator/IndigoPlugins-Sharp-TV-Network-Remote",
+      "store_url": "https://www.indigodomo.com/pluginstore/206/",
+      "store_download": "https://github.com/RogueProeliator/indigo-plugins-sharptv/releases/download/v2024.6.0/Sharp.TV.Network.Remote.indigoPlugin.zip"
     },
     "com.durosity.indigoplugin.lighttools": {
       "name": "LightTools",
-      "github": "durosity/Indigo-LightTools"
+      "github": "durosity/Indigo-LightTools",
+      "store_url": "https://www.indigodomo.com/pluginstore/312/",
+      "store_download": "https://github.com/durosity/Indigo-LightTools/releases/download/v1.5.1/LightTools.indigoPlugin.zip"
     },
     "com.durosity.indigoplugin.renault": {
       "name": "Renault Car",
-      "github": "Durosity/Indigo-Renault-Car"
+      "github": "Durosity/Indigo-Renault-Car",
+      "store_url": "https://www.indigodomo.com/pluginstore/314/",
+      "store_download": "https://github.com/durosity/Indigo-Renault-Car/releases/download/v1.2.4/RenaultCar.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.bondhome": {
       "name": "Bond Home",
-      "github": "FlyingDiver/Indigo-BondHome"
+      "github": "FlyingDiver/Indigo-BondHome",
+      "store_url": "https://www.indigodomo.com/pluginstore/219/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-BondHome/releases/download/2025.0.3/BondHome.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.camect": {
       "name": "Camect",
-      "github": "FlyingDiver/Indigo-Camect"
+      "github": "FlyingDiver/Indigo-Camect",
+      "store_url": "https://www.indigodomo.com/pluginstore/258/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-Camect/releases/download/2022.0.0/Camect.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.ecobee": {
       "name": "Ecobee 2",
-      "github": "FlyingDiver/Indigo-Ecobee-2"
+      "github": "FlyingDiver/Indigo-Ecobee-2",
+      "store_url": "https://www.indigodomo.com/pluginstore/193/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-Ecobee-2/releases/download/2025.0.1/Ecobee.2.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.fireboard": {
       "name": "Fireboard",
-      "github": "FlyingDiver/Indigo-FireBoard"
+      "github": "FlyingDiver/Indigo-FireBoard",
+      "store_url": "https://www.indigodomo.com/pluginstore/261/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-FireBoard/releases/download/2022.0.2/Fireboard.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.ftp": {
       "name": "FTP",
-      "github": "FlyingDiver/Indigo-FTP"
+      "github": "FlyingDiver/Indigo-FTP",
+      "store_url": "https://www.indigodomo.com/pluginstore/61/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-FTP/releases/download/2022.0.0/FTP.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.harmonyhub": {
       "name": "Harmony Hub",
-      "github": "FlyingDiver/Indigo-Harmony"
+      "github": "FlyingDiver/Indigo-Harmony",
+      "store_url": "https://www.indigodomo.com/pluginstore/32/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-Harmony/releases/download/2025.0.2/HarmonyHub.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.httpd2": {
       "name": "HTTPd 2",
-      "github": "FlyingDiver/Indigo-HTTPd-2"
+      "github": "FlyingDiver/Indigo-HTTPd-2",
+      "store_url": "https://www.indigodomo.com/pluginstore/222/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-HTTPd-2/releases/download/2022.0.1/HTTPd2.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.lifxbridge": {
       "name": "LIFX Bridge",
-      "github": "FlyingDiver/Indigo-lifx-bridge"
+      "github": "FlyingDiver/Indigo-lifx-bridge",
+      "store_url": "https://www.indigodomo.com/pluginstore/33/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-lifx-bridge/releases/download/2022.0.0/LIFXBridge.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.lutron-leap": {
       "name": "Lutron Leap",
-      "github": "FlyingDiver/Indigo-Lutron-Leap"
+      "github": "FlyingDiver/Indigo-Lutron-Leap",
+      "store_url": "https://www.indigodomo.com/pluginstore/278/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-Lutron-Leap/releases/download/2025.0.1/Lutron.Leap.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.masquerade": {
       "name": "Masquerade",
-      "github": "FlyingDiver/Indigo-Masquerade"
+      "github": "FlyingDiver/Indigo-Masquerade",
+      "store_url": "https://www.indigodomo.com/pluginstore/34/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-Masquerade/releases/download/2022.0.4/Masquerade.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.miniPurple": {
       "name": "miniPurple",
-      "github": "FlyingDiver/Indigo-miniPurple"
+      "github": "FlyingDiver/Indigo-miniPurple",
+      "store_url": "https://www.indigodomo.com/pluginstore/262/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-miniPurple/releases/download/2022.1.1/miniPurple.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.miniUniFi": {
       "name": "miniUniFi",
-      "github": "FlyingDiver/Indigo-miniUniFi"
+      "github": "FlyingDiver/Indigo-miniUniFi",
+      "store_url": "https://www.indigodomo.com/pluginstore/243/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-miniUniFi/releases/download/2022.1.3/miniUniFi.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.miniserial": {
       "name": "miniSerial",
-      "github": "FlyingDiver/Indigo-miniSerial"
+      "github": "FlyingDiver/Indigo-miniSerial",
+      "store_url": "https://www.indigodomo.com/pluginstore/295/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-miniSerial/releases/download/2023.0.1/miniSerial.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.mqtt": {
       "name": "MQTT Connector",
-      "github": "FlyingDiver/Indigo-MQTT"
+      "github": "FlyingDiver/Indigo-MQTT",
+      "store_url": "https://www.indigodomo.com/pluginstore/211/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-MQTT/releases/download/2023.2.1/MQTT.Connector.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.mqtt-broker": {
       "name": "MQTT Broker",
-      "github": "FlyingDiver/Indigo-MQTT-Broker"
+      "github": "FlyingDiver/Indigo-MQTT-Broker",
+      "store_url": "https://www.indigodomo.com/pluginstore/260/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-MQTT-Broker/releases/download/2023.2.1/MQTT.Broker.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.occupatum": {
       "name": "Occupatum",
-      "github": "FlyingDiver/Indigo-Occupatum"
+      "github": "FlyingDiver/Indigo-Occupatum",
+      "store_url": "https://www.indigodomo.com/pluginstore/263/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-Occupatum/releases/download/2022.1.7/Occupatum.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.pushsafer": {
       "name": "Pushsafer",
-      "github": "IndigoDomotics/indigo-pushsafer"
+      "github": "IndigoDomotics/indigo-pushsafer",
+      "store_url": "https://www.indigodomo.com/pluginstore/161/",
+      "store_download": "https://github.com/IndigoDomotics/indigo-pushsafer/releases/download/2022.1.0/pushsafer.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.ratgdo": {
       "name": "ratgdo GDO Controller",
-      "github": "FlyingDiver/Indigo-ratgdo"
+      "github": "FlyingDiver/Indigo-ratgdo",
+      "store_url": "https://www.indigodomo.com/pluginstore/296/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-ratgdo/releases/download/2023.2.0/ratgdo.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.schlageencode": {
       "name": "Schlage Encode",
-      "github": "FlyingDiver/Indigo-Schlage"
+      "github": "FlyingDiver/Indigo-Schlage",
+      "store_url": "https://www.indigodomo.com/pluginstore/306/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-Schlage/releases/download/2025.0.3/SchlageEncode.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.shims": {
       "name": "MQTT Shims",
-      "github": "FlyingDiver/Indigo-Shims"
+      "github": "FlyingDiver/Indigo-Shims",
+      "store_url": "https://www.indigodomo.com/pluginstore/210/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-Shims/releases/download/2023.2.2/MQTT.Shims.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.slack": {
       "name": "Slack 2",
-      "github": "FlyingDiver/Indigo-Slack2"
+      "github": "FlyingDiver/Indigo-Slack2",
+      "store_url": "https://www.indigodomo.com/pluginstore/192/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-Slack2/releases/download/2023.2.0/Slack2.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.smtpd": {
       "name": "SMTPd",
-      "github": "FlyingDiver/Indigo-SMTPd"
+      "github": "FlyingDiver/Indigo-SMTPd",
+      "store_url": "https://www.indigodomo.com/pluginstore/63/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-SMTPd/releases/download/2023.2.0/SMTPd.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.tankutility": {
       "name": "TankUtility",
-      "github": "FlyingDiver/Indigo-TankUtility"
+      "github": "FlyingDiver/Indigo-TankUtility",
+      "store_url": "https://www.indigodomo.com/pluginstore/171/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-TankUtility/releases/download/2022.0.0/TankUtility.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.trane-nexia": {
       "name": "Trane Home",
-      "github": "FlyingDiver/Indigo-Trane-Nexia"
+      "github": "FlyingDiver/Indigo-Trane-Nexia",
+      "store_url": "https://www.indigodomo.com/pluginstore/242/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-Trane-Nexia/releases/download/2023.2.0/Trane.Home.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.twilio": {
       "name": "Twilio",
-      "github": "FlyingDiver/Indigo-Twilio"
+      "github": "FlyingDiver/Indigo-Twilio",
+      "store_url": "https://www.indigodomo.com/pluginstore/26/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-Twilio/releases/download/2024.0.1/Twilio.indigoPlugin.zip"
     },
     "com.flyingdiver.indigoplugin.weatherlink-live": {
       "name": "WeatherLink Live",
-      "github": "FlyingDiver/Indigo-WeatherLinkLive"
+      "github": "FlyingDiver/Indigo-WeatherLinkLive",
+      "store_url": "https://www.indigodomo.com/pluginstore/208/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-WeatherLinkLive/releases/download/2022.0.0/WeatherLink.Live.indigoPlugin.zip"
     },
     "com.fogbert.indigoplugin.GhostXML": {
       "name": "GhostXML",
-      "github": "IndigoDomotics/GhostXML"
+      "github": "IndigoDomotics/GhostXML",
+      "store_url": "https://www.indigodomo.com/pluginstore/38/",
+      "store_download": "https://github.com/IndigoDomotics/GhostXML/releases/download/2024.1.01/GhostXML.indigoPlugin.zip"
     },
     "com.fogbert.indigoplugin.OWServer": {
       "name": "OWServer",
-      "github": "DaveL17/OWServer"
+      "github": "DaveL17/OWServer",
+      "store_url": "https://www.indigodomo.com/pluginstore/98/",
+      "store_download": "https://github.com/DaveL17/OWServer/releases/download/2022.0.2/OWserver.indigoPlugin.zip"
     },
     "com.fogbert.indigoplugin.announcements": {
       "name": "Announcements",
-      "github": "DaveL17/Announcements"
+      "github": "DaveL17/Announcements",
+      "store_url": "https://www.indigodomo.com/pluginstore/141/",
+      "store_download": "https://github.com/DaveL17/Announcements/releases/download/2025.1.0/Announcements.indigoPlugin.zip"
     },
     "com.fogbert.indigoplugin.bikeShare": {
       "name": "Bike Share",
-      "github": "DaveL17/BikeShare"
+      "github": "DaveL17/BikeShare",
+      "store_url": "https://www.indigodomo.com/pluginstore/41/",
+      "store_download": "https://github.com/DaveL17/BikeShare/releases/download/2025.1.0/Bike.Share.indigoPlugin.zip"
     },
     "com.fogbert.indigoplugin.fantasticwWeather": {
       "name": "Fantastic Weather",
-      "github": "DaveL17/Fantastic-Weather"
+      "github": "DaveL17/Fantastic-Weather",
+      "store_url": "https://www.indigodomo.com/pluginstore/191/",
+      "store_download": "https://github.com/DaveL17/Fantastic-Weather/releases/download/2022.0.6/fantasticWeather.indigoPlugin.zip"
     },
     "com.fogbert.indigoplugin.matplotlib": {
       "name": "Matplotlib",
-      "github": "DaveL17/matplotlib"
+      "github": "DaveL17/matplotlib",
+      "store_url": "https://www.indigodomo.com/pluginstore/27/",
+      "store_download": "https://github.com/DaveL17/matplotlib/releases/download/v2023.0.1/matplotlib.indigoPlugin.zip"
     },
     "com.fogbert.indigoplugin.multitool": {
       "name": "Multitool",
-      "github": "DaveL17/Multitool"
+      "github": "DaveL17/Multitool",
+      "store_url": "https://www.indigodomo.com/pluginstore/145/",
+      "store_download": "https://github.com/DaveL17/Multitool/releases/download/2025.2.2/Multitool.indigoPlugin.zip"
     },
     "com.frightideas.indigoplugin.dscAlarm": {
       "name": "DSC Alarm",
-      "github": "IndigoDomotics/DSC-Alarm"
+      "github": "IndigoDomotics/DSC-Alarm",
+      "store_url": "https://www.indigodomo.com/pluginstore/16/",
+      "store_download": "https://github.com/IndigoDomotics/DSC-Alarm/releases/download/2022.0.6/DSC.Alarm.indigoPlugin.zip"
     },
     "com.github.wonderslug.hassbridge": {
       "name": "HassBridge",
-      "github": "IndigoDomotics/hassbridge"
+      "github": "IndigoDomotics/hassbridge",
+      "store_url": "https://www.indigodomo.com/pluginstore/233/",
+      "store_download": "https://github.com/IndigoDomotics/hassbridge/releases/download/2022.0.5/HassBridge.indigoPlugin.zip"
     },
     "com.heddings.indigo.prowl": {
       "name": "Prowl",
-      "github": "jheddings/indigo-prowl"
+      "github": "jheddings/indigo-prowl",
+      "store_url": "https://www.indigodomo.com/pluginstore/134/",
+      "store_download": "https://github.com/jheddings/indigo-prowl/releases/download/v1.2.0/Prowl.indigoPlugin.zip"
     },
     "com.howartp.clockdisplay": {
       "name": "Clock Display",
-      "github": "howartp84/ClockDisplay"
+      "github": "howartp84/ClockDisplay",
+      "store_url": "https://www.indigodomo.com/pluginstore/164/",
+      "store_download": "https://github.com/howartp84/ClockDisplay/releases/download/3.0.17/ClockDisplay.indigoPlugin.zip"
     },
     "com.howartp.lockmanager": {
       "name": "Z-Wave Lock Manager",
-      "github": "howartp84/ZWaveLockManager"
+      "github": "howartp84/ZWaveLockManager",
+      "store_url": "https://www.indigodomo.com/pluginstore/83/",
+      "store_download": "https://github.com/howartp84/ZWaveLockManager/releases/download/3.0.66/ZwaveLockManager.indigoPlugin.zip"
     },
     "com.howartp.neoblinds": {
       "name": "Neo Blinds",
-      "github": "howartp84/NeoSmartBlinds"
+      "github": "howartp84/NeoSmartBlinds",
+      "store_url": "https://www.indigodomo.com/pluginstore/230/",
+      "store_download": "https://github.com/howartp84/NeoSmartBlinds/releases/download/3.0.7/NeoSmartBlinds.indigoPlugin.zip"
     },
     "com.howartp.scenecontrol": {
       "name": "Z-Wave Scene Controller",
-      "github": "howartp84/ZWaveSceneController"
+      "github": "howartp84/ZWaveSceneController",
+      "store_url": "https://www.indigodomo.com/pluginstore/39/",
+      "store_download": "https://github.com/howartp84/ZWaveSceneController/releases/download/3.0.43/ZwaveSceneController.indigoPlugin.zip"
     },
     "com.howartp.sense": {
       "name": "Sense",
-      "github": "howartp84/Sense"
+      "github": "howartp84/Sense",
+      "store_url": "https://www.indigodomo.com/pluginstore/213/",
+      "store_download": "https://github.com/howartp84/Sense/releases/download/3.0.9/Sense.indigoPlugin.zip"
     },
     "com.howartp.teslacontrol": {
       "name": "Tesla EV Control",
-      "github": "howartp84/TeslaControl"
+      "github": "howartp84/TeslaControl",
+      "store_url": "https://www.indigodomo.com/pluginstore/165/",
+      "store_download": "https://github.com/howartp84/TeslaControl/releases/download/3.0.2/Tesla.Control.indigoPlugin.zip"
     },
     "com.howartp.variabledevice": {
       "name": "Variable Devices",
-      "github": "howartp84/VariableDevice"
+      "github": "howartp84/VariableDevice",
+      "store_url": "https://www.indigodomo.com/pluginstore/269/",
+      "store_download": "https://github.com/howartp84/VariableDevice/releases/download/3.0.7/VariableDevice.indigoPlugin.zip"
     },
     "com.howartp.verisurev2": {
       "name": "Verisure v2",
-      "github": "howartp84/verisure"
+      "github": "howartp84/verisure",
+      "store_url": "https://www.indigodomo.com/pluginstore/216/",
+      "store_download": "https://api.github.com/repos/howartp84/Verisure/zipball/3.0.12"
     },
     "com.howartp.windowcontrol": {
       "name": "Z-Wave Window Controller",
-      "github": "howartp84/ZWaveWindowController"
+      "github": "howartp84/ZWaveWindowController",
+      "store_url": "https://www.indigodomo.com/pluginstore/246/",
+      "store_download": "https://github.com/howartp84/ZWaveWindowController/releases/download/3.0.3/ZwaveWindowController.indigoPlugin.zip"
     },
     "com.howartp.zwavesensorlogger": {
       "name": "Z-Wave Sensor Logger",
-      "github": "howartp84/ZWaveSensorLogger"
+      "github": "howartp84/ZWaveSensorLogger",
+      "store_url": "https://www.indigodomo.com/pluginstore/36/",
+      "store_download": "https://github.com/howartp84/ZwaveSensorLogger/releases/download/3.0.31/ZwaveSensorLogger.indigoPlugin.zip"
     },
     "com.howartp.zwavewatcher": {
       "name": "Z-Wave Watcher",
-      "github": "howartp84/ZWaveWatcher"
+      "github": "howartp84/ZWaveWatcher",
+      "store_url": "https://www.indigodomo.com/pluginstore/43/",
+      "store_download": "https://github.com/howartp84/ZWaveWatcher/releases/download/3.0.9/ZwaveWatcher.indigoPlugin.zip"
     },
     "com.indigodomo.indigoplugin.autologsqueezeboxcontroller": {
       "name": "Squeezebox",
-      "github": "autolog/Squeezebox_Controller"
+      "github": "autolog/Squeezebox_Controller",
+      "store_url": "https://www.indigodomo.com/pluginstore/58/",
+      "store_download": "https://github.com/autolog/Squeezebox_Controller/releases/download/2023.0.7/Squeezebox.indigoPlugin.zip"
     },
     "com.indigodomo.opensource.rachio": {
       "name": "Rachio Sprinklers",
-      "github": "IndigoDomotics/rachio-indigo"
+      "github": "IndigoDomotics/rachio-indigo",
+      "store_url": "https://www.indigodomo.com/pluginstore/12/",
+      "store_download": "https://github.com/IndigoDomotics/rachio-indigo/releases/download/2022.0.2/Rachio.Sprinkler.indigoPlugin.zip"
     },
     "com.jeremyswancoat.indigoplugin.nuvograndconcerto": {
       "name": "NuVo Grand Concerto",
-      "github": "Monstergerm/Indigo-NuvoGrandConcerto"
+      "github": "Monstergerm/Indigo-NuvoGrandConcerto",
+      "store_url": "https://www.indigodomo.com/pluginstore/66/",
+      "store_download": "https://api.github.com/repos/Monstergerm/Indigo-NuvoGrandConcerto/zipball/2022.0.1"
     },
     "com.jeremyswancoat.indigoplugin.pentairpool": {
       "name": "Pentair Pool",
-      "github": "FlyingDiver/Indigo-Pentair"
+      "github": "FlyingDiver/Indigo-Pentair",
+      "store_url": "https://www.indigodomo.com/pluginstore/67/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-Pentair/releases/download/2023.0.1/Pentair.Pool.indigoPlugin.zip"
     },
     "com.jimandnoreen.indigoplugin.lutron-radiora2": {
       "name": "Lutron RRA2/Cas\u00e9ta",
-      "github": "FlyingDiver/Indigo-radiora2"
+      "github": "FlyingDiver/Indigo-radiora2",
+      "store_url": "https://www.indigodomo.com/pluginstore/84/",
+      "store_download": "https://api.github.com/repos/FlyingDiver/Indigo-radiora2/zipball/2022.1.3"
     },
     "com.karlwachs.INDIGOplotD": {
       "name": "INDIGOplotD",
-      "github": "kw123/indigoplotd"
+      "github": "kw123/indigoplotd",
+      "store_url": "https://www.indigodomo.com/pluginstore/71/",
+      "store_download": "https://github.com/kw123/indigoplotd/releases/download/2022.21.92/INDIGOplotD.indigoPlugin.zip"
     },
     "com.karlwachs.VoiceReceiver": {
       "name": "VoiceReceiver",
-      "github": "kw123/VoiceReceiver"
+      "github": "kw123/VoiceReceiver",
+      "store_url": "https://www.indigodomo.com/pluginstore/316/",
+      "store_download": "https://github.com/kw123/VoiceReceiver/releases/download/2022.3.3/VoiceReceiver.indigoPlugin.zip"
     },
     "com.karlwachs.arduino": {
       "name": "arduino",
-      "github": "kw123/arduino"
+      "github": "kw123/arduino",
+      "store_url": "https://www.indigodomo.com/pluginstore/74/",
+      "store_download": "https://github.com/kw123/arduino/releases/download/2022.9.16/arduino.indigoPlugin.zip"
     },
     "com.karlwachs.fingscan": {
       "name": "fingscan",
-      "github": "kw123/fingscan"
+      "github": "kw123/fingscan",
+      "store_url": "https://www.indigodomo.com/pluginstore/72/",
+      "store_download": "https://api.github.com/repos/kw123/fingscan/zipball/2022.40.116"
     },
     "com.karlwachs.homematic": {
       "name": "homematic",
-      "github": "kw123/homematic"
+      "github": "kw123/homematic",
+      "store_url": "https://www.indigodomo.com/pluginstore/292/",
+      "store_download": "https://github.com/kw123/homematic/releases/download/2022.7.8/homematic.indigoPlugin.zip"
     },
     "com.karlwachs.minMax": {
       "name": "minMax",
-      "github": "kw123/minMax"
+      "github": "kw123/minMax",
+      "store_url": "https://www.indigodomo.com/pluginstore/95/",
+      "store_download": "https://github.com/kw123/minMax/releases/download/2022.18.28/minMax.indigoPlugin.zip"
     },
     "com.karlwachs.networkscanner": {
       "name": "Network Scanner",
@@ -470,43 +701,63 @@
     },
     "com.karlwachs.piBeacon": {
       "name": "piBeacon",
-      "github": "kw123/pibeacon"
+      "github": "kw123/pibeacon",
+      "store_url": "https://www.indigodomo.com/pluginstore/59/",
+      "store_download": "https://github.com/kw123/pibeacon/releases/download/2022.191.161/piBeacon.indigoPlugin.zip"
     },
     "com.karlwachs.secondsSinceLastChange": {
       "name": "secondsSinceLastChange",
-      "github": "kw123/secondssincelastchnage"
+      "github": "kw123/secondssincelastchnage",
+      "store_url": "https://www.indigodomo.com/pluginstore/96/",
+      "store_download": "https://api.github.com/repos/kw123/secondssincelastchnage/zipball/2022.1.13"
     },
     "com.karlwachs.shelly": {
       "name": "shelly",
-      "github": "kw123/SHELLY"
+      "github": "kw123/SHELLY",
+      "store_url": "https://www.indigodomo.com/pluginstore/224/",
+      "store_download": "https://github.com/kw123/SHELLY/releases/download/7.20.57/shellyDirect.indigoPlugin.zip"
     },
     "com.karlwachs.shutdownAction": {
       "name": "shutdownAction",
-      "github": "kw123/shutdown-action"
+      "github": "kw123/shutdown-action",
+      "store_url": "https://www.indigodomo.com/pluginstore/190/",
+      "store_download": "https://github.com/kw123/shutdown-action/releases/download/2022.5.5/shutdownAction.indigoPlugin.zip"
     },
     "com.karlwachs.startupAction": {
       "name": "startupAction",
-      "github": "kw123/startupAction"
+      "github": "kw123/startupAction",
+      "store_url": "https://www.indigodomo.com/pluginstore/298/",
+      "store_download": "https://github.com/kw123/startupAction/releases/download/2022.0.3/startupAction.indigoPlugin.zip"
     },
     "com.karlwachs.uniFiAP": {
       "name": "uniFiAP",
-      "github": "kw123/unifi"
+      "github": "kw123/unifi",
+      "store_url": "https://www.indigodomo.com/pluginstore/73/",
+      "store_download": "https://github.com/kw123/unifi/releases/download/2022.49.434/uniFiAP.indigoPlugin.zip"
     },
     "com.karlwachs.utilities": {
       "name": "utilities",
-      "github": "kw123/indigoUtilities"
+      "github": "kw123/indigoUtilities",
+      "store_url": "https://www.indigodomo.com/pluginstore/75/",
+      "store_download": "https://github.com/kw123/indigoUtilities/releases/download/2022.22.45/utilities.indigoPlugin.zip"
     },
     "com.lionsheeptechnology.ShellyMQTT": {
       "name": "ShellyMQTT",
-      "github": "AaronLionsheep/ShellyMQTT"
+      "github": "AaronLionsheep/ShellyMQTT",
+      "store_url": "https://www.indigodomo.com/pluginstore/236/",
+      "store_download": "https://github.com/AaronLionsheep/ShellyMQTT/releases/download/1.1.0/ShellyMQTT.indigoPlugin.zip"
     },
     "com.lionsheeptechnology.ShellyNGMQTT": {
       "name": "ShellyNGMQTT",
-      "github": "AaronLionsheep/ShellyNGMQTT"
+      "github": "AaronLionsheep/ShellyNGMQTT",
+      "store_url": "https://www.indigodomo.com/pluginstore/290/",
+      "store_download": "https://github.com/AaronLionsheep/ShellyNGMQTT/releases/download/1.1.0/ShellyNGMQTT.indigoPlugin.zip"
     },
     "com.lionsheeptechnology.SmartRent": {
       "name": "SmartRent",
-      "github": "AaronLionsheep/SmartRent"
+      "github": "AaronLionsheep/SmartRent",
+      "store_url": "https://www.indigodomo.com/pluginstore/305/",
+      "store_download": "https://github.com/AaronLionsheep/SmartRent/releases/download/v1.0.2/SmartRent.indigoPlugin.zip"
     },
     "com.marcus.indigoplugin.yamaharxaus": {
       "name": "Yamaha RX Receiver AUS",
@@ -515,103 +766,153 @@
     },
     "com.mkuchnic.indigoplugin.schluter": {
       "name": "Schluter Thermostat",
-      "github": "MKuchnic/Indigo-Schluter-1"
+      "github": "MKuchnic/Indigo-Schluter-1",
+      "store_url": "https://www.indigodomo.com/pluginstore/286/",
+      "store_download": "https://github.com/MKuchnic/Indigo-Schluter-1/releases/download/v2023.1.0/Schluter-1.indigoPlugin.zip"
     },
     "com.morris.confirmed-lock": {
       "name": "Confirmed Lock",
-      "github": "kmarkley/Indigo-Confirmed-Lock"
+      "github": "kmarkley/Indigo-Confirmed-Lock",
+      "store_url": "https://www.indigodomo.com/pluginstore/152/",
+      "store_download": "https://github.com/kmarkley/Indigo-Confirmed-Lock/releases/download/0.1.0/Confirmed.Lock.indigoPlugin.zip"
     },
     "com.morris.default-dimmer-level": {
       "name": "Default Dimmer Level",
-      "github": "kmarkley/Indigo-Default-Dimmer"
+      "github": "kmarkley/Indigo-Default-Dimmer",
+      "store_url": "https://www.indigodomo.com/pluginstore/227/",
+      "store_download": "https://github.com/kmarkley/Indigo-Default-Dimmer/releases/download/0.1.0/Default.Dimmer.indigoPlugin.zip"
     },
     "com.morris.fan-group": {
       "name": "Fan Group",
-      "github": "kmarkley/Indigo-Fan-Group"
+      "github": "kmarkley/Indigo-Fan-Group",
+      "store_url": "https://www.indigodomo.com/pluginstore/89/",
+      "store_download": "https://github.com/kmarkley/Indigo-Fan-Group/releases/download/0.1.0/Fan.Group.indigoPlugin.zip"
     },
     "com.morris.google-calendar": {
       "name": "Google Calendar",
-      "github": "kmarkley/Indigo-Google-Calendar"
+      "github": "kmarkley/Indigo-Google-Calendar",
+      "store_url": "https://www.indigodomo.com/pluginstore/226/",
+      "store_download": "https://github.com/kmarkley/Indigo-Google-Calendar/releases/download/0.1.0/Google.Calendar.indigoPlugin.zip"
     },
     "com.morris.group-change-listener": {
       "name": "Group Change Listener",
-      "github": "kmarkley/Indigo-Group-Change-Listener"
+      "github": "kmarkley/Indigo-Group-Change-Listener",
+      "store_url": "https://www.indigodomo.com/pluginstore/153/",
+      "store_download": "https://github.com/kmarkley/Indigo-Group-Change-Listener/releases/download/0.1.0/Group.Change.Listener.indigoPlugin.zip"
     },
     "com.morris.itunes-local-control": {
       "name": "iTunes Local Control",
-      "github": "kmarkley/Indigo-iTunes-Local-Control"
+      "github": "kmarkley/Indigo-iTunes-Local-Control",
+      "store_url": "https://www.indigodomo.com/pluginstore/154/",
+      "store_download": "https://github.com/kmarkley/Indigo-iTunes-Local-Control/releases/download/2022.0.7/iTunes.Local.Control.indigoPlugin.zip"
     },
     "com.morris.lock-group": {
       "name": "Lock Group",
-      "github": "kmarkley/Indigo-Lock-Group"
+      "github": "kmarkley/Indigo-Lock-Group",
+      "store_url": "https://www.indigodomo.com/pluginstore/225/",
+      "store_download": "https://github.com/kmarkley/Indigo-Lock-Group/releases/download/0.1.0/Lock.Group.indigoPlugin.zip"
     },
     "com.morris.mac-apps": {
       "name": "Mac Apps",
-      "github": "kmarkley/Indigo-Mac-Apps"
+      "github": "kmarkley/Indigo-Mac-Apps",
+      "store_url": "https://www.indigodomo.com/pluginstore/92/",
+      "store_download": "https://github.com/kmarkley/Indigo-Mac-Apps/releases/download/0.1.0/Mac.Apps.indigoPlugin.zip"
     },
     "com.morris.neato-botvac": {
       "name": "Neato Botvac",
-      "github": "kmarkley/Indigo-Neato-Botvac"
+      "github": "kmarkley/Indigo-Neato-Botvac",
+      "store_url": "https://www.indigodomo.com/pluginstore/229/",
+      "store_download": "https://github.com/kmarkley/Indigo-Neato-Botvac/releases/download/0.1.0/Neato.Botvac.indigoPlugin.zip"
     },
     "com.morris.online-sensor": {
       "name": "Online Sensor",
-      "github": "kmarkley/Indigo-Online-Sensor"
+      "github": "kmarkley/Indigo-Online-Sensor",
+      "store_url": "https://www.indigodomo.com/pluginstore/90/",
+      "store_download": "https://github.com/kmarkley/Indigo-Online-Sensor/releases/download/0.1.0/Online.Sensor.indigoPlugin.zip"
     },
     "com.morris.over-auto": {
       "name": "Over Auto",
-      "github": "kmarkley/Indigo-Over-Auto"
+      "github": "kmarkley/Indigo-Over-Auto",
+      "store_url": "https://www.indigodomo.com/pluginstore/228/",
+      "store_download": "https://github.com/kmarkley/Indigo-Over-Auto/releases/download/0.1.0/Over.Auto.indigoPlugin.zip"
     },
     "com.morris.realistic-random": {
       "name": "Realistic Random",
-      "github": "kmarkley/Indigo-Realistic-Random"
+      "github": "kmarkley/Indigo-Realistic-Random",
+      "store_url": "https://www.indigodomo.com/pluginstore/94/",
+      "store_download": "https://github.com/kmarkley/Indigo-Realistic-Random/releases/download/0.1.0/Realistic.Random.indigoPlugin.zip"
     },
     "com.morris.sensor-stats": {
       "name": "Sensor Stats",
-      "github": "kmarkley/Indigo-Sensor-Stats"
+      "github": "kmarkley/Indigo-Sensor-Stats",
+      "store_url": "https://www.indigodomo.com/pluginstore/178/",
+      "store_download": "https://github.com/kmarkley/Indigo-Sensor-Stats/releases/download/0.1.0/Sensor.Stats.indigoPlugin.zip"
     },
     "com.morris.state-tree-actions": {
       "name": "State Tree Actions",
-      "github": "kmarkley/Indigo-State-Tree-Actions"
+      "github": "kmarkley/Indigo-State-Tree-Actions",
+      "store_url": "https://www.indigodomo.com/pluginstore/155/",
+      "store_download": "https://github.com/kmarkley/Indigo-State-Tree-Actions/releases/download/0.1.0/State.Tree.Actions.indigoPlugin.zip"
     },
     "com.morris.timed-devices": {
       "name": "Timed Devices",
-      "github": "kmarkley/Indigo-Timed-Devices"
+      "github": "kmarkley/Indigo-Timed-Devices",
+      "store_url": "https://www.indigodomo.com/pluginstore/88/",
+      "store_download": "https://api.github.com/repos/kmarkley/Indigo-Timed-Devices/zipball/0.1.0"
     },
     "com.morris.unistat": {
       "name": "Unistat",
-      "github": "kmarkley/Indigo-Unistat"
+      "github": "kmarkley/Indigo-Unistat",
+      "store_url": "https://www.indigodomo.com/pluginstore/156/",
+      "store_download": "https://github.com/kmarkley/Indigo-Unistat/releases/download/0.1.0/Unistat.indigoPlugin.zip"
     },
     "com.nathansheldon.indigoplugin.HueLights": {
       "name": "Hue Lights",
-      "github": "kw123/Hue-Lights-Indigo-plugin"
+      "github": "kw123/Hue-Lights-Indigo-plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/21/",
+      "store_download": "https://github.com/kw123/Hue-Lights-Indigo-plugin/releases/download/2022.29.82/Hue.Lights.indigoPlugin.zip"
     },
     "com.nathansheldon.indigoplugin.PioneerReceiver": {
       "name": "Pioneer Receiver",
-      "github": "IndigoDomotics/Pioneer-Receiver-Indigo-Plugin"
+      "github": "IndigoDomotics/Pioneer-Receiver-Indigo-Plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/45/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.nathansheldon/com.nathansheldon.indigoplugin.PioneerReceiver/2022.0.11/Pioneer_Receiver.indigoPlugin.zip"
     },
     "com.nathansheldon.indigoplugin.sleepybed-iq": {
       "name": "SleepyBed IQ",
-      "github": "IndigoDomotics/SleepyBed-IQ-Indigo-Plugin"
+      "github": "IndigoDomotics/SleepyBed-IQ-Indigo-Plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/46/",
+      "store_download": "https://github.com/IndigoDomotics/SleepyBed-IQ-Indigo-Plugin/releases/download/2023.0.0/SleepyBed.IQ.indigoPlugin.zip"
     },
     "com.nathanw.IndigoPlugin.ESPHomeClimate": {
       "name": "ESPHome Climate",
-      "github": "nathanjw/ESPHomeClimate-indigo-plugin"
+      "github": "nathanjw/ESPHomeClimate-indigo-plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/289/",
+      "store_download": "https://github.com/nathanjw/ESPHomeClimate-indigo-plugin/releases/download/v1.1.0/ESPHomeClimate.indigoPlugin.zip"
     },
     "com.pennypacker.indigoplugin.weatherflow": {
       "name": "WeatherFlow Smart Weather",
-      "github": "bpennypacker/WeatherFlow-Indigo-Plugin"
+      "github": "bpennypacker/WeatherFlow-Indigo-Plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/217/",
+      "store_download": "https://api.github.com/repos/bpennypacker/WeatherFlow-Indigo-Plugin/zipball/v2022.0.1"
     },
     "com.perceptiveautomation.indigoplugin.directvdvrcontrol": {
       "name": "DIRECTV DVR Control",
-      "github": "IndigoDomotics/directv-dvr-control"
+      "github": "IndigoDomotics/directv-dvr-control",
+      "store_url": "https://www.indigodomo.com/pluginstore/2/",
+      "store_download": "https://api.github.com/repos/IndigoDomotics/directv-dvr-control/zipball/2023.0.1"
     },
     "com.perceptiveautomation.indigoplugin.user-scripts": {
       "name": "User Scripts",
-      "github": "IndigoDomotics/indigo-user-scripts"
+      "github": "IndigoDomotics/indigo-user-scripts",
+      "store_url": "https://www.indigodomo.com/pluginstore/150/",
+      "store_download": "https://api.github.com/repos/IndigoDomotics/indigo-user-scripts/zipball/2023.1.0"
     },
     "com.pluginfactory.indigoplugin.rainmachine2": {
       "name": "RainMachine2",
-      "github": "geoffsharris/RainMachine2"
+      "github": "geoffsharris/RainMachine2",
+      "store_url": "https://www.indigodomo.com/pluginstore/277/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.pluginfactory/com.pluginfactory.indigoplugin.rainmachine2/1.0.0/RainMachine2.zip"
     },
     "com.racarter.indigoplugin.blink": {
       "name": "Blink",
@@ -665,135 +966,201 @@
     },
     "com.ramias.indigo.plugins.pihole": {
       "name": "Pi Hole DNS Controller",
-      "github": "Ramias1/indigo-pi-hole"
+      "github": "Ramias1/indigo-pi-hole",
+      "store_url": "https://www.indigodomo.com/pluginstore/203/",
+      "store_download": "https://api.github.com/repos/Ramias1/indigo-pi-hole/zipball/2.1.1"
     },
     "com.ryanbuckner.indigoplugin.life360": {
       "name": "Life360",
-      "github": "ryanbuckner/life360-plugin"
+      "github": "ryanbuckner/life360-plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/256/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.ryanbuckner/com.ryanbuckner.indigoplugin.life360/2023.1.3/life360.indigoPlugin.zip"
     },
     "com.schollnick.indigoplugin.BatteryMonitor": {
       "name": "UPS and Battery Monitor",
-      "github": "FlyingDiver/Indigo-UPS-Battery-Plugin"
+      "github": "FlyingDiver/Indigo-UPS-Battery-Plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/108/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-UPS-Battery-Plugin/releases/download/2023.0.0/BatteryMonitor.indigoPlugin.zip"
     },
     "com.sherwinsound.anthemrs232": {
       "name": "Anthem RS232",
-      "github": "Koreysherwin/indigo-anthem-rs232"
+      "github": "Koreysherwin/indigo-anthem-rs232",
+      "store_url": "https://www.indigodomo.com/pluginstore/324/",
+      "store_download": "https://github.com/Koreysherwin/indigo-anthem-rs232/releases/download/v1.0/Anthem-RS232.indigoPlugin.zip"
     },
     "com.sherwinsound.spotifycontrol": {
       "name": "Spotify Control",
-      "github": "Koreysherwin/indigo-spotify-control"
+      "github": "Koreysherwin/indigo-spotify-control",
+      "store_url": "https://www.indigodomo.com/pluginstore/325/",
+      "store_download": "https://github.com/Koreysherwin/indigo-spotify-control/releases/download/v1.0.7/Spotify.Control.indigoPlugin.zip"
     },
     "com.sherwinsound.viewsonicprojector": {
       "name": "ViewSonic Projector",
-      "github": "Koreysherwin/indigo-ViewSonicProjector"
+      "github": "Koreysherwin/indigo-ViewSonicProjector",
+      "store_url": "https://www.indigodomo.com/pluginstore/323/",
+      "store_download": "https://downloads.indigodomo.com/pluginstore/com.sherwinsound/com.sherwinsound.viewsonicprojector/1.4.5/ViewSonicProjector.indigoPlugin.zip"
     },
     "com.simons-plugins.UKTrains": {
       "name": "UK Trains",
-      "github": "simons-plugins/indigo-UKTrains"
+      "github": "simons-plugins/indigo-UKTrains",
+      "store_url": "https://www.indigodomo.com/pluginstore/284/",
+      "store_download": "https://github.com/simons-plugins/indigo-UKTrains/releases/download/v2026.0.3/UKTrains.indigoPlugin.zip"
     },
     "com.simons-plugins.domio": {
       "name": "Domio",
-      "github": "simons-plugins/indigo-domio-plugin"
+      "github": "simons-plugins/indigo-domio-plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/320/",
+      "store_download": "https://github.com/simons-plugins/indigo-domio-plugin/releases/download/2026.3.2/Domio.indigoPlugin.zip"
     },
     "com.simons-plugins.logs-over-reflector": {
       "name": "LogsOverReflector",
-      "github": "simons-plugins/logs-over-reflector"
+      "github": "simons-plugins/logs-over-reflector",
+      "store_url": "https://www.indigodomo.com/pluginstore/317/",
+      "store_download": "https://github.com/simons-plugins/logs-over-reflector/releases/download/2026.0.3/LogsOverReflector.indigoPlugin.zip"
     },
     "com.simons-plugins.netro": {
       "name": "Netro Sprinklers",
-      "github": "simons-plugins/netro-indigo"
+      "github": "simons-plugins/netro-indigo",
+      "store_url": "https://www.indigodomo.com/pluginstore/282/",
+      "store_download": "https://github.com/simons-plugins/netro-indigo/releases/download/2026.1.2/Netro.Sprinklers.indigoPlugin.zip"
     },
     "com.simons-plugins.sofabaton": {
       "name": "Sofabaton",
-      "github": "simons-plugins/indigo-sofabaton"
+      "github": "simons-plugins/indigo-sofabaton",
+      "store_url": "https://www.indigodomo.com/pluginstore/319/",
+      "store_download": "https://github.com/simons-plugins/indigo-sofabaton/releases/download/2026.0.3/Sofabaton.indigoPlugin.zip"
     },
     "com.smurfless.indigoplugin.json1": {
       "name": "JSON Broadcast Plugin",
-      "github": "smurfless1/indigo-json-broadcaster"
+      "github": "smurfless1/indigo-json-broadcaster",
+      "store_url": "https://www.indigodomo.com/pluginstore/35/",
+      "store_download": "https://api.github.com/repos/smurfless1/indigo-json-broadcaster/zipball/v0.6.2"
     },
     "com.ssi.indigoplugin.Sonos": {
       "name": "Sonos",
-      "github": "IndigoDomotics/Sonos"
+      "github": "IndigoDomotics/Sonos",
+      "store_url": "https://www.indigodomo.com/pluginstore/147/",
+      "store_download": "https://github.com/IndigoDomotics/Sonos/releases/download/2024.0.4/Sonos.indigoPlugin.zip"
     },
     "com.vtmikel.augusthome": {
       "name": "August Home",
-      "github": "mlamoure/Indigo-August-Home"
+      "github": "mlamoure/Indigo-August-Home",
+      "store_url": "https://www.indigodomo.com/pluginstore/103/",
+      "store_download": "https://github.com/mlamoure/Indigo-August-Home/releases/download/v1.1.0/August.Home.indigoPlugin.zip"
     },
     "com.vtmikel.autofan": {
       "name": "Auto Fan",
-      "github": "mlamoure/indigo-auto-fan-plugin"
+      "github": "mlamoure/indigo-auto-fan-plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/322/",
+      "store_download": "https://github.com/mlamoure/indigo-auto-fan-plugin/releases/download/v2026.1.0/Auto.Fan.indigoPlugin.zip"
     },
     "com.vtmikel.autolights": {
       "name": "Auto Lights",
-      "github": "mlamoure/indigo-auto-lights"
+      "github": "mlamoure/indigo-auto-lights",
+      "store_url": "https://www.indigodomo.com/pluginstore/300/",
+      "store_download": "https://github.com/mlamoure/indigo-auto-lights/releases/download/v2026.1.0/Auto.Lights.indigoPlugin.zip"
     },
     "com.vtmikel.grafana": {
       "name": "Grafana Home Dashboard",
-      "github": "mlamoure/indigo-grafana-dashboard"
+      "github": "mlamoure/indigo-grafana-dashboard",
+      "store_url": "https://www.indigodomo.com/pluginstore/167/",
+      "store_download": "https://api.github.com/repos/mlamoure/indigo-grafana-dashboard/zipball/v2.0.1"
     },
     "com.vtmikel.mcp_server": {
       "name": "MCP Server",
-      "github": "mlamoure/indigo-mcp-server"
+      "github": "mlamoure/indigo-mcp-server",
+      "store_url": "https://www.indigodomo.com/pluginstore/310/",
+      "store_download": "https://github.com/mlamoure/indigo-mcp-server/releases/download/v2026.0.1/MCP.Server.indigoPlugin.zip"
     },
     "com.vtmikel.securityspyimage": {
       "name": "Image downloader and SecuritySpy helper",
-      "github": "mlamoure/indigo-securityspy-image-downloader"
+      "github": "mlamoure/indigo-securityspy-image-downloader",
+      "store_url": "https://www.indigodomo.com/pluginstore/162/",
+      "store_download": "https://github.com/mlamoure/indigo-securityspy-image-downloader/releases/download/v2025.0.1/SecuritySpy.Image.Downloader.indigoPlugin.zip"
     },
     "com.weathersnoop.indigoplugin": {
       "name": "WeatherSnoop",
-      "github": "fluentweather/weathersnoop-indigoplugin"
+      "github": "fluentweather/weathersnoop-indigoplugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/10/",
+      "store_download": "https://api.github.com/repos/FluentWeather/weathersnoop-indigoplugin/zipball/v3.2.0"
     },
     "com.webdeck.indigoplugin.bafcontrol": {
       "name": "BAF/Haiku",
-      "github": "webdeck/Indigo-BAF-Control"
+      "github": "webdeck/Indigo-BAF-Control",
+      "store_url": "https://www.indigodomo.com/pluginstore/321/",
+      "store_download": "https://github.com/webdeck/Indigo-BAF-Control/releases/download/2026.2.4/BAFControl.indigoPlugin.zip"
     },
     "com.whmoorejr.my-people": {
       "name": "My People",
-      "github": "whmoorejr/My-People"
+      "github": "whmoorejr/My-People",
+      "store_url": "https://www.indigodomo.com/pluginstore/244/",
+      "store_download": "https://github.com/whmoorejr/My-People/releases/download/v2022.0.1/MyPeople.indigoPlugin.zip"
     },
     "com.woodsmachine.indigoplugins.LightScenes": {
       "name": "Light Scenes",
-      "github": "rbdubz3/light-scenes-indigo"
+      "github": "rbdubz3/light-scenes-indigo",
+      "store_url": "https://www.indigodomo.com/pluginstore/251/",
+      "store_download": "https://github.com/rbdubz3/light-scenes-indigo/releases/download/2.0.1/LightScenes.indigoPlugin.zip"
     },
     "com.woodsmachine.indigoplugins.SmartSetpoints": {
       "name": "Smart Setpoints",
-      "github": "rbdubz3/smart-setpoints-indigo"
+      "github": "rbdubz3/smart-setpoints-indigo",
+      "store_url": "https://www.indigodomo.com/pluginstore/250/",
+      "store_download": "https://github.com/rbdubz3/smart-setpoints-indigo/releases/download/2.1.1/SmartSetpoints.indigoPlugin.zip"
     },
     "com.woodsmachine.indigoplugins.SylvaniaLightify": {
       "name": "Sylvania Lightify",
-      "github": "rbdubz3/sylvania-lightify-indigo"
+      "github": "rbdubz3/sylvania-lightify-indigo",
+      "store_url": "https://www.indigodomo.com/pluginstore/199/",
+      "store_download": "https://github.com/rbdubz3/sylvania-lightify-indigo/releases/download/2.0.1/SylvaniaLightify.indigoPlugin.zip"
     },
     "io.thechad.indigoplugin.pushover": {
       "name": "Pushover",
-      "github": "IndigoDomotics/indigo-pushover"
+      "github": "IndigoDomotics/indigo-pushover",
+      "store_url": "https://www.indigodomo.com/pluginstore/14/",
+      "store_download": "https://github.com/IndigoDomotics/indigo-pushover/releases/download/2022.0.2/Pushover.indigoPlugin.zip"
     },
     "io.thechad.indigoplugin.yamaharx": {
       "name": "Yamaha RX Receiver",
-      "github": "IndigoDomotics/indigo-yamaharx"
+      "github": "IndigoDomotics/indigo-yamaharx",
+      "store_url": "https://www.indigodomo.com/pluginstore/15/",
+      "store_download": "https://github.com/IndigoDomotics/indigo-yamaharx/releases/download/2022.0.3/YamahaRX.indigoPlugin.zip"
     },
     "net.dowles.doorbird": {
       "name": "DoorBird",
-      "github": "kwijibo007/DoorBird"
+      "github": "kwijibo007/DoorBird",
+      "store_url": "https://www.indigodomo.com/pluginstore/209/",
+      "store_download": "https://github.com/kwijibo007/DoorBird/releases/download/3.0.0/DoorBird.indigoPlugin.zip"
     },
     "net.dowles.monoprice6zoneamp": {
       "name": "Monoprice 6 Zone Amp",
-      "github": "kwijibo007/Monoprice-6-Zone-Amp"
+      "github": "kwijibo007/Monoprice-6-Zone-Amp",
+      "store_url": "https://www.indigodomo.com/pluginstore/55/",
+      "store_download": "https://github.com/kwijibo007/Monoprice-6-Zone-Amp/releases/download/2.0.0/Monoprice.6.Zone.Amp.indigoPlugin.zip"
     },
     "net.papamac.indigoplugin.virtualgaragedoor": {
       "name": "Virtual Garage Door",
-      "github": "papamac/VirtualGarageDoor"
+      "github": "papamac/VirtualGarageDoor",
+      "store_url": "https://www.indigodomo.com/pluginstore/267/",
+      "store_download": "https://github.com/papamac/VirtualGarageDoor/releases/download/v1.2.8/Virtual.Garage.Door.indigoPlugin.zip"
     },
     "net.zengers.weerlive": {
       "name": "WeerLive",
-      "github": "idurz/indigo-Weerlive"
+      "github": "idurz/indigo-Weerlive",
+      "store_url": "https://www.indigodomo.com/pluginstore/249/",
+      "store_download": "https://api.github.com/repos/idurz/Indigo-Weerlive/zipball/2.0.0"
     },
     "nl.rjdekok.indigoplugin.RFXCOM": {
       "name": "RFXCOM",
-      "github": "IndigoDomotics/rfxcom-plugin"
+      "github": "IndigoDomotics/rfxcom-plugin",
+      "store_url": "https://www.indigodomo.com/pluginstore/17/",
+      "store_download": "https://github.com/IndigoDomotics/rfxcom-plugin/releases/download/3.0.2/RFXCOM.indigoPlugin.zip"
     },
     "no.homeassistant.plugin": {
       "name": "Home Assistant Agent",
-      "github": "FlyingDiver/Indigo-HA-Agent"
+      "github": "FlyingDiver/Indigo-HA-Agent",
+      "store_url": "https://www.indigodomo.com/pluginstore/200/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-HA-Agent/releases/download/2025.1.7/HomeAssistantAgent.indigoPlugin.zip"
     },
     "org.cynic.indigo.behaviors": {
       "name": "Cynical Behaviors",
@@ -842,19 +1209,27 @@
     },
     "pro.sleepers.indigoplugin.8channel-relay": {
       "name": "8 Channel Network Relay",
-      "github": "IndigoDomotics/indigo-8channel-relay"
+      "github": "IndigoDomotics/indigo-8channel-relay",
+      "store_url": "https://www.indigodomo.com/pluginstore/196/",
+      "store_download": "https://github.com/IndigoDomotics/indigo-8channel-relay/releases/download/v2.0.1/8chRelay.indigoPlugin.zip"
     },
     "se.cobmedia.indigoplugin.virtualenergymeter": {
       "name": "Virtual Energy Meter",
-      "github": "IndigoDomotics/Indigo-VirtualEnergyMeter"
+      "github": "IndigoDomotics/Indigo-VirtualEnergyMeter",
+      "store_url": "https://www.indigodomo.com/pluginstore/194/",
+      "store_download": "https://github.com/IndigoDomotics/Indigo-VirtualEnergyMeter/releases/download/2023.1.0/Indigo-VirtualEnergyMeter.indigoPlugin.zip"
     },
     "se.furtenbach.indigo.plugin.beacon": {
       "name": "GeoFence",
-      "github": "FlyingDiver/Indigo-GeoFence"
+      "github": "FlyingDiver/Indigo-GeoFence",
+      "store_url": "https://www.indigodomo.com/pluginstore/121/",
+      "store_download": "https://github.com/FlyingDiver/Indigo-GeoFence/releases/download/2022.1.4/GeoFence.indigoPlugin.zip"
     },
     "uk.co.greensky.flux": {
       "name": "Flux LED",
-      "github": "IndigoDomotics/IndigoFluxLED"
+      "github": "IndigoDomotics/IndigoFluxLED",
+      "store_url": "https://www.indigodomo.com/pluginstore/163/",
+      "store_download": "https://github.com/IndigoDomotics/IndigoFluxLED/releases/download/2023.0.2/FluxLED.indigoPlugin.zip"
     }
   }
 }
