@@ -20,11 +20,11 @@ Example:
 
 ### Reading GithubInfo
 
-The bundle path comes from `mcp__indigo__list_plugins` (the `path` field). Use the absolute `PlistBuddy` path so this works on any macOS without relying on `$PATH`:
+The bundle path comes from `mcp__indigo__list_plugins` (the `path` field, captured into `$PLUGIN_PATH`). Use the absolute `PlistBuddy` binary path so this works on any macOS without relying on the system `$PATH` variable:
 
 ```bash
-/usr/libexec/PlistBuddy -c "Print :GithubInfo:GithubUser" "$PATH/Contents/Info.plist" 2>/dev/null
-/usr/libexec/PlistBuddy -c "Print :GithubInfo:GithubRepo" "$PATH/Contents/Info.plist" 2>/dev/null
+/usr/libexec/PlistBuddy -c "Print :GithubInfo:GithubUser" "$PLUGIN_PATH/Contents/Info.plist" 2>/dev/null
+/usr/libexec/PlistBuddy -c "Print :GithubInfo:GithubRepo" "$PLUGIN_PATH/Contents/Info.plist" 2>/dev/null
 ```
 
 Non-zero exit → no GitHub source declared → fall through to Source 2.

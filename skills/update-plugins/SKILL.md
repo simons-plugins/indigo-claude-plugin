@@ -27,10 +27,11 @@ Call `mcp__indigo__list_plugins` with its default parameters (disabled plugins a
 **Installed version is `PluginVersion` from Info.plist, not the MCP `version` field.** The MCP `version` field usually returns `CFBundleVersion` which is rarely updated. For accurate version diffs, read `PluginVersion` directly:
 
 ```bash
-/usr/libexec/PlistBuddy -c "Print :PluginVersion" "$PATH/Contents/Info.plist"
+PLUGIN_PATH="..."  # `path` from mcp__indigo__list_plugins (with mount-prefix handling)
+/usr/libexec/PlistBuddy -c "Print :PluginVersion" "$PLUGIN_PATH/Contents/Info.plist"
 ```
 
-Where `$PATH` is the `path` from `list_plugins` (with mount-prefix handling — see `references/install-workflow.md`).
+See `references/install-workflow.md` "Deploy path portability" for the mount-prefix handling.
 
 ### Phase 2 — RESOLVE UPGRADE SOURCE
 
@@ -102,7 +103,7 @@ Enforced by phase ordering and by the detailed sequence in `references/install-w
 - **One plugin at a time.** Failures stay isolated.
 - **Disabled plugins are skipped.** See Phase 1.
 - **MCP Server never self-restarts via this skill.** Dedicated manual path.
-- **Stop before rsync, start after.** For plugins with bundled native extensions, running-plugin file locks can break `rsync --delete`. The workflow restarts before and after the rsync for that reason.
+- **File-lock aware rsync.** Plugins with bundled native extensions can hold file locks that break `rsync --delete`. The workflow retries without `--delete` as a soft fallback when it hits `unlinkat: Directory not empty`. Cleaner approach (MCP `stop_plugin` tool) is filed as an upstream ask.
 
 ## Related Skills
 

@@ -43,12 +43,13 @@ Call `mcp__indigo__list_plugins` with its default parameters (disabled plugins a
 **Read the real installed version directly from Info.plist**, not from MCP's `version` field:
 
 ```bash
-/usr/libexec/PlistBuddy -c "Print :PluginVersion" "$PATH/Contents/Info.plist"
+PLUGIN_PATH="..."  # `path` from mcp__indigo__list_plugins (mount-prefixed if needed)
+/usr/libexec/PlistBuddy -c "Print :PluginVersion" "$PLUGIN_PATH/Contents/Info.plist"
 ```
 
 The `version` field from MCP returns `CFBundleVersion` (rarely updated) rather than `PluginVersion` — useless for diffs.
 
-**Cross-mount note**: if `$PATH` from MCP isn't directly accessible (Indigo runs on a different Mac than this skill), apply a mount prefix. See `references/install-workflow.md` "Deploy path portability" section.
+**Cross-mount note**: if the MCP-reported path isn't directly accessible (Indigo runs on a different Mac than this skill), apply a mount prefix. See `references/install-workflow.md` "Deploy path portability" section.
 
 ### Phase 2 — RESOLVE UPGRADE SOURCE
 

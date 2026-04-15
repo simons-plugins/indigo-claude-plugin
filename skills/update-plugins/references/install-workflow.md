@@ -135,19 +135,7 @@ STAGED_VERSION=$(/usr/libexec/PlistBuddy -c "Print :PluginVersion" "$STAGED_BUND
 
 Compare to the advertised upstream version. Mismatch → log a warning and continue. Final installed version shows up in Phase 6.
 
-### 6. Stop the plugin before rsync
-
-**Critical ordering**: stop the plugin first, then rsync, then start it again. The old order (rsync → restart) fails for plugins with bundled native extensions (e.g. `Packages/pyarrow`) where running-plugin file locks block `rsync --delete`, leaving `Contents/` in a mixed state: new `Info.plist` but old `Packages/`.
-
-```text
-mcp__indigo__restart_plugin(plugin_id=$BUNDLE_ID)
-```
-
-Wait: there's no `stop_plugin` MCP tool. The workaround is to issue `restart_plugin` *before* rsync — Indigo stops the process, starts a new one from disk, which at that moment still has the old files, then we immediately rsync the new files over the (now-not-locked) `Packages/` directory. On the next restart in step 7, Indigo picks up the new version.
-
-The cleaner fix would be an MCP `stop_plugin` tool — worth filing upstream against `mlamoure/indigo-mcp-server`. Until then, two restarts (before + after) is the correct sequence.
-
-### 7. Deploy via rsync
+### 6. Deploy via rsync
 
 ```bash
 rsync -a --delete "$STAGED_BUNDLE/Contents/" "$DEPLOY_PATH/Contents/"
@@ -155,11 +143,19 @@ rsync -a --delete "$STAGED_BUNDLE/Contents/" "$DEPLOY_PATH/Contents/"
 
 Trailing slashes matter: `.../Contents/` → `.../Contents/` copies contents rather than nesting. `--delete` removes files present in the old bundle but not the new one.
 
-If rsync fails (permission denied, disk full, target not found), fail this plugin and continue. Do **not** sudo.
+**File-lock gotcha**: for plugins with bundled native extensions (observed with `Packages/pyarrow` in the MCP Server plugin), the running plugin process holds file handles under `Packages/` that block `rsync --delete` with `unlinkat: Directory not empty`. The current MCP toolset has **no clean way** to stop a plugin without also starting it — there's no `stop_plugin` tool, and calling `restart_plugin` as a "stop" is a false friend because Indigo starts the new process immediately and the new process re-acquires the same locks before our rsync finishes.
 
-**If `--delete` still fails** with "Directory not empty" despite the pre-stop in step 6 (very bundled native extensions may re-grab locks mid-rsync), retry once without `--delete` as a soft fallback — the new files land on top, leftovers from the old version linger in unused directories, log a warning.
+Three pragmatic mitigations, in order:
 
-### 8. Restart the plugin
+1. **Retry without `--delete`** as a soft fallback. The new files land on top of the old ones, leftovers from removed-upstream files linger in unused directories. Log a warning. This is what actually works today.
+2. **Accept the partial state** for plugins where the soft fallback also fails. Report per-plugin failure and continue with the batch.
+3. **File upstream**: open an issue against [`mlamoure/indigo-mcp-server`](https://github.com/mlamoure/indigo-mcp-server) requesting a `stop_plugin` MCP tool (or a `disable_plugin` → rsync → `enable_plugin` flow). When that lands, this step gets a proper pre-stop and the `--delete` pass works reliably.
+
+Do not sleep-loop or `lsof`-poll as a "fake stop" — those are flaky because Indigo may respawn the process between the stop signal and the rsync, and lsof on an NFS/SMB-mounted Plugins dir (cross-mount setups) is unreliable.
+
+If rsync fails for non-lock reasons (permission denied, disk full, target not found), fail this plugin and continue. Do **not** sudo.
+
+### 7. Restart the plugin
 
 ```text
 mcp__indigo__restart_plugin(plugin_id=$BUNDLE_ID)
@@ -167,7 +163,7 @@ mcp__indigo__restart_plugin(plugin_id=$BUNDLE_ID)
 
 **Except** when `$BUNDLE_ID == com.vtmikel.mcp_server` — see the hard limitation section above. Defer this call and tell the user to run it from a fresh session.
 
-### 9. Verify startup
+### 8. Verify startup
 
 Two checks. The **version check is the primary success signal**; the log check is a secondary sanity pass because the exact `TypeVal` severity mapping isn't well-documented and shouldn't be the sole oracle.
 
@@ -196,7 +192,7 @@ Treat missing success marker as inconclusive, not failed, if the version check a
 
 **No rollback.** If the upgrade rsync'd cleanly but the new code throws errors after restart, report the failure and let the user decide whether to revert manually.
 
-### 10. Cleanup
+### 9. Cleanup
 
 ```bash
 rm -rf "$TMPDIR"
@@ -211,9 +207,9 @@ Always run this, even on failure.
 | 404 downloading asset | Step 2 | Try zipball fallback, then store_download fallback, then fail |
 | Zipball has no `.indigoPlugin` at any depth | Step 3 | Corrupted or source-only repo; fail this plugin |
 | Bundle identifier mismatch | Step 4 | Cached metadata wrong; don't rsync, fail |
-| `rsync --delete` "Directory not empty" | Step 7 | Stop was ineffective for this plugin — retry without `--delete` as a soft fallback, leave cleanup to the user |
-| rsync permission denied | Step 7 | Indigo filesystem perms — user resolves manually; continue with other plugins |
-| Plugin restart hangs | Step 8 | MCP `restart_plugin` has its own timeout; if it never returns, report "restart uncertain" |
-| Bundle ID is `com.vtmikel.mcp_server` | Step 8 | Do not call restart; tell user to restart from a fresh session |
-| Log shows errors after restart | Step 9 | Upgrade applied but new code misbehaves; mark failed, suggest release notes |
+| `rsync --delete` "Directory not empty" | Step 6 | Running plugin holds file locks; retry without `--delete` as a soft fallback, leaving stale files from removed-upstream in place. Log a warning. |
+| rsync permission denied | Step 6 | Indigo filesystem perms — user resolves manually; continue with other plugins |
+| Plugin restart hangs | Step 7 | MCP `restart_plugin` has its own timeout; if it never returns, report "restart uncertain" |
+| Bundle ID is `com.vtmikel.mcp_server` | Step 7 | Do not call restart; tell user to restart from a fresh session |
+| Log shows errors after restart | Step 8 | Upgrade applied but new code misbehaves; mark failed, suggest release notes |
 | Deploy path not accessible | Prereq | Cross-mount detection failed; ask user for the mount prefix |
