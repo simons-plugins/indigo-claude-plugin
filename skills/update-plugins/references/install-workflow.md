@@ -30,7 +30,7 @@ Option 1 is safer. Option 2 requires warning the user clearly that the MCP state
 
 The destination for rsync comes from the `path` field returned by `mcp__indigo__list_plugins` / `mcp__indigo__get_plugin_by_id`. **Do not hardcode** `/Library/Application Support/...`.
 
-**Cross-machine mount handling**: if the user is running this skill on a different Mac than the Indigo server (e.g. Indigo on `jarvis.local` mounted as `/Volumes/<VolumeName>/`), the MCP-reported absolute path won't exist directly. Detect this:
+**Cross-machine mount handling**: if the user is running this skill on a different Mac than the Indigo server (with the Indigo server's filesystem mounted as `/Volumes/<VolumeName>/`), the MCP-reported absolute path won't exist directly. Detect this:
 
 ```bash
 if [ ! -d "$MCP_REPORTED_PATH/Contents" ]; then
