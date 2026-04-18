@@ -60,10 +60,27 @@ Locate the SQL Logger plugin:
 mcp__indigo__list_plugins → entry where name == "SQL Logger"
 ```
 
-Capture `id` (bundle ID, commonly
-`com.perceptiveautomation.indigoplugin.sql-logger`) and `path`. Apply
-a mount prefix if the reported path isn't directly accessible (same
-pattern `/indigo:update-plugins` uses).
+Capture `id` (bundle ID: `com.perceptiveautomation.indigoplugin.sql-logger`)
+and `path`. If the reported path isn't directly accessible (Indigo
+runs on a different Mac than this skill — common in this workspace),
+apply the workspace mount-prefix probe:
+
+```bash
+MCP_REPORTED_PATH="..."  # from mcp__indigo__list_plugins
+DEPLOY_PATH="$MCP_REPORTED_PATH"
+if [ ! -d "$DEPLOY_PATH/Contents" ]; then
+    for prefix in "/Volumes/Macintosh HD-1" "/Volumes/Macintosh HD"; do
+        if [ -d "${prefix}${MCP_REPORTED_PATH}/Contents" ]; then
+            DEPLOY_PATH="${prefix}${MCP_REPORTED_PATH}"
+            break
+        fi
+    done
+fi
+```
+
+If neither prefix resolves, stop and ask the user for the mount
+prefix. See `skills/update-plugins/references/install-workflow.md`
+§ "Deploy path portability" for the canonical version of this logic.
 
 Derive the two working paths:
 
@@ -74,39 +91,49 @@ Derive the two working paths:
 
 ### Phase 2 — PATCH
 
-Locate the two call sites in `plugin.py` with `Grep`:
+Locate the two call sites in `plugin.py` with `Grep`. Line numbers
+drift across SQL Logger versions — always locate by the message
+fragment, not by number:
 
-- `_update_device_history` — look for `logger.debug` near
-  `"Failed to update table"` (historically ~line 529)
-- `_create_table_for_dev` — look for `logger.debug` near
-  `"Failed to create table"` (historically ~line 476)
+- Update path — grep `Failed to update table`. At time of writing
+  (bundle `com.perceptiveautomation.indigoplugin.sql-logger` 2025.x)
+  it's at ~line 529 and already carries `exc_info=True`.
+- Create path — grep `Failed to create table .* for device history`.
+  Currently at ~line 476 and does **not** carry `exc_info=True`.
 
-Line numbers drift across SQL Logger versions — always locate by
-content, not by number.
+Promote each to `logger.error`, prefix the message with
+`[DEBUG-PATCH] `, and ensure `exc_info=True` is present on both (add
+it to the create call if missing — without it the traceback never
+reaches the log, which defeats the point of the patch). Use `Edit`,
+not `Write`.
 
-Promote each to `logger.error` and prefix the message with
-`[DEBUG-PATCH] `. Use `Edit`, not `Write` — do not rewrite the file.
-
-Before:
-
-```python
-self.logger.debug(
-    f"Failed to update table {dev_table_name} for device {dev.id}: {err}",
-    exc_info=True,
-)
-```
-
-After:
+Update path before/after:
 
 ```python
-self.logger.error(
-    f"[DEBUG-PATCH] Failed to update table {dev_table_name} for device {dev.id}: {err}",
-    exc_info=True,
-)
+# before (~line 529, with exc_info=True already)
+self.logger.debug(f"Failed to update table {dev_table_name} with device changes: {err}", exc_info=True)
+
+# after
+self.logger.error(f"[DEBUG-PATCH] Failed to update table {dev_table_name} with device changes: {err}", exc_info=True)
 ```
 
-Every patched line MUST contain the literal string `[DEBUG-PATCH]` —
-the revert step relies on grep returning zero hits.
+Create path before/after (note: source has no `exc_info=True` — add
+it when promoting):
+
+```python
+# before (~line 476, no exc_info)
+self.logger.debug(f"Failed to create table {table_name} for device history: {err}")
+
+# after
+self.logger.error(f"[DEBUG-PATCH] Failed to create table {table_name} for device history: {err}", exc_info=True)
+```
+
+If a `grep` finds the fragment but the surrounding arguments differ
+from the above (SQL Logger is maintained; call signatures drift),
+adapt — the invariant is *promote to error, add the DEBUG-PATCH tag,
+ensure exc_info=True*. Every patched line MUST contain the literal
+string `[DEBUG-PATCH]` — the revert step relies on grep returning
+zero hits.
 
 Restart the plugin:
 
@@ -179,7 +206,9 @@ Which fix? (a / b / c / none)
 ```
 
 If the user answers (b), ask which states before proceeding. If
-"none", jump to Phase 6 (revert only, no fix applied).
+"none" — or at any abort path — jump directly to Phase 6 (revert
+only, no fix applied). See Safety Rules: patches must never outlive
+the skill's own exit, regardless of cause.
 
 ### Phase 5 — APPLY (chosen option only)
 
@@ -203,8 +232,14 @@ Phase 3.
 
 **Option (c) — drop + rebuild:**
 
+Before emitting any SQL, assert `<id>` is purely decimal digits
+(`^[0-9]+$`). Indigo device IDs are always integers, so a non-match
+means the extraction in Phase 3 went wrong — stop and re-run
+extraction rather than continuing with a malformed DROP.
+
 Add a one-shot DROP block at the very end of `startup()` in
-`plugin.py` — after `_connect_db()`. Substitute the real device ID:
+`plugin.py` — after `_connect_db()`. Substitute the validated device
+ID:
 
 ```python
 # [DEBUG-PATCH] one-shot drop of broken device_history_<id>
@@ -269,12 +304,16 @@ Expected outcomes:
 If errors continue after two cycles:
 
 - Different device? The original "one **or more** failures" is plural
-  for a reason. Re-run from Phase 2 — the next iteration will surface
-  a different `device_history_<id>` in the log.
+  for a reason. Re-run the **full Phase 2 → 7 cycle** — Phase 6 has
+  already reverted the previous patch, so the log no longer carries
+  `[DEBUG-PATCH]` lines. Re-patching is required to surface the next
+  device.
 - Fix didn't land? Check the sharedProp in Indigo UI directly, or
   grep the plugin log for the post-fix behaviour.
-- Drop rebuild failed? Look for `_create_table_for_dev` exceptions in
-  the log (the patched version of that call site will surface them).
+- Drop rebuild failed? Re-apply the Phase 2 patch and look for
+  `_create_table_for_dev` exceptions in the log — with `exc_info=True`
+  now present on both sites, the traceback will show why the rebuild
+  insert failed.
 
 Report the outcome to the user plainly: what changed, what's still
 happening, what to do next.
@@ -283,12 +322,19 @@ happening, what to do next.
 
 - **Every temporary edit is tagged `[DEBUG-PATCH]`.** Phase 6 relies
   on `grep [DEBUG-PATCH]` returning zero.
-- **Never leave a patch in the file.** A leftover `startup()` DROP
-  will re-destroy the rebuilt table on every restart.
+- **Patches never outlive the skill's exit.** If the skill aborts at
+  any point after Phase 2 — user cancels, log-read finds nothing,
+  extraction fails, any error, interrupt, or user "none" in Phase 4 —
+  the first action before exiting is a full Phase 6 revert
+  (restore both `logger.debug` call sites, remove any `startup()`
+  DROP block, grep-verify zero `[DEBUG-PATCH]` hits, restart plugin).
+  A patched `logger.error` left behind will spam the event log every
+  ~60s at error level until noticed.
 - **Never hardcode `Plugins/...` paths.** Discover via
   `mcp__indigo__list_plugins` and apply the workspace mount prefix.
 - **Never DROP a table the skill hasn't just identified.** The SQL
-  string must embed the specific `<id>` extracted in Phase 3.
+  string must embed the specific `<id>` extracted in Phase 3, and
+  `<id>` must be confirmed decimal-only (`^[0-9]+$`) before emission.
 - **Interactive only.** Every phase waits for the user — no
   background runs, no cron.
 - **One device per pass.** If multiple devices are failing, finish
