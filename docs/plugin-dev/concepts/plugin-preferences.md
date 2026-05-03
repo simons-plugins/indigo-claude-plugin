@@ -60,6 +60,8 @@ def startup(self):
     debug = self.pluginPrefs.get("showDebugInfo", False)
 ```
 
+To seed fields with computed values when the prefs dialog opens, override `getPrefsConfigUiValues(self)` — see [`plugin-lifecycle.md`](plugin-lifecycle.md#configui-pre-population-callbacks).
+
 ## Hidden Preferences
 
 Store values not shown in the config UI:

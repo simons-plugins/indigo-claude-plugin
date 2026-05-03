@@ -5,8 +5,8 @@ Your comprehensive guide to creating your first Indigo plugin in minutes.
 ## Prerequisites
 
 - **macOS**: Indigo runs only on macOS
-- **Indigo 2023.2+**: Home automation server installed and running
-- **Python 3.10+**: Comes with macOS, used by Indigo
+- **Indigo 2023.2+** (2025.x recommended): Home automation server installed and running
+- **Python 3.10–3.13**: Comes bundled with Indigo (see version table below)
 - **Text Editor**: VS Code, PyCharm, or any code editor
 - **Basic Python**: Understanding of Python and object-oriented programming
 
@@ -241,9 +241,11 @@ import paho.mqtt.client as mqtt
 
 **How it works:**
 - Indigo runs `pip install` into `Contents/Packages/` automatically on first load
-- Indigo tracks installation via `pip-install-log-success.txt` in `Packages/`
-- Subsequent restarts skip installation if the success marker exists
-- If you change `requirements.txt`, delete the success marker to force reinstall
+- Indigo writes a success marker in `Packages/` — filename is version-keyed:
+  - **2025.2**: `3.13-pip-install-log-success.txt`
+  - **2025.1 and older**: `pip-install-log-success.txt`
+- Subsequent restarts skip installation if the marker exists
+- If you change `requirements.txt`, delete the marker to force reinstall
 
 **Important:**
 - Do NOT commit `Contents/Packages/` to git — add it to `.gitignore`
@@ -298,17 +300,23 @@ Place `.py` files here to make them importable by any plugin. After adding or up
 
 **Solutions**:
 - Add a `requirements.txt` in `Contents/Server Plugin/` listing your dependencies
-- Delete `Contents/Packages/pip-install-log-success.txt` to force Indigo to reinstall
+- To force Indigo to reinstall, delete the success marker in `Contents/Packages/` (`3.13-pip-install-log-success.txt` on 2025.2, `pip-install-log-success.txt` on older versions)
 - If you see `dlopen` errors with architecture mismatches, remove any manually bundled `.so` files from `Contents/Packages/` and let Indigo reinstall via `requirements.txt`
 - Use Python 3 syntax (not Python 2)
 - Check package compatibility with Python 3.10+
 
-## Python Version Reference
+## Version Reference
 
-| Indigo Version | Python Version | Notes |
-|----------------|----------------|-------|
-| 2023.2+ | Python 3.10+ | Current, recommended |
-| 2022.x | Python 2.7 | Legacy, end-of-life |
+| Indigo | Python | Plugin install path                                | Runtime API |
+|--------|--------|----------------------------------------------------|-------------|
+| 2025.2 | 3.13.9 | `.../Perceptive Automation/Indigo 2025.2/Plugins/` | 3.8         |
+| 2025.1 | 3.11.6 | `.../Perceptive Automation/Indigo 2025.1/Plugins/` | 3.7         |
+| 2023.2 | 3.10+  | `.../Perceptive Automation/Indigo 2023.2/Plugins/` | (see docs)  |
+| 2022.x | 2.7    | Legacy, end-of-life                                | n/a         |
+
+`ServerApiVersion` in `Info.plist` declares the **minimum** API your plugin requires. `3.0` continues to work on all 2023.2+ versions — there is no need to bump it just because you're on a newer Indigo release. The path examples elsewhere in this guide use 2023.2; substitute the row above that matches your installation.
+
+**Upgrading to 2025.2?** Python 3.13 has several library breaking changes — see [`troubleshooting/common-issues.md`](troubleshooting/common-issues.md#upgrading-to-indigo-20252--python-313).
 
 **For Python 3 migration**, see: [`reference/Python3-Migration-Guide.md`](../../reference/Python3-Migration-Guide.md)
 
