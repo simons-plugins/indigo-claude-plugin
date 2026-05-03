@@ -25,16 +25,18 @@ Useful for:
 
 ## Command-Line Interface
 
+> Path examples below use `Indigo 2025.2`. Substitute your installed version (`2025.1`, `2023.2`, etc.) — see the [version reference table](../quick-start.md#version-reference).
+
 ### Run a Script File
 
 ```bash
-/Library/Application\ Support/Perceptive\ Automation/Indigo\ 2023.2/IndigoPluginHost.app/Contents/MacOS/IndigoPluginHost -x /path/to/script.py
+/Library/Application\ Support/Perceptive\ Automation/Indigo\ 2025.2/IndigoPluginHost.app/Contents/MacOS/IndigoPluginHost -x /path/to/script.py
 ```
 
 ### Run Inline Code
 
 ```bash
-/Library/Application\ Support/Perceptive\ Automation/Indigo\ 2023.2/IndigoPluginHost.app/Contents/MacOS/IndigoPluginHost -e 'indigo.device.turnOn("Hallway Light")'
+/Library/Application\ Support/Perceptive\ Automation/Indigo\ 2025.2/IndigoPluginHost.app/Contents/MacOS/IndigoPluginHost -e 'indigo.device.turnOn("Hallway Light")'
 ```
 
 ### SSH Remote Access
@@ -42,7 +44,7 @@ Useful for:
 You can run Indigo scripts remotely via SSH:
 
 ```bash
-ssh user@indigo-mac '/Library/Application\ Support/Perceptive\ Automation/Indigo\ 2023.2/IndigoPluginHost.app/Contents/MacOS/IndigoPluginHost -e "indigo.server.log(\"Hello from SSH\")"'
+ssh user@indigo-mac '/Library/Application\ Support/Perceptive\ Automation/Indigo\ 2025.2/IndigoPluginHost.app/Contents/MacOS/IndigoPluginHost -e "indigo.server.log(\"Hello from SSH\")"'
 ```
 
 ## Notes

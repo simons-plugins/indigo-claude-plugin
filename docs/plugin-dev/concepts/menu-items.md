@@ -78,6 +78,8 @@ def send_custom_command(self, values_dict, menu_item_id):
     self.logger.info(f"Sending command: {command}")
 ```
 
+**Pre-populating fields when the dialog opens.** Override `getMenuActionConfigUiValues(self, menu_id)` to seed fields with computed values (today's date, the latest reading, etc.) before the dialog is shown. Static `defaultValue` only fires once and dynamic lists do not auto-select their first item — see [`plugin-lifecycle.md`](plugin-lifecycle.md#configui-pre-population-callbacks) for the full reference.
+
 ## Common Patterns
 
 ### Debug Toggle

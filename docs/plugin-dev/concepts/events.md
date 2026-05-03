@@ -145,6 +145,8 @@ def getEventConfigUiValues(self, pluginProps, typeId, triggerId):
     return valuesDict
 ```
 
+This is one of five `get*ConfigUiValues` callbacks — see [`plugin-lifecycle.md`](plugin-lifecycle.md#configui-pre-population-callbacks) for the full reference (device, action, menu item, and plugin prefs dialogs).
+
 ### closedEventConfigUi
 
 Called after event config is saved:

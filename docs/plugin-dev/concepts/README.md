@@ -70,7 +70,7 @@ Documentation planned for this section:
 
 ## Contributing
 
-Want to add documentation to this section? See [CONTRIBUTING.md](../../CONTRIBUTING.md) for guidelines.
+Want to add documentation to this section? Open a PR or issue on the [GitHub repo](https://github.com/simons-plugins/indigo-claude-plugin).
 
 **Valuable topics include**:
 - State update performance patterns

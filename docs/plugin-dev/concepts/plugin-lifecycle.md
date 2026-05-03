@@ -351,6 +351,49 @@ def deviceDeleted(self, dev):
     self._cleanup_device_data(dev.id)
 ```
 
+## ConfigUI Pre-population Callbacks
+
+Override any of these to seed dialog fields with computed or live values **before** the dialog opens. They run on every dialog open, so the values can change from one open to the next (e.g. defaulting a date dropdown to today). All return `(values_dict, errors_dict)` as `indigo.Dict()` instances.
+
+| Callback                       | Dialog          | Signature                                       |
+|--------------------------------|-----------------|-------------------------------------------------|
+| `getPrefsConfigUiValues`       | Plugin prefs    | `(self)`                                        |
+| `getDeviceConfigUiValues`      | Device config   | `(self, plugin_props, type_id, dev_id)`         |
+| `getEventConfigUiValues`       | Event / trigger | `(self, plugin_props, type_id, event_id)`       |
+| `getMenuActionConfigUiValues`  | Menu item       | `(self, menu_id)`                               |
+| `getActionConfigUiValues`      | Action config   | `(self, plugin_props, type_id, dev_id)`         |
+
+All five exist in `plugin_base.py` on every supported Indigo version (2023.2, 2025.1, 2025.2). The Indigo SDK examples leave most of them off, which has historically made them easy to miss.
+
+**Static `defaultValue` vs. dynamic lists.** A `<Field defaultValue="X">` only seeds the field on first open — and dynamic lists (`<List class="self" method="..."/>`) do **not** auto-select their first item if no `defaultValue` matches. If you want a value computed at open-time (today's date, the latest sensor reading, the user's last choice), use the callback above for that dialog type.
+
+### Example — default a menu item's date dropdowns to today
+
+```python
+from datetime import date
+
+def getMenuActionConfigUiValues(self, menu_id):
+    values_dict = indigo.Dict()
+    errors_dict = indigo.Dict()
+    if menu_id == "dailyReport":
+        today = date.today()
+        values_dict["rpt_day"]   = f"{today.day:02d}"
+        values_dict["rpt_month"] = f"{today.month:02d}"
+        values_dict["rpt_year"]  = str(today.year)
+    return (values_dict, errors_dict)
+```
+
+### Example — seed a device dialog with a fresh API token
+
+```python
+def getDeviceConfigUiValues(self, plugin_props, type_id, dev_id):
+    values_dict = indigo.Dict(plugin_props)
+    errors_dict = indigo.Dict()
+    if not values_dict.get("api_token"):
+        values_dict["api_token"] = self._mint_token()
+    return (values_dict, errors_dict)
+```
+
 ## Common Patterns
 
 ### Deferred Initialization

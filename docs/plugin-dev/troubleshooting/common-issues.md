@@ -289,13 +289,22 @@ zeroconf==0.148.0
 **How Indigo handles it:**
 1. On plugin load, Indigo checks for `requirements.txt`
 2. Runs `pip install` into `Contents/Packages/` using Indigo's Python
-3. Creates `Contents/Packages/pip-install-log-success.txt` as a marker
+3. Creates a success marker in `Contents/Packages/` (filename varies — see below)
 4. On subsequent restarts, skips installation if the marker exists
+
+The marker filename is version-keyed:
+
+| Indigo         | Success file (in `Contents/Packages/`)        |
+|----------------|-----------------------------------------------|
+| 2025.2         | `3.13-pip-install-log-success.txt`            |
+| 2025.1 / older | `pip-install-log-success.txt`                 |
+
+Never `pip install` into the system Python — those packages disappear on any Python upgrade. `requirements.txt` is the only supported path on every Indigo version.
 
 ### Force Reinstall
 
 If you change `requirements.txt` or packages are corrupted:
-1. Delete `Contents/Packages/pip-install-log-success.txt`
+1. Delete the success marker (see filename table above)
 2. Restart the plugin
 3. Indigo will re-run `pip install`
 
@@ -331,6 +340,44 @@ import requests
 - `.so` files compiled on arm64 (Apple Silicon) won't work on x86_64 (Intel) servers
 - Files built for Python 3.11 won't load on Python 3.10
 - `__file__` is not defined in Indigo's plugin environment, breaking `os.path.dirname(__file__)` patterns
+
+## Upgrading to Indigo 2025.2 / Python 3.13
+
+*Applies to 2025.2 only — earlier Indigo versions ship Python 3.10 or 3.11.*
+
+Indigo 2025.2 ships Python 3.13.9. Several stdlib and popular-library changes between 3.11 and 3.13 break plugins that worked on 2025.1.
+
+### `telnetlib` removed from the Python 3.13 stdlib
+
+```
+ModuleNotFoundError: No module named 'telnetlib'
+```
+
+**Fix**: add `telnetlib-313-and-up` to your `requirements.txt`. The shim restores the same import path so existing code keeps working.
+
+### `websockets` v14+ — `extra_headers` renamed
+
+```
+TypeError: connect() got unexpected keyword argument 'extra_headers'
+```
+
+**Fix**: rename `extra_headers=` to `additional_headers=` in `websockets.connect()`. This is a `websockets` library change (v14+), not Python 3.13 itself — pinning `websockets<14` in `requirements.txt` is the alternative.
+
+### `matplotlib` — `legendHandles` removed
+
+```
+AttributeError: 'Legend' object has no attribute 'legendHandles'
+```
+
+**Fix**: use `legend_handles` (snake_case) instead — e.g. `ax.legend().legend_handles`.
+
+### `matplotlib` — `plot_date` deprecated
+
+```
+MatplotlibDeprecationWarning: plot_date was deprecated in 3.9 and will be removed in 3.11. Use plot() instead.
+```
+
+**Fix**: replace `ax.plot_date(...)` with `ax.plot(...)`. Matplotlib auto-formats date axes on `plot()` — no extra setup needed.
 
 ## Python 3 Issues
 

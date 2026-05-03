@@ -326,6 +326,10 @@ def get_device_list(self, filter="", values_dict=None, type_id="", target_id=0):
 
 **Return**: List of `(value_string, display_string)` tuples.
 
+## Pre-population Callbacks
+
+To seed fields with computed values when a dialog opens (today's date, the latest sensor reading, a freshly minted token), override the matching `get*ConfigUiValues` callback. Static `defaultValue` only fires once and dynamic lists do not auto-select their first item — the callback is the supported way to set values that may change between opens. See [`plugin-lifecycle.md`](plugin-lifecycle.md#configui-pre-population-callbacks) for the full reference table covering all five callbacks (`getPrefsConfigUiValues`, `getDeviceConfigUiValues`, `getEventConfigUiValues`, `getMenuActionConfigUiValues`, `getActionConfigUiValues`).
+
 ## Validation
 
 ### Validation Callbacks

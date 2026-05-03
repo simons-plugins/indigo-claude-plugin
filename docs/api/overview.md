@@ -189,4 +189,4 @@ While both APIs provide access to core Indigo functionality (devices, variables,
 - **[HTTP API Reference](http-api.md)** - Complete HTTP documentation
 - **[Authentication Guide](authentication.md)** - Setup and security
 - **[Device Commands](device-commands.md)** - All available commands
-- **[Indigo Object Model](../indigo-object-model.md)** - Understanding device objects
+- **[Indigo Object Model](../plugin-dev/api/indigo-object-model.md)** - Understanding device objects

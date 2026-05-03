@@ -35,6 +35,8 @@ Define custom plugin actions in `Actions.xml`. Users configure and trigger these
 </Action>
 ```
 
+To pre-populate fields with computed or live values when the dialog opens (e.g. seed `brightness` from the device's current state), override `getActionConfigUiValues(self, plugin_props, type_id, dev_id)` — see [`plugin-lifecycle.md`](plugin-lifecycle.md#configui-pre-population-callbacks).
+
 ### Action Targeting All Devices
 
 ```xml

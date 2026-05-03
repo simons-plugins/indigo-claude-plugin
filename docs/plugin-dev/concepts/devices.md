@@ -106,6 +106,8 @@ States store device data and can trigger events:
 
 **Field Types**: `textfield`, `textarea`, `checkbox`, `menu`, `list`, `button`, `label`, `separator`
 
+To pre-populate fields when the device dialog opens (e.g. seed a fresh API token, load the current sensor reading), override `getDeviceConfigUiValues(self, plugin_props, type_id, dev_id)` — see [`plugin-lifecycle.md`](plugin-lifecycle.md#configui-pre-population-callbacks).
+
 ## Device Factory Pattern
 
 A Device Factory creates and manages a group of child devices from a single dialog. Use this when a hub or controller discovers multiple sub-devices (e.g., a bridge with relays, dimmers, and sensors).
