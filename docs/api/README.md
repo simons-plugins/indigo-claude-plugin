@@ -89,9 +89,9 @@ Indigo provides two primary integration APIs:
 
 ## Related Documentation
 
-- **[Indigo Object Model](../indigo-object-model.md)** - Understanding device/variable objects
-- **[Plugin Development](../../concepts/)** - Building Indigo plugins (server-side)
-- **[Examples](../../examples/)** - SDK examples for plugin development
+- **[Indigo Object Model](../plugin-dev/api/indigo-object-model.md)** - Understanding device/variable objects
+- **[Plugin Development](../plugin-dev/concepts/)** - Building Indigo plugins (server-side)
+- **[Examples](../plugin-dev/examples/)** - SDK examples for plugin development
 
 ## For Claude (Context Optimization)
 

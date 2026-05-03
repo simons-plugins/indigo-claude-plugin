@@ -10,8 +10,8 @@ Usage:
     4. Implement your plugin logic in the appropriate methods
 
 Requirements:
-    - Indigo 2023.2+ (Python 3.10+)
-    - ServerApiVersion 3.0 in Info.plist
+    - Indigo 2023.2+ (Python 3.10–3.13; 2025.2 recommended)
+    - ServerApiVersion 3.0 in Info.plist (declares minimum API; works on all 2023.2+)
 """
 
 import indigo

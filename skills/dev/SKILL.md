@@ -71,8 +71,8 @@ class Plugin(indigo.PluginBase):
 - Use `self.sleep()` not `time.sleep()` in concurrent threads
 - Handle `self.StopThread` in `runConcurrentThread`
 - Log with `self.logger.debug/info/warning/error/exception()`
-- Python 3.10+ (Indigo 2023+)
-- Bundle dependencies in `Contents/Packages/` (not system pip)
+- Python 3.10–3.13 (see version table in `docs/plugin-dev/quick-start.md`)
+- Use `requirements.txt` in `Contents/Server Plugin/` — Indigo auto-installs into `Contents/Packages/`. Never `pip install` into system Python.
 - `CFBundleIdentifier` in Info.plist must be globally unique
 
 ## Device Types (Devices.xml)
