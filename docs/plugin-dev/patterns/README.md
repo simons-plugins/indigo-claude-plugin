@@ -12,6 +12,11 @@ Core patterns for working with the Indigo Object Model:
 - Variable and action group patterns
 - Common anti-patterns to avoid
 
+### [Testing](testing.md)
+Two complementary testing patterns:
+- Pattern A — `unittest.mock`-based unit tests (fast, no Indigo runtime, runs in CI)
+- Pattern B — live integration tests with the upstream `TestingBase` git submodule (`APIBase` + `ValidateXmlFile` against a running server)
+
 ## Coming Soon
 
 We're building additional implementation patterns including:
