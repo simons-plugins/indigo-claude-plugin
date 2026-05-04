@@ -30,6 +30,7 @@ Expert assistant for Indigo home automation plugin development. Provides compreh
 | `docs/plugin-dev/troubleshooting/common-issues.md` | 11KB | Troubleshooting |
 | `docs/plugin-dev/patterns/api-patterns.md` | 5KB | Common API patterns |
 | `docs/plugin-dev/patterns/open-source-contributing.md` | 3KB | Contributing to IndigoDomotics open source |
+| `docs/plugin-dev/patterns/testing.md` | 4KB | Testing — pytest mocks (Pattern A) and TestingBase live integration (Pattern B) |
 
 ### Modular IOM Reference (Load by Topic)
 
@@ -70,6 +71,7 @@ These are complementary - load based on question type:
 | Subscriptions | `docs/plugin-dev/api/iom/subscriptions.md` |
 | Schedule/action group commands | `docs/plugin-dev/api/iom/command-namespaces.md` |
 | Open source contributing | `docs/plugin-dev/patterns/open-source-contributing.md` |
+| Testing, pytest, mocking, TestingBase | `docs/plugin-dev/patterns/testing.md` |
 
 ### Specific Routing
 
@@ -98,6 +100,9 @@ These are complementary - load based on question type:
 
 **"How do I contribute to open source?" / "Add plugin to IndigoDomotics"**
 1. Read `docs/plugin-dev/patterns/open-source-contributing.md`
+
+**"How do I test my plugin?" / "Write tests" / "TestingBase" / "pytest"**
+1. Read `docs/plugin-dev/patterns/testing.md`
 
 **"What device properties exist?"**
 1. Read `docs/plugin-dev/api/iom/devices.md`
@@ -143,7 +148,8 @@ docs/plugin-dev/
 │       └── utilities.md           # Helpers (4KB)
 ├── patterns/
 │   ├── api-patterns.md            # Common patterns (5KB)
-│   └── open-source-contributing.md # IndigoDomotics contributing guide (3KB)
+│   ├── open-source-contributing.md # IndigoDomotics contributing guide (3KB)
+│   └── testing.md                 # pytest mocks + TestingBase (4KB)
 ├── examples/
 │   └── sdk-examples-guide.md      # Example catalog (8KB)
 └── troubleshooting/

@@ -122,6 +122,7 @@ For detailed guidance on specific topics, read these files relative to `${CLAUDE
 | Scripting shell & CLI | `docs/plugin-dev/concepts/scripting-shell.md` |
 | Plugin preferences & PluginConfig.xml | `docs/plugin-dev/concepts/plugin-preferences.md` |
 | API patterns (state updates, replaceOnServer) | `docs/plugin-dev/patterns/api-patterns.md` |
+| Testing patterns (pytest mocks, TestingBase) | `docs/plugin-dev/patterns/testing.md` |
 | Troubleshooting | `docs/plugin-dev/troubleshooting/common-issues.md` |
 | SDK examples guide | `docs/plugin-dev/examples/sdk-examples-guide.md` |
 | Indigo Object Model overview | `docs/plugin-dev/api/indigo-object-model.md` |

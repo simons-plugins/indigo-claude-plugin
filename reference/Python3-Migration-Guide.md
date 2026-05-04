@@ -124,3 +124,56 @@
 - `dict.iteritems()` is deprecated, `dict.items()` works just as well in both python 2 & 3 (same for all the iter* functions on dict and list objects).
 
 - `pylint -py3k` may give you this error: `round built-in referenced (round-builtin)`. This warning can safely be ignored since it's primarily just a reminder that the [algorithm for calculating how an exact halfway cases](https://docs.python.org/3/whatsnew/3.0.html#builtins) has changed in python 3.
+
+---
+
+## Indigo 2025.2 / Python 3.11 → 3.13
+
+Indigo 2025.2 bumps the embedded interpreter from Python **3.11 to 3.13.9**. The 3.11→3.13 step is small compared to 2→3, and most plugin code needs no changes. Two categories warrant a quick sweep before upgrading.
+
+### Library-level breakages
+
+For specific third-party library and stdlib import errors observed under 3.13 (`telnetlib`, `websockets` v14+, `matplotlib`'s `legendHandles` and `plot_date`), see [common-issues.md → Upgrading to Indigo 2025.2 / Python 3.13](../docs/plugin-dev/troubleshooting/common-issues.md#upgrading-to-indigo-20252--python-313). Those are the issues seen in the wild; the rest of this section covers generic 3.13 deprecations to clean up while you're in the area.
+
+### Deprecations to clean up
+
+These don't fail under 3.13 yet but are slated for removal:
+
+- **`datetime.utcnow()`** — deprecated since 3.12, returns naive datetimes.
+  ```python
+  # before
+  ts = datetime.utcnow()
+  # after
+  from datetime import datetime, UTC
+  ts = datetime.now(UTC)
+  ```
+
+- **`asyncio.get_event_loop()`** with no running loop emits a DeprecationWarning since 3.10.
+  ```python
+  # inside a coroutine
+  loop = asyncio.get_running_loop()
+  # creating a new loop explicitly
+  loop = asyncio.new_event_loop()
+  ```
+
+- **`pkg_resources`** is deprecated. Prefer `importlib.metadata` for distribution introspection.
+
+### Removed stdlib (PEP 594 — completed in 3.13)
+
+If any of these appear in your imports, they will now fail at import time:
+
+`aifc`, `audioop`, `cgi`, `chunk`, `crypt`, `imghdr`, `mailcap`, `nis`, `nntplib`, `ossaudiodev`, `pipes`, `sndhdr`, `spwd`, `sunau`, `telnetlib`, `uu`, `xdrlib`.
+
+For `telnetlib` specifically, the `telnetlib-313-and-up` PyPI shim restores the same import path — see the troubleshooting note linked above.
+
+`imp` (removed in 3.12) and `distutils` (removed in 3.12) are gone too if you've been carrying any pre-3.12 code. Switch to `importlib` and `setuptools`/`packaging`.
+
+### Vendored packages
+
+Pre-built packages in `Contents/Packages/` are tagged with the Python version that created them. Pure-Python wheels (`.py` only — no `.so` files) usually transport across versions. Anything with compiled extensions needs rebuilding for 3.13. The safer pattern is `requirements.txt` — Indigo 2025.2 will reinstall under 3.13 automatically and writes a version-keyed `3.13-pip-install-log-success.txt` marker.
+
+### Testing under 3.13
+
+Run your existing test suite (Pattern A from [patterns/testing.md](../docs/plugin-dev/patterns/testing.md)) under 3.13 locally before installing 2025.2 on a live server. If you don't have a test suite, restart plugins one at a time after the upgrade and watch the Indigo Event Log for tracebacks — bump `PluginVersion` and ship a fix for any plugin that fails to start.
+
+To roll back to 2025.1: quit 2025.2 server and client, relaunch 2025.1.
