@@ -129,7 +129,7 @@
 
 ## Indigo 2025.2 / Python 3.11 → 3.13
 
-Indigo 2025.2 bumps the embedded interpreter from Python **3.11 to 3.13.9**. The 3.11→3.13 step is small compared to 2→3, and most plugin code needs no changes. Two categories warrant a quick sweep before upgrading.
+Indigo 2025.2 bumps the embedded interpreter from Python **3.11 to 3.13**. The 3.11→3.13 step is small compared to 2→3, and most plugin code needs no changes. Two categories warrant a quick sweep before upgrading.
 
 ### Library-level breakages
 
@@ -148,7 +148,7 @@ These don't fail under 3.13 yet but are slated for removal:
   ts = datetime.now(UTC)
   ```
 
-- **`asyncio.get_event_loop()`** with no running loop emits a DeprecationWarning since 3.10.
+- **`asyncio.get_event_loop()`** with no running loop emits a `DeprecationWarning` since 3.12 (cpython gh-100160) and will be removed in 3.14. Inside a coroutine, use `asyncio.get_running_loop()` instead.
   ```python
   # inside a coroutine
   loop = asyncio.get_running_loop()
@@ -162,7 +162,7 @@ These don't fail under 3.13 yet but are slated for removal:
 
 If any of these appear in your imports, they will now fail at import time:
 
-`aifc`, `audioop`, `cgi`, `chunk`, `crypt`, `imghdr`, `mailcap`, `nis`, `nntplib`, `ossaudiodev`, `pipes`, `sndhdr`, `spwd`, `sunau`, `telnetlib`, `uu`, `xdrlib`.
+`aifc`, `audioop`, `cgi`, `cgitb`, `chunk`, `crypt`, `imghdr`, `mailcap`, `msilib`, `nis`, `nntplib`, `ossaudiodev`, `pipes`, `sndhdr`, `spwd`, `sunau`, `telnetlib`, `uu`, `xdrlib`.
 
 For `telnetlib` specifically, the `telnetlib-313-and-up` PyPI shim restores the same import path — see the troubleshooting note linked above.
 

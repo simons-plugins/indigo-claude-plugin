@@ -35,6 +35,8 @@ sys.path.insert(0, str(SERVER_PLUGIN_DIR))
 
 @pytest.fixture
 def mock_logger():
+    # Mock() auto-creates these attributes on first access — the explicit
+    # assignment is for readability so test failures point at named mocks.
     logger = Mock()
     for level in ("debug", "info", "warning", "error", "exception"):
         setattr(logger, level, Mock())
@@ -47,7 +49,7 @@ Tests then import plugin modules and inject `mock_logger` (and other fixtures) w
 
 ## Pattern B — Live integration with TestingBase
 
-Indigo ships [`TestingBase`](https://github.com/IndigoDomotics/TestingBase) as a shared git submodule. Tests subclass `APIBase` (a `unittest.TestCase`) and exercise a running Indigo server's HTTP API. The companion `ValidateXmlFile` helper validates `Devices.xml`, `Actions.xml`, `Events.xml`, and `MenuItems.xml` against the Indigo schema.
+Indigo ships [`TestingBase`](https://github.com/IndigoDomotics/TestingBase) as a shared git submodule. Tests subclass `APIBase` — an abstract `unittest.TestCase` — and exercise a running Indigo server's HTTP API. The companion `ValidateXmlFile` helper validates `Devices.xml`, `Actions.xml`, `Events.xml`, and `MenuItems.xml` against the Indigo schema.
 
 **When to use**: pre-release smoke tests; XML schema validation; end-to-end checks against your plugin's HTTP responder.
 
@@ -90,14 +92,18 @@ class TestMyPlugin(APIBase):
         self.assertTrue(device["enabled"])
 ```
 
-**XML validation** — `ValidateXmlFile` MUST come first in the MRO:
+**XML validation** — `ValidateXmlFile` MUST come first in the MRO. Resolve the path relative to the test file so the test runs on any machine:
 
 ```python
+import os
 from shared import APIBase, ValidateXmlFile
 
 class TestActionsXml(ValidateXmlFile, APIBase):
-    server_plugin_dir_path = (
-        "/path/to/MyPlugin.indigoPlugin/Contents/Server Plugin"
+    server_plugin_dir_path = os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            "../MyPlugin.indigoPlugin/Contents/Server Plugin",
+        )
     )
     file_name = "Actions.xml"
 ```
@@ -112,7 +118,7 @@ local changes back to it — the upstream README is explicit about that.
 
 | | Pattern A (mocks) | Pattern B (TestingBase) |
 |---|---|---|
-| Speed | Seconds | Slow (spawns processes per call) |
+| Speed | Seconds | Slower — HTTP round-trips per assertion; helpers like `run_host_script` spawn an IPH3 process per call |
 | Indigo install needed | No | Yes — running server + admin API access |
 | What it catches | Logic errors | Integration + XML schema errors |
 | Best for | CI on every PR | Pre-release smoke |
