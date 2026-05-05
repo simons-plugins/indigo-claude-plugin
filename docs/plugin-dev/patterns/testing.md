@@ -127,8 +127,74 @@ Use both for any non-trivial plugin: A on every commit, B before each release.
 
 ---
 
+## TestingBase conventions worth knowing
+
+The upstream [TestingBase repo](https://github.com/IndigoDomotics/TestingBase) is the authoritative source for TestingBase usage — its `README.md` and `example_test_xml_files.py` document the public API. `/indigo:dev` covers Indigo plugin SDK questions; for TestingBase-specific questions, read upstream first.
+
+A few conventions that aren't intuitive and have bitten downstream consumers:
+
+### `run_host_script` uses `return`, not `print`
+
+`tests/shared/utils.py:run_host_script(script)` wraps `indigo-host -e <script>`. Indigo wraps your script as a function body; `print()` goes to Indigo's event log, not the subprocess stdout. Use `return` to send a value back:
+
+```python
+# WRONG — print goes to event log, run_host_script returns ""
+script = "print(indigo.server.getInstallFolderPath())"
+
+# RIGHT — return value comes back via stdout
+script = "return indigo.server.getInstallFolderPath()"
+```
+
+Upstream's own `tests/shared/utils.py:get_install_folder` uses the same `return` convention. Result is always a string — JSON-encode and decode if you need richer types.
+
+### Plugin state is not on the HTTP API — use the IOM
+
+Indigo's HTTP API (`/v2/api/indigo.<endpoint>`) only knows about `devices`, `variables`, `actionGroups`, `controlPages`, `logs`, `triggers`, `schedules`. There is no `indigo.plugins` endpoint. Plugin state queries (`isEnabled`, `isRunning`, `isInstalled`) go through the IOM via `run_host_script`:
+
+```python
+from shared import APIBase
+from shared.utils import run_host_script
+
+class TestPluginLoaded(APIBase):
+    def test_loaded(self):
+        script = (
+            f"plugin = indigo.server.getPlugin('{self.plugin_id}')\n"
+            f"if plugin is None:\n"
+            f"    return 'state=missing'\n"
+            f"return f'state=found|enabled={{plugin.isEnabled()}}|running={{plugin.isRunning()}}'\n"
+        )
+        result = run_host_script(script)
+        self.assertIn("enabled=True", result, f"indigo-host returned: {result!r}")
+```
+
+The plugin object's API (`isInstalled()`, `isEnabled()`, `isRunning()`, plus several properties) is documented in `/indigo:dev` → `docs/plugin-dev/api/iom/command-namespaces.md` under "Plugin Object Access". That's the SDK side; this section covers how to *invoke* it from a TestingBase test.
+
+### `/usr/local/indigo/` must be traversable by your user
+
+A fresh Indigo 2025.2 install sets `drwxrwx---  root:wheel` on `/usr/local/indigo/`, which means a regular user can't even traverse into the directory to execute `indigo-host` or `indigo-restart-plugin`. Symptom: `PermissionError: [Errno 13] Permission denied: '/usr/local/indigo/indigo-host'` raised from `subprocess.run` inside `setUpClass`.
+
+Fix once on each developer machine:
+
+```bash
+sudo chmod 0755 /usr/local/indigo/   # makes the dir traversable + listable
+```
+
+The binaries inside stay `0770 root:admin` so only admin-group users can run them. macOS primary users are in `admin` by default.
+
+### Reflector setup needs an Indigo Server restart
+
+If `URL_PREFIX` points at a brand-new reflector (e.g. `https://yourname.indigodomo.net`), the reflector address resolves immediately but indigodomo.com's reflector service shows "Reflector Not Found" until Indigo Server is restarted with the reflector configured. Symptom: `httpx` returns HTTP 200 with the public indigodomo.com error page (HTML, not JSON). Fix: restart Indigo Server after enabling the reflector.
+
+### Local IWS is HTTP, not HTTPS
+
+`URL_PREFIX=https://localhost:8176` gives an SSL handshake timeout — local Indigo Web Server is HTTP-only by default. Use `http://localhost:8176` for direct local testing, or a reflector for HTTPS. The upstream `ENV_TEMPLATE` shows `https://localhost:8176` as the default, which is misleading for local-only setups.
+
+---
+
 ## References
 
-- TestingBase upstream: https://github.com/IndigoDomotics/TestingBase
+- TestingBase upstream (authoritative for TestingBase): https://github.com/IndigoDomotics/TestingBase
+- TestingBase upstream `example_test_xml_files.py`: shows the canonical `ValidateXmlFile` patterns
 - Plugin HTTP API (consumed by Pattern B): see `/indigo:api`
 - Plugin lifecycle (what you'd typically test): see `concepts/plugin-lifecycle.md`
+- Plugin Object Access (the IOM surface for plugin queries): see `docs/plugin-dev/api/iom/command-namespaces.md` — "Plugin Object Access" section
