@@ -10,7 +10,7 @@ Drop-in GitHub Actions workflows for any Indigo plugin in the workspace. They au
 ## Conventions
 
 - **Tag prefix**: `v$VERSION` (e.g. `v2026.0.3`). The version-check is conservative and rejects either prefixed or bare tags clashing with the new version.
-- **Plugin bundle detection**: `find . -maxdepth 1 -name "*.indigoPlugin" -type d`. The bundle must live at the repo root.
+- **Plugin bundle detection**: `find . -maxdepth 1 -iname "*.indigoPlugin" -type d`. The bundle must live at the repo root. Case-insensitive (`-iname`) so legacy bundles like `HeatmiserNeo.IndigoPlugin` are matched.
 - **Action versions**: `actions/checkout@v4`, `softprops/action-gh-release@v2`. Both run on Node 20.
 
 ## Usage
