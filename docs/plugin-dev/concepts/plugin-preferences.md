@@ -77,6 +77,28 @@ def _after_sync(self):
     self.pluginPrefs["_syncCount"] = self.pluginPrefs.get("_syncCount", 0) + 1
 ```
 
+> **⚠️ The `_` prefix convention applies to `self.pluginPrefs` only — NOT to
+> device-level `dev.pluginProps`.**
+>
+> Plugin-level prefs (`self.pluginPrefs[...] = ...`) accept underscore-prefixed
+> keys because they're written via direct dict mutation. Device-level
+> `dev.pluginProps` written via `replacePluginPropsOnServer()` go through
+> Indigo's XML serialiser which rejects keys starting with `_`:
+>
+> ```python
+> # Fine — direct dict, no XML validation
+> self.pluginPrefs["_lastSync"] = "..."
+>
+> # FAILS with LowLevelBadParameterError -- illegal XML tag name character
+> new_props = dict(dev.pluginProps)
+> new_props["_dynamicKeys"] = "..."
+> dev.replacePluginPropsOnServer(new_props)
+>
+> # Right — same intent, valid name
+> new_props["dynamicKeys"] = "..."
+> dev.replacePluginPropsOnServer(new_props)
+> ```
+
 ## Validating Preferences
 
 ```python
@@ -179,7 +201,7 @@ def startup(self):
 ## Best Practices
 
 - Use `get()` with defaults for safe access
-- Prefix hidden preferences with underscore (`_cacheTime`)
+- Prefix hidden Plugin-level preferences with underscore (`_cacheTime`) — but **never** prefix device-level `dev.pluginProps` keys with `_`; those go through Indigo's XML serialiser and a leading `_` raises `LowLevelBadParameterError`. See the warning above.
 - Validate all user input in `validatePrefsConfigUi()`
 - React to changes in `closedPrefsConfigUi()`
 - Don't store sensitive data like passwords in plain text
