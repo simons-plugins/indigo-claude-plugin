@@ -201,7 +201,7 @@ def startup(self):
 ## Best Practices
 
 - Use `get()` with defaults for safe access
-- Prefix hidden plugin-level preferences with underscore (`_cacheTime`) — but **never** prefix device-level `dev.pluginProps` keys with `_`; those go through Indigo's XML serialiser and a leading `_` raises `LowLevelBadParameterError`. See the warning above.
+- Prefix hidden Plugin-level preferences with underscore (`_cacheTime`) — but **never** prefix device-level `dev.pluginProps` keys with `_`; those go through Indigo's XML serialiser and a leading `_` raises `LowLevelBadParameterError`. See the warning above.
 - Validate all user input in `validatePrefsConfigUi()`
 - React to changes in `closedPrefsConfigUi()`
 - Don't store sensitive data like passwords in plain text

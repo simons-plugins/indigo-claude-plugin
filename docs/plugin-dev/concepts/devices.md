@@ -297,7 +297,7 @@ dev.enabled         # Is device enabled?
 
 ## State ID naming rules (undocumented but strict)
 
-Indigo's plugin host validates custom state IDs more strictly than XML or
+Indigo's Plugin host validates custom state IDs more strictly than XML or
 Python identifiers permit. Violating any of these rules raises
 `LowLevelBadParameterError -- illegal XML tag name character` from
 `stateListOrDisplayStateIdChanged()` or `replacePluginPropsOnServer()`,
@@ -342,7 +342,7 @@ def _is_valid_state_id(key):
 ## Reserved state names — don't shadow native device properties
 
 Indigo has reserved property names on device objects (e.g. `device.batteryLevel`).
-If a plugin declares a custom state with the same name, Indigo silently routes
+If a Plugin declares a custom state with the same name, Indigo silently routes
 `updateStateOnServer()` writes to the **native property** instead of Custom States.
 The state never appears in the Custom States panel and no error is raised.
 
@@ -350,7 +350,7 @@ Known reserved names to avoid as custom state IDs:
 
 - `batteryLevel` — use `battery` (with `Integer` type) instead
 
-The reservation hides bugs that look like "my plugin isn't writing the state"
+The reservation hides bugs that look like "my Plugin isn't writing the state"
 when actually the write succeeded into the wrong slot. Use `Integer` rather
 than `Number` for whole-number percentages so the Custom States panel renders
 the value correctly.
@@ -358,7 +358,7 @@ the value correctly.
 ## Dynamic state declaration — three subtle rules
 
 When overriding `getDeviceStateList(dev)` to advertise states beyond what's in
-Devices.xml (typical pattern: capture-all sensor plugins, MQTT/HA bridges):
+Devices.xml (typical pattern: capture-all sensor Plugins, MQTT/HA bridges):
 
 ### 1. The parent's list is a LIVE reference, not a copy
 
@@ -381,7 +381,7 @@ def getDeviceStateList(self, dev):
 
 Indigo's XML serialiser rejects `dev.replacePluginPropsOnServer({"_seenKeys": ...})`
 with `LowLevelBadParameterError`. This is **distinct** from `self.pluginPrefs`
-(plugin-level prefs written via direct dict assignment) — those accept
+(Plugin-level prefs written via direct dict assignment) — those accept
 underscore-prefixed keys fine. Only **device-level** pluginProps written via
 `replacePluginPropsOnServer` are strict.
 
@@ -419,12 +419,12 @@ except Exception:
 
 ## `deviceUpdated` self-loop guard
 
-If your plugin calls `indigo.devices.subscribeToChanges()` AND also writes
+If your Plugin calls `indigo.devices.subscribeToChanges()` AND also writes
 states on its own devices, every state write fires `deviceUpdated()` again —
 infinite loop unless guarded.
 
 The guard MUST be at the very top of `deviceUpdated()` and check `pluginId`,
-not `id`. A per-device id check is not sufficient if the plugin manages more
+not `id`. A per-device id check is not sufficient if the Plugin manages more
 than one device — it doesn't prevent A→B→A→B cross-device loops.
 
 ```python

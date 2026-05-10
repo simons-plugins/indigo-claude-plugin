@@ -334,7 +334,7 @@ def actionControlUniversal(self, action, dev):
 
 ## `uiPath` attribute — PascalCase, no spaces
 
-When you group plugin actions under a sub-menu in Indigo's UI via
+When you group Plugin actions under a sub-menu in Indigo's UI via
 `uiPath="..."` on `<Action>` or `<MenuItem>`, the value MUST be PascalCase
 with no spaces and no punctuation. Spaces cause an
 `NSInternalInconsistencyException` crash in the Indigo client (confirmed
@@ -355,14 +355,14 @@ with no spaces and no punctuation. Spaces cause an
 
 `uiPath="hidden"` is the documented reserved value that hides the action
 from the user-visible Action picker (e.g. for actions only invoked from
-plugin code via `executeAction`).
+Plugin code via `executeAction`).
 
-## Calling other plugins' actions — known prop-name pitfalls
+## Calling other Plugins' actions — known prop-name pitfalls
 
-`indigo.server.getPlugin(...)` lets you call actions on installed plugins,
-but the action ID and prop names must match exactly what the target plugin
+`indigo.server.getPlugin(...)` lets you call actions on installed Plugins,
+but the action ID and prop names must match exactly what the target Plugin
 defines in its Actions.xml. Two patterns trip people up because the
-"obvious" action name is not what the plugin actually exposes:
+"obvious" action name is not what the Plugin actually exposes:
 
 ### Pushover (`io.thechad.indigoplugin.pushover`)
 
@@ -392,7 +392,7 @@ indigo.server.sendEmailTo(
     body="Plain text or HTML body",
 )
 
-# Wrong — props dict loses keys during cross-plugin serialization,
+# Wrong — props dict loses keys during cross-Plugin serialization,
 # emailMessage is silently dropped, email never sends
 indigo.server.getPlugin("com.indigodomo.email").executeAction(
     "sendEmail",
@@ -401,7 +401,7 @@ indigo.server.getPlugin("com.indigodomo.email").executeAction(
 ```
 
 `indigo.server.sendEmailTo()` automatically uses the first configured
-SMTP device — no need to look up the plugin or device ID.
+SMTP device — no need to look up the Plugin or device ID.
 
 ## Action Validation
 
