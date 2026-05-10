@@ -357,51 +357,28 @@ with no spaces and no punctuation. Spaces cause an
 from the user-visible Action picker (e.g. for actions only invoked from
 Plugin code via `executeAction`).
 
-## Calling other Plugins' actions — known prop-name pitfalls
+## Calling another Plugin's actions
 
-`indigo.server.getPlugin(...)` lets you call actions on installed Plugins,
-but the action ID and prop names must match exactly what the target Plugin
-defines in its Actions.xml. Two patterns trip people up because the
-"obvious" action name is not what the Plugin actually exposes:
+`indigo.server.getPlugin(plugin_id).executeAction(action_id, props=...)`
+lets you invoke actions exposed by other installed Plugins. Two things
+must match exactly what the target Plugin declares in its `Actions.xml`:
 
-### Pushover (`io.thechad.indigoplugin.pushover`)
+1. **The action ID** — the `id` attribute on the `<Action>` element, not
+   the user-facing menu name.
+2. **The prop names** — the `id` of every `<Field>` inside the action's
+   `<ConfigUI>`. A typo or guessed name is silently dropped during
+   cross-Plugin serialization; the action runs with missing data and no
+   error is raised.
 
-```python
-pushover = indigo.server.getPlugin("io.thechad.indigoplugin.pushover")
-if pushover and pushover.isEnabled():
-    pushover.executeAction("send", props={        # ← "send", NOT "sendPushover"
-        "msgTitle":    "Subject",
-        "msgBody":     "Message body",            # required
-        "msgUser":     PUSHOVER_USER_TOKEN,
-        "msgPriority": "0",                       # string: -2,-1,0,1,2
-        "msgSound":    "vibrate",                 # any Pushover sound name
-    })
-```
+Always read the target Plugin's `Actions.xml` to confirm both. Don't
+infer the action ID from the menu label, and don't guess prop names
+from what feels natural ("title", "message" etc.) — they are whatever
+that Plugin's author chose.
 
-- Action ID is `"send"` (NOT `"sendPushover"` — that does not exist)
-- Priority is a **string**, not an int
-- Prop names are `msg*`-prefixed; bare `title`/`message` are ignored
-
-### Email+ (`com.indigodomo.email`)
-
-```python
-# Correct — direct API call
-indigo.server.sendEmailTo(
-    "recipient@example.com",
-    subject="Subject here",
-    body="Plain text or HTML body",
-)
-
-# Wrong — props dict loses keys during cross-Plugin serialization,
-# emailMessage is silently dropped, email never sends
-indigo.server.getPlugin("com.indigodomo.email").executeAction(
-    "sendEmail",
-    props={"emailAddress": "...", "emailSubject": "...", "emailMessage": "..."}
-)
-```
-
-`indigo.server.sendEmailTo()` automatically uses the first configured
-SMTP device — no need to look up the Plugin or device ID.
+If Indigo exposes a direct server API for the same operation (e.g.
+`indigo.server.sendEmailTo(...)`), prefer it over routing through
+`getPlugin(...).executeAction(...)` — fewer moving parts and no prop-
+serialization layer to misbehave.
 
 ## Action Validation
 
