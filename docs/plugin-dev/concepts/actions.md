@@ -332,6 +332,77 @@ def actionControlUniversal(self, action, dev):
         self.logger.info(f"sent \"{dev.name}\" status request")
 ```
 
+## `uiPath` attribute — PascalCase, no spaces
+
+When you group plugin actions under a sub-menu in Indigo's UI via
+`uiPath="..."` on `<Action>` or `<MenuItem>`, the value MUST be PascalCase
+with no spaces and no punctuation. Spaces cause an
+`NSInternalInconsistencyException` crash in the Indigo client (confirmed
+2026-04-30 during SigenEnergyManager development).
+
+```xml
+<!-- Correct -->
+<Action id="setHeatSetpoint" uiPath="DeviceActions">
+<Action id="readMeter"        uiPath="EnergyActions">
+
+<!-- Wrong — crashes the Indigo client -->
+<Action id="setHeatSetpoint" uiPath="Device Actions">
+<Action id="readMeter"        uiPath="Energy Actions">
+
+<!-- Special — Indigo's reserved literal for "no menu shown" -->
+<Action id="internalAction" uiPath="hidden">
+```
+
+`uiPath="hidden"` is the documented reserved value that hides the action
+from the user-visible Action picker (e.g. for actions only invoked from
+plugin code via `executeAction`).
+
+## Calling other plugins' actions — known prop-name pitfalls
+
+`indigo.server.getPlugin(...)` lets you call actions on installed plugins,
+but the action ID and prop names must match exactly what the target plugin
+defines in its Actions.xml. Two patterns trip people up because the
+"obvious" action name is not what the plugin actually exposes:
+
+### Pushover (`io.thechad.indigoplugin.pushover`)
+
+```python
+pushover = indigo.server.getPlugin("io.thechad.indigoplugin.pushover")
+if pushover and pushover.isEnabled():
+    pushover.executeAction("send", props={        # ← "send", NOT "sendPushover"
+        "msgTitle":    "Subject",
+        "msgBody":     "Message body",            # required
+        "msgUser":     PUSHOVER_USER_TOKEN,
+        "msgPriority": "0",                       # string: -2,-1,0,1,2
+        "msgSound":    "vibrate",                 # any Pushover sound name
+    })
+```
+
+- Action ID is `"send"` (NOT `"sendPushover"` — that does not exist)
+- Priority is a **string**, not an int
+- Prop names are `msg*`-prefixed; bare `title`/`message` are ignored
+
+### Email+ (`com.indigodomo.email`)
+
+```python
+# Correct — direct API call
+indigo.server.sendEmailTo(
+    "recipient@example.com",
+    subject="Subject here",
+    body="Plain text or HTML body",
+)
+
+# Wrong — props dict loses keys during cross-plugin serialization,
+# emailMessage is silently dropped, email never sends
+indigo.server.getPlugin("com.indigodomo.email").executeAction(
+    "sendEmail",
+    props={"emailAddress": "...", "emailSubject": "...", "emailMessage": "..."}
+)
+```
+
+`indigo.server.sendEmailTo()` automatically uses the first configured
+SMTP device — no need to look up the plugin or device ID.
+
 ## Action Validation
 
 ```python
