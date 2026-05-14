@@ -485,16 +485,37 @@ with open(path, encoding="utf-8") as f:
     contents = f.read()
 ```
 
-For the `exec()` pattern (e.g. when one script reuses functions from another):
-```python
-CONTROLLER_PATH = "/Library/Application Support/Perceptive Automation/Python Scripts/Some_Library.py"
-with open(CONTROLLER_PATH, encoding="utf-8") as _f:
-    exec(_f.read())
-```
+For the `exec()` pattern (e.g. when one script reuses functions from another), pass `globals()` explicitly as well — see the next section.
 
 Indigo's own logs, plugin sources, MQTT payloads, and JSON configs are all UTF-8 in practice. Defaulting to `encoding="utf-8"` everywhere is the safe rule.
 
 **Note:** `Path.read_text()` has the same default-encoding issue — pass `encoding="utf-8"` there too if you're using `pathlib`.
+
+### `NameError: name 'log' is not defined` after `exec()`-ing a shared library
+
+**Symptom:** A trigger or action script `exec()`s another script to reuse its functions (the "core-only" / shared-library pattern), but every call to a function from that library raises:
+```
+NameError: name '<function>' is not defined
+```
+The exec call itself succeeds with no error.
+
+**Cause:** Indigo runs embedded trigger/action scripts **inside a function wrapper**, not at true module level. At the point of your `exec()` call, `globals()` and `locals()` are *different* dicts. Python's `exec()` semantics in that case put any new definitions into `locals()` only — i.e. the wrapper function's local scope. The library's functions are defined, but they never reach the global namespace where the subsequent code looks them up.
+
+**Fix:** pass `globals()` to `exec()` explicitly so definitions land in the module global namespace:
+```python
+LIBRARY_PATH = "/Library/Application Support/Perceptive Automation/Python Scripts/Some_Library.py"
+
+with open(LIBRARY_PATH, encoding="utf-8") as _f:
+    exec(_f.read(), globals())   # ← globals() makes the functions visible below
+
+# Now functions defined in Some_Library.py resolve correctly:
+log("Library loaded")
+do_something()
+```
+
+Without `globals()`, `exec()` runs as if inside a class body (per Python's documented behaviour when globals and locals are different) and `def` statements bind names locally.
+
+**Why this is Indigo-specific:** a normal Python script run from the command line has `globals() is locals()` at module level, so bare `exec(code)` works as expected. Indigo's plugin host wraps embedded scripts, breaking that assumption. The pairing of this with the UTF-8 default (above) means the "exec a shared library" pattern needs *both* `encoding="utf-8"` AND `globals()` to work reliably under Indigo.
 
 ## HTTP Responder Issues
 
