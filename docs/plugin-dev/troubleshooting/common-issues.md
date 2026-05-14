@@ -447,6 +447,55 @@ See [Python 3 Migration Guide](../../reference/Python3-Migration-Guide.md) for c
    indigo.kStateImageSel.NoImage
    ```
 
+### `UnicodeDecodeError: 'ascii' codec can't decode byte 0xe2`
+
+**Symptom:**
+```
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xe2 in position N: ordinal not in range(128)
+```
+Triggered by code like:
+```python
+exec(open(SOME_PATH).read())
+# or
+text = open(some_path).read()
+```
+
+**Cause:** `IndigoPluginHost3` runs Python with a locale that makes the built-in `open()` default to **ASCII** encoding rather than UTF-8. Any source file or text file containing common non-ASCII characters fails to decode:
+
+| Byte sequence | Character | Where it appears |
+|---------------|-----------|------------------|
+| `0xe2 0x80 0x94` | `—` (em-dash) | comments, docstrings, log messages |
+| `0xe2 0x86 0x92` | `→` (arrow) | log messages (`Hall Lamp → blue`) |
+| `0xc2 0xb0` | `°` | temperature strings |
+| `0xc2 0xa3` | `£` | currency in error messages |
+
+This bites:
+- Scripts that `exec()` another script to reuse its functions (the "core-only" / shared-module pattern used by many automation setups)
+- Plugins reading bundled `.json`, `.txt`, or `.py` resource files with bare `open()`
+- Any code that loads UTF-8 user content (MQTT payloads written to disk, scraped web data, etc.)
+
+**Fix:** always pass `encoding="utf-8"` explicitly to `open()` when reading text:
+```python
+# WRONG — relies on Indigo's locale default (ASCII)
+with open(path) as f:
+    contents = f.read()
+
+# RIGHT — explicit UTF-8
+with open(path, encoding="utf-8") as f:
+    contents = f.read()
+```
+
+For the `exec()` pattern (e.g. when one script reuses functions from another):
+```python
+CONTROLLER_PATH = "/Library/Application Support/Perceptive Automation/Python Scripts/Some_Library.py"
+with open(CONTROLLER_PATH, encoding="utf-8") as _f:
+    exec(_f.read())
+```
+
+Indigo's own logs, plugin sources, MQTT payloads, and JSON configs are all UTF-8 in practice. Defaulting to `encoding="utf-8"` everywhere is the safe rule.
+
+**Note:** `Path.read_text()` has the same default-encoding issue — pass `encoding="utf-8"` there too if you're using `pathlib`.
+
 ## HTTP Responder Issues
 
 ### 404 Errors
