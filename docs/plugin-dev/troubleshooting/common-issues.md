@@ -450,7 +450,7 @@ See [Python 3 Migration Guide](../../reference/Python3-Migration-Guide.md) for c
 ### `UnicodeDecodeError: 'ascii' codec can't decode byte 0xe2`
 
 **Symptom:**
-```
+```text
 UnicodeDecodeError: 'ascii' codec can't decode byte 0xe2 in position N: ordinal not in range(128)
 ```
 Triggered by code like:
@@ -494,7 +494,7 @@ Indigo's own logs, plugin sources, MQTT payloads, and JSON configs are all UTF-8
 ### `NameError: name 'log' is not defined` after `exec()`-ing a shared library
 
 **Symptom:** A trigger or action script `exec()`s another script to reuse its functions (the "core-only" / shared-library pattern), but every call to a function from that library raises:
-```
+```text
 NameError: name '<function>' is not defined
 ```
 The exec call itself succeeds with no error.
