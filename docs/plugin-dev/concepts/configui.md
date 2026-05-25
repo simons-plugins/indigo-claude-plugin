@@ -340,6 +340,7 @@ To seed fields with computed values when a dialog opens (today's date, the lates
 | Device config | `validateDeviceConfigUi(self, values_dict, type_id, dev_id)` |
 | Action config | `validateActionConfigUi(self, values_dict, type_id, device_id)` |
 | Event config | `validateEventConfigUi(self, values_dict, type_id, event_id)` |
+| Menu item | `validateMenuActionConfigUi(self, values_dict, menu_id)` |
 | Device factory | `validateDeviceFactoryUi(self, values_dict, dev_id_list)` |
 
 ### Return Values
@@ -373,6 +374,7 @@ Called after validation succeeds or user cancels:
 | Device config | `closedDeviceConfigUi(self, values_dict, user_cancelled, type_id, dev_id)` |
 | Action config | `closedActionConfigUi(self, values_dict, user_cancelled, type_id, action_id)` |
 | Event config | `closedEventConfigUi(self, values_dict, user_cancelled, type_id, event_id)` |
+| Menu item | `closedMenuActionConfigUi(self, values_dict, user_cancelled, menu_id)` |
 | Device factory | `closedDeviceFactoryUi(self, values_dict, user_cancelled, dev_id_list)` |
 
 ## SupportURL
