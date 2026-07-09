@@ -32,7 +32,7 @@ Start with a working example as your template:
 cd ~/Documents
 
 # Copy the Custom Device example
-cp -r "/Library/Application Support/Perceptive Automation/Indigo 2023.2/IndigoSDK/Example Device - Custom.indigoPlugin" MyFirstPlugin.indigoPlugin
+cp -r "/Library/Application Support/Perceptive Automation/Indigo 2025.2/IndigoSDK/Example Device - Custom.indigoPlugin" MyFirstPlugin.indigoPlugin
 
 # Edit the plugin
 cd MyFirstPlugin.indigoPlugin/Contents
@@ -83,10 +83,14 @@ cd HelloWorld.indigoPlugin/Contents
     <key>CFBundleVersion</key>
     <string>1.0.0</string>
     <key>ServerApiVersion</key>
-    <string>3.0</string>
+    <string>3.4</string>
 </dict>
 </plist>
 ```
+
+> `ServerApiVersion` is the **minimum** server API your plugin needs. Use **`3.4`** for a modern
+> plugin: 3.4 (Indigo 2023.2) is the first version with Python 3 **and** with `requirements.txt`
+> auto-install — declaring `3.0` predates both and would silently disable dependency auto-install.
 
 ### 3. Create Server Plugin/plugin.py
 
@@ -112,7 +116,7 @@ class Plugin(indigo.PluginBase):
 
 ```bash
 # Copy to Indigo's plugin folder
-cp -r HelloWorld.indigoPlugin "/Library/Application Support/Perceptive Automation/Indigo 2023.2/Plugins/"
+cp -r HelloWorld.indigoPlugin "/Library/Application Support/Perceptive Automation/Indigo 2025.2/Plugins/"
 ```
 
 ### 5. Enable in Indigo
@@ -154,12 +158,12 @@ MyPlugin.indigoPlugin/
 Before enabling your plugin, verify:
 
 - [ ] Unique `CFBundleIdentifier` in Info.plist (no conflicts with other plugins)
-- [ ] `ServerApiVersion` is `3.0` or higher (for Python 3 support)
+- [ ] `ServerApiVersion` is `3.4` or higher (Python 3 + requirements.txt auto-install; 3.4 = Indigo 2023.2)
 - [ ] `Plugin` class inherits from `indigo.PluginBase`
 - [ ] `__init__` method calls `super().__init__()`
 - [ ] `startup()` and `shutdown()` methods are defined
 - [ ] Plugin bundle ends with `.indigoPlugin`
-- [ ] Plugin is in correct folder: `/Library/Application Support/Perceptive Automation/Indigo 2023.2/Plugins/`
+- [ ] Plugin is in correct folder: `/Library/Application Support/Perceptive Automation/Indigo 2025.2/Plugins/`
 
 ## Common Beginner Mistakes
 
@@ -171,7 +175,7 @@ def startup(self):
     super().startup()  # AttributeError!
     self.logger.info("Starting")
 
-# RIGHT - Only call super() in __init__ and device callbacks
+# RIGHT - super() is required in __init__; never in startup/shutdown
 def __init__(self, pluginId, pluginDisplayName, pluginVersion, pluginPrefs):
     super().__init__(pluginId, pluginDisplayName, pluginVersion, pluginPrefs)  # REQUIRED!
 
@@ -180,7 +184,8 @@ def startup(self):
     self.logger.info("Starting")
 
 def deviceStartComm(self, dev):
-    super().deviceStartComm(dev)  # Good practice for device callbacks
+    # deviceStartComm is an override hook — super() is optional here (base is a no-op).
+    # But deviceUpdated/deviceCreated/deviceDeleted DO need super() — the base does real work.
     # Your code here
 ```
 
@@ -280,7 +285,7 @@ Place `.py` files here to make them importable by any plugin. After adding or up
 
 **Solutions**:
 - Check `CFBundleIdentifier` is unique (doesn't match another plugin)
-- Verify `ServerApiVersion` is `3.0` or higher
+- Verify `ServerApiVersion` is `3.4` or higher
 - Open Event Log for Python errors
 - Check file permissions: `chmod -R 755 MyPlugin.indigoPlugin`
 
@@ -290,7 +295,7 @@ Place `.py` files here to make them importable by any plugin. After adding or up
 
 **Solutions**:
 - Verify bundle name ends with `.indigoPlugin`
-- Check bundle is in correct location: `/Library/Application Support/Perceptive Automation/Indigo 2023.2/Plugins/`
+- Check bundle is in correct location: `/Library/Application Support/Perceptive Automation/Indigo 2025.2/Plugins/`
 - Restart Indigo Server Helper
 - Check Info.plist is valid XML (no syntax errors)
 
@@ -311,10 +316,10 @@ Place `.py` files here to make them importable by any plugin. After adding or up
 |--------|--------|----------------------------------------------------|-------------|
 | 2025.2 | 3.13.9 | `.../Perceptive Automation/Indigo 2025.2/Plugins/` | 3.8         |
 | 2025.1 | 3.11.6 | `.../Perceptive Automation/Indigo 2025.1/Plugins/` | 3.7         |
-| 2023.2 | 3.10+  | `.../Perceptive Automation/Indigo 2023.2/Plugins/` | (see docs)  |
+| 2023.2 | 3.10+  | `.../Perceptive Automation/Indigo 2025.2/Plugins/` | (see docs)  |
 | 2022.x | 2.7    | Legacy, end-of-life                                | n/a         |
 
-`ServerApiVersion` in `Info.plist` declares the **minimum** API your plugin requires. `3.0` continues to work on all 2023.2+ versions — there is no need to bump it just because you're on a newer Indigo release. The path examples elsewhere in this guide use 2023.2; substitute the row above that matches your installation.
+`ServerApiVersion` in `Info.plist` declares the **minimum** API your plugin requires. Use **`3.4`** for a Python-3 plugin (first version with Python 3 and `requirements.txt` auto-install, Indigo 2023.2); `3.0`/`3.1` predate Python 3. There's no need to bump beyond the minimum you actually use just because you're on a newer release. Path examples in this guide use 2025.2; substitute the row above that matches your installation.
 
 **Upgrading to 2025.2?** Python 3.13 has several library breaking changes — see [`troubleshooting/common-issues.md`](troubleshooting/common-issues.md#upgrading-to-indigo-20252--python-313).
 
@@ -326,12 +331,12 @@ Now that you have a working plugin:
 
 1. **Understand Plugin Architecture**
    - Read [`concepts/plugin-lifecycle.md`](concepts/plugin-lifecycle.md)
-   - Learn about device types in [`concepts/devices.md`](concepts/devices.md)
+   - Device types & Devices.xml: [`reference/canonical/plugin-dev/reference/xml/devices.md`](../../reference/canonical/plugin-dev/reference/xml/devices.md)
 
 2. **Add Functionality**
-   - Create devices: See [`concepts/devices.md`](concepts/devices.md)
-   - Add custom events: See [`concepts/events.md`](concepts/events.md)
-   - Plugin preferences: See [`concepts/plugin-preferences.md`](concepts/plugin-preferences.md)
+   - Create devices: [`reference/canonical/plugin-dev/reference/xml/devices.md`](../../reference/canonical/plugin-dev/reference/xml/devices.md)
+   - Add custom events: [`reference/canonical/plugin-dev/reference/xml/events.md`](../../reference/canonical/plugin-dev/reference/xml/events.md)
+   - Plugin preferences: [`reference/canonical/plugin-dev/reference/xml/pluginconfig.md`](../../reference/canonical/plugin-dev/reference/xml/pluginconfig.md)
 
 3. **Study Examples**
    - Browse [`sdk-examples/README.md`](../../sdk-examples/README.md) for 16 complete examples
@@ -343,8 +348,8 @@ Now that you have a working plugin:
 
 ## External Resources
 
-- [Official Plugin Developer's Guide](https://wiki.indigodomo.com/doku.php?id=indigo_2025.1_documentation:plugin_guide)
-- [Indigo Object Model Reference](https://wiki.indigodomo.com/doku.php?id=indigo_2025.1_documentation:object_model_reference)
+- [Plugin Development (official docs)](https://docs.indigodomo.com/2025.2/plugin-dev/)
+- [Scripting Indigo / IOM (official docs)](https://docs.indigodomo.com/2025.2/scripting/)
 - [Indigo Developer Forum](https://forums.indigodomo.com/viewforum.php?f=18)
 - [GitHub: Indigo Skill Repository](https://github.com/simons-plugins/indigo-claude-skill)
 

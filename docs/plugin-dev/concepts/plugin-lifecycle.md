@@ -1,6 +1,6 @@
 # Plugin Lifecycle
 
-**Official Documentation**: [Plugin Guide - Lifecycle](https://wiki.indigodomo.com/doku.php?id=indigo_2025.1_documentation:plugin_guide#plugin_lifecycle)
+**Canonical reference**: `reference/canonical/plugin-dev/reference/plugin-py/general-methods.md` (+ `device-methods.md`) — or the [official docs](https://docs.indigodomo.com/2025.2/plugin-dev/reference/plugin-py/).
 
 Understanding the plugin lifecycle is essential for proper plugin development, resource management, and avoiding memory leaks or zombie processes.
 
@@ -247,7 +247,14 @@ def wakeUp(self):
 
 ## Device Lifecycle Callbacks
 
-These callbacks are called for each device as it starts, stops, or changes:
+These callbacks are called for each device as it starts, stops, or changes.
+
+> **The `super()` contract (common footgun).** The base implementations differ by method:
+> - `deviceStartComm` / `deviceStopComm` are **override hooks** — the base versions are effectively no-ops, so calling `super()` is optional (harmless, not required).
+> - `deviceCreated` / `deviceDeleted` — the base **starts/stops comm** for the device. If you override these, call `super()` (or call `deviceStartComm`/`deviceStopComm` yourself), or you silently lose the default start/stop.
+> - `deviceUpdated` — the base drives the comm-property-change machinery (stop→start on a relevant config change). If you override it, you **must** call `super()`, or config changes won't restart the device.
+>
+> See canonical `reference/canonical/plugin-dev/reference/plugin-py/device-methods.md`.
 
 ### `deviceStartComm(dev)`
 
@@ -314,6 +321,7 @@ def deviceStopComm(self, dev):
 
 ```python
 def deviceCreated(self, dev):
+    super().deviceCreated(dev)   # base starts comm — keep it, or call deviceStartComm yourself
     self.logger.debug(f"Device created: {dev.name}")
     # Perform one-time setup if needed
 ```
@@ -346,6 +354,7 @@ def deviceUpdated(self, origDev, newDev):
 
 ```python
 def deviceDeleted(self, dev):
+    super().deviceDeleted(dev)   # base stops comm — keep it, or call deviceStopComm yourself
     self.logger.debug(f"Device deleted: {dev.name}")
     # Clean up any persistent data or external resources
     self._cleanup_device_data(dev.id)
@@ -558,7 +567,7 @@ def shutdown(self):
     self.logger.info("Shutting down")
 ```
 
-**Remember**: Only call `super()` in `__init__()` (required) and device callbacks like `deviceStartComm()` (recommended)
+**Remember**: `super().__init__()` is required in `__init__()`. Do NOT call super in `startup`/`shutdown`/`runConcurrentThread`. For device callbacks, call super where the base does real work — `deviceUpdated` (required), `deviceCreated`/`deviceDeleted` (keeps default start/stop) — while `deviceStartComm`/`deviceStopComm` are override hooks where super is optional.
 
 ### ❌ Using `time.sleep()` in Concurrent Thread
 
@@ -653,7 +662,7 @@ Indigo handles plugin failures differently depending on where they occur:
 - [ ] All instance variables initialized in `__init__()`
 - [ ] No Indigo database access in `__init__()`
 - [ ] `super().__init__()` called in `__init__()` (required)
-- [ ] `super()` called in device callbacks like `deviceStartComm()` (recommended)
+- [ ] `super()` called in `deviceUpdated` (required) and `deviceCreated`/`deviceDeleted` (keeps default start/stop); optional in `deviceStartComm`/`deviceStopComm`
 - [ ] `super()` NOT called in `startup()` or `shutdown()`
 - [ ] Connections opened in `startup()`
 - [ ] Event subscriptions done in `startup()`
@@ -672,6 +681,6 @@ Indigo handles plugin failures differently depending on where they occur:
 
 ## Official References
 
-- [Plugin Developer's Guide - Lifecycle](https://wiki.indigodomo.com/doku.php?id=indigo_2025.1_documentation:plugin_guide#plugin_lifecycle)
-- [Plugin Developer's Guide - Concurrent Thread](https://wiki.indigodomo.com/doku.php?id=indigo_2025.1_documentation:plugin_guide#concurrent_thread)
-- [Object Model Reference](https://wiki.indigodomo.com/doku.php?id=indigo_2025.1_documentation:object_model_reference)
+- [plugin.py General Methods (lifecycle)](https://docs.indigodomo.com/2025.2/plugin-dev/reference/plugin-py/general-methods/) — or vendored `reference/canonical/plugin-dev/reference/plugin-py/general-methods.md`
+- [Device Methods (start/stop comm)](https://docs.indigodomo.com/2025.2/plugin-dev/reference/plugin-py/device-methods/)
+- [Scripting / IOM Reference](https://docs.indigodomo.com/2025.2/scripting/)
