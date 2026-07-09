@@ -134,7 +134,7 @@ Produce a single HTML file. Follow this template structure:
 - Disable toggle controls briefly (500ms) after a command to prevent double-taps
 - Escape all device names with a text-node approach before rendering as HTML
 
-**Critical**: All device commands use `POST /v2/api/command` — consult `/indigo:api` skill docs (`docs/api/device-commands.md`) for the full command reference. Do not guess command formats.
+**Critical**: All device commands use `POST /v2/api/command` — consult `/indigo:api` skill docs (`reference/canonical/api/messages.md`) for the full command reference. Do not guess command formats.
 
 ### Phase 4: DEPLOY
 

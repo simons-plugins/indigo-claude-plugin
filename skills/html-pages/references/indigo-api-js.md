@@ -107,7 +107,7 @@ All commands are sent via `POST /v2/api/command` with JSON body:
 }
 ```
 
-Refer to `/indigo:api` skill documentation (`docs/api/device-commands.md`) for the full command reference.
+Refer to `/indigo:api` skill documentation (`reference/canonical/api/messages.md`) for the full command reference.
 
 ## Capability Detection
 

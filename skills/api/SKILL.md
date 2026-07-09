@@ -29,64 +29,71 @@ Indigo exposes two transport APIs for remote control. Choose based on use case:
 | iOS/mobile apps | WebSocket | Real-time device updates, bidirectional |
 | Web dashboards | WebSocket | Live state without polling |
 | Scripts/automation | HTTP | Simple, stateless, one-shot commands |
-| Third-party integration | HTTP | Standard REST, easy to integrate |
+| Third-party integration | HTTP | Standard request/response, easy to integrate |
 | Hybrid apps | Both | HTTP for initial load, WebSocket for live updates |
 
 ## Authentication
 
-Two methods available:
+Both APIs authenticate with **HTTP Digest, API Keys, or local secrets** (canonical `api/http.md`, `api/websocket.md`).
 
-- **API Keys** (recommended) — Works over network, configured in Indigo preferences
-  - Header: `Authorization: Bearer <api-key>`
-- **Local Secrets** — Local network only, auto-generated per-reflector
-  - Only for same-machine or trusted LAN access
-
-## WebSocket Quick Reference
-
-```
-ws[s]://<host>:<port>/v2/api/ws
-```
-
-- **Subscribe**: Send `{"name": "device", "id": <deviceId>}` to receive state changes
-- **Commands**: Send actions via WebSocket messages
-- **Reconnection**: Implement exponential backoff with jitter
+- **API Keys** (recommended) — managed in your Indigo Account → **Authorizations** (not "API Keys"), per-app and revocable. Send as `Authorization: Bearer <api-key>`, or as an `?api-key=<key>` query arg when headers aren't available. Keys can control devices but **cannot modify the database** (add/delete devices) — that stays with the username/password.
+- **Local secrets** — a *special kind of API key* that does not route through the Indigo reflector; used identically as a Bearer token. Also managed under Authorizations.
+- **HTTP Basic** and the **old REST API** are **deprecated** — do not use.
 
 ## HTTP Quick Reference
 
+**GET** retrieves object instances; **POST to `/v2/api/command`** sends every command. There is **no `PUT`** and no per-object write endpoint.
+
 ```
-GET  /v2/api/indigo.devices         # List all devices
-GET  /v2/api/indigo.devices/<id>    # Get specific device
-PUT  /v2/api/indigo.devices/<id>    # Update device
-POST /v2/api/command                # Execute command
+GET  /v2/api/indigo.devices          # List all devices
+GET  /v2/api/indigo.devices/<id>     # Get one device (full object; there is no ?detail flag)
+GET  /v2/api/indigo.variables[/<id>] # Variables
+GET  /v2/api/indigo.actionGroups[/<id>]
+POST /v2/api/command                 # ALL commands (device control, variable update, action execute)
 ```
 
-All responses are JSON. Use `?detail=true` for full state information.
+## Command Message Shape (both transports)
 
-## Common Device Commands
+Commands use `message` + `objectId` (+ optional `parameters`) — **not** `name`/`parameters.id`. Command names are namespaced (`indigo.device.*`, `indigo.dimmer.*`, `indigo.thermostat.*`). See `api/messages.md`.
 
 ```json
-// Turn on
-{"name": "device.turnOn", "parameters": {"id": 123456}}
-
-// Set brightness
-{"name": "device.setBrightness", "parameters": {"id": 123456, "value": 75}}
-
-// Set thermostat
-{"name": "thermostat.setHeatSetpoint", "parameters": {"id": 123456, "value": 72}}
+{"message": "indigo.device.turnOn",  "objectId": 123456789}
+{"message": "indigo.device.toggle",  "objectId": 123456789, "parameters": {"delay": 5, "duration": 10}}
+{"message": "indigo.dimmer.setBrightness", "objectId": 123456789, "parameters": {"value": 75}}
+{"message": "indigo.thermostat.setHeatSetpoint", "objectId": 123456789, "parameters": {"value": 72}}
 ```
 
-## Reference Documentation
+## WebSocket Quick Reference
 
-For detailed guidance, read these files relative to `${CLAUDE_PLUGIN_ROOT}`:
+Connect to a **specific feed**, not a bare `/v2/api/ws`. Seven feeds:
+`device-feed`, `variable-feed`, `action-feed`, `schedule-feed`, `trigger-feed`, `page-feed`, `log-feed`.
+
+```
+ws[s]://<host>:<port>/v2/api/ws/device-feed?api-key=<key>
+```
+
+- **Get current state**: send a `refresh` message (there is no "subscribe"):
+  ```json
+  {"id": "req-1", "message": "refresh", "objectType": "indigo.Device", "objectId": 123456789}
+  ```
+  Omit `objectId` to receive the whole list.
+- **Incoming**: read `add` / `patch` / `delete` / `refresh` messages and apply them.
+- **Commands**: send the same `message`/`objectId` envelope as HTTP.
+- **Reconnection**: exponential backoff with jitter.
+
+## Reference Documentation (canonical — load only what's needed)
+
+Vendored verbatim from Indigo's published docs. Read relative to `${CLAUDE_PLUGIN_ROOT}`:
 
 | Topic | File |
 |-------|------|
-| WebSocket vs HTTP overview | `docs/api/overview.md` |
-| Authentication setup | `docs/api/authentication.md` |
-| WebSocket API (full) | `docs/api/websocket-api.md` |
-| HTTP REST API (full) | `docs/api/http-api.md` |
-| Device command reference | `docs/api/device-commands.md` |
-| API navigation guide | `docs/api/README.md` |
+| Integration APIs overview / transport choice | `reference/canonical/api.md` |
+| HTTP API (endpoints, auth, curl/Python) | `reference/canonical/api/http.md` |
+| Message format (commands, events, errors) | `reference/canonical/api/messages.md` |
+| WebSocket API (feeds, refresh, patches) | `reference/canonical/api/websocket.md` |
+| Webhooks (receiving external events) | `reference/canonical/api/webhooks.md` |
+| Migrating from the old REST API | `reference/canonical/api/rest-migration.md` |
+| Full canonical index (all pages) | `reference/canonical/INDEX.md` |
 
 ## Full Documentation
 

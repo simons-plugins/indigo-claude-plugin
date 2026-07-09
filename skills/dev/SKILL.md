@@ -106,39 +106,50 @@ dev.updateStatesOnServer(states)
 dev.replaceOnServer()
 ```
 
+## Lifecycle callbacks & `super()` (common footgun)
+
+- `__init__` — **do** call `super().__init__(...)`. `startup`/`shutdown`/`runConcurrentThread` — do **not** call super.
+- `deviceStartComm`/`deviceStopComm` — these are override hooks; the base versions are effectively no-ops, so calling super is optional (not "required").
+- `deviceUpdated`/`triggerUpdated` and `deviceCreated`/`deviceDeleted`/`triggerCreated`/`triggerDeleted` — the base implementations do real work (they drive the stop/start-comm machinery). Overriding these **requires** calling the base (`indigo.PluginBase.deviceUpdated(self, orig, new)`) or re-implementing start/stop. See `reference/canonical/plugin-dev/reference/plugin-py/device-methods.md`.
+- `secure="true"` on a text field only **masks the value in the UI — it is NOT stored securely.** Never rely on it for secrets.
+
 ## Reference Documentation
 
-For detailed guidance on specific topics, read these files relative to `${CLAUDE_PLUGIN_ROOT}`:
+Reference facts come from `reference/canonical/**` (relative to `${CLAUDE_PLUGIN_ROOT}`) — vendored
+verbatim from Indigo 2025.2 docs via `tools/refresh_canonical.py`. Load only the page needed;
+`reference/canonical/INDEX.md` lists all. A few docs under `docs/plugin-dev/` are workspace
+on-ramps/patterns kept alongside canonical. All paths below are relative to `${CLAUDE_PLUGIN_ROOT}`.
 
 | Topic | File |
 |-------|------|
-| Plugin lifecycle (full) | `docs/plugin-dev/concepts/plugin-lifecycle.md` |
-| Device design & Devices.xml | `docs/plugin-dev/concepts/devices.md` |
-| ConfigUI reference (fields, attributes, bindings) | `docs/plugin-dev/concepts/configui.md` |
-| Actions.xml & actionControl callbacks | `docs/plugin-dev/concepts/actions.md` |
-| Menu items (MenuItems.xml) | `docs/plugin-dev/concepts/menu-items.md` |
-| Custom events | `docs/plugin-dev/concepts/events.md` |
-| HTTP Responder (web endpoints, IWS) | `docs/plugin-dev/concepts/http-responder.md` |
-| Scripting shell & CLI | `docs/plugin-dev/concepts/scripting-shell.md` |
-| Plugin preferences & PluginConfig.xml | `docs/plugin-dev/concepts/plugin-preferences.md` |
+| Plugin lifecycle (workspace on-ramp) | `docs/plugin-dev/concepts/plugin-lifecycle.md` |
+| plugin.py lifecycle methods (reference) | `reference/canonical/plugin-dev/reference/plugin-py/general-methods.md` |
+| Device start/stop/config/action callbacks | `reference/canonical/plugin-dev/reference/plugin-py/device-methods.md` |
+| Devices.xml (device types, states, subType) | `reference/canonical/plugin-dev/reference/xml/devices.md` |
+| ConfigUI fields & bindings | `reference/canonical/plugin-dev/reference/xml/configui.md` (+ `configui/` subpages) |
+| ConfigUI validation methods (+ `ValidationError`) | `reference/canonical/plugin-dev/reference/xml/configui/validation.md` |
+| Actions.xml | `reference/canonical/plugin-dev/reference/xml/actions.md` |
+| MenuItems.xml (+ callback contract) | `reference/canonical/plugin-dev/reference/xml/menuitems.md` |
+| Events.xml / custom triggers | `reference/canonical/plugin-dev/reference/xml/events.md` |
+| PluginConfig.xml & preferences | `reference/canonical/plugin-dev/reference/xml/pluginconfig.md` |
+| HTTP request handling (IWS) | `reference/canonical/plugin-dev/reference/plugin-py/http-requests.md` |
+| Logging | `reference/canonical/plugin-dev/reference/plugin-py/logging.md` |
+| Dev environment (symlink workflow, debuggers) | `reference/canonical/plugin-dev/reference/dev-environment.md` |
 | API patterns (state updates, replaceOnServer) | `docs/plugin-dev/patterns/api-patterns.md` |
 | Testing patterns (pytest mocks, TestingBase) | `docs/plugin-dev/patterns/testing.md` |
 | Troubleshooting | `docs/plugin-dev/troubleshooting/common-issues.md` |
 | SDK examples guide | `docs/plugin-dev/examples/sdk-examples-guide.md` |
-| Indigo Object Model overview | `docs/plugin-dev/api/indigo-object-model.md` |
 
-### IOM Reference (modular)
+### Indigo Object Model (scripting reference — canonical)
 
-For specific Indigo Object Model topics, read from `docs/plugin-dev/api/iom/`:
+For the `indigo.*` object model, read from `reference/canonical/scripting/`:
 
-- `architecture.md` — Object hierarchy and base classes
-- `devices.md` — Device properties, methods, base types
-- `command-namespaces.md` — `indigo.device`, `indigo.variable`, etc.
-- `triggers.md` — Trigger types and configuration
-- `subscriptions.md` — Change subscriptions
-- `constants.md` — Enums and constant values
-- `containers.md` — Lists, dictionaries, database access
-- `utilities.md` — Logging, scheduling, server info
+- `iom-concepts.md` — object hierarchy, base classes, copy semantics
+- `reference/devices/base-class.md` — device base class properties & methods
+- `reference/device-subclasses/` — dimmer, relay, sensor, thermostat, sprinkler, speedcontrol, multiio
+- `reference/triggers.md` / `reference/schedules.md` / `reference/action-groups.md` / `reference/variables.md`
+- `reference/server-commands.md` — server properties & commands
+- `reference/folders.md`, `reference/insteon-commands.md`, `reference/x10-commands.md`, `reference/utils.md`
 
 ### SDK Examples
 
