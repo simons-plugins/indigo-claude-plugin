@@ -1,0 +1,7 @@
+indigo_version: 2025.2
+source_index: https://docs.indigodomo.com/llms.txt
+source_full: https://docs.indigodomo.com/llms-full.txt
+fetched_utc: 2026-07-09T22:05:28Z
+sha256_full: 3d79e398f7093ce9199b055c5be56de60441192e07e0495ba31b0f4c86ace5bd
+pages: 68
+generated_by: tools/refresh_canonical.py

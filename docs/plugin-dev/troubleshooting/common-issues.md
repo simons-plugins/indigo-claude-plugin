@@ -10,9 +10,9 @@
 
 1. **Wrong Location**
    ```bash
-   # Plugins should be in one of these locations:
-   ~/Library/Application Support/Perceptive Automation/Indigo 2023.2/Plugins/
-   ~/Library/Application Support/Perceptive Automation/Indigo 2023.2/Plugins (Disabled)/
+   # Plugins should be in one of these locations (substitute your Indigo version):
+   ~/Library/Application Support/Perceptive Automation/Indigo 2025.2/Plugins/
+   ~/Library/Application Support/Perceptive Automation/Indigo 2025.2/Plugins (Disabled)/
    ```
 
 2. **Bundle Extension Wrong**
@@ -44,8 +44,8 @@
    ```
    ModuleNotFoundError: No module named 'requests'
    ```
-   - Add a `requirements.txt` in `Contents/Server Plugin/` — Indigo auto-installs on load
-   - Don't manually bundle packages or rely on system Python packages
+   - Add a `requirements.txt` in `Contents/Server Plugin/` — Indigo auto-installs on load (needs `ServerApiVersion` ≥ 3.4)
+   - Preferred over relying on system Python packages (which vanish on Python upgrades). Manual bundling into `Contents/Packages/` via `pip3 install -t` is also supported — see canonical `reference/canonical/scripting/guides/python-packages.md`
    - See [Python Dependencies](#python-dependency-issues) below
 
 3. **API Version Mismatch**
@@ -313,7 +313,7 @@ The marker filename is version-keyed:
 | 2025.2         | `3.13-pip-install-log-success.txt`            |
 | 2025.1 / older | `pip-install-log-success.txt`                 |
 
-Never `pip install` into the system Python — those packages disappear on any Python upgrade. `requirements.txt` is the only supported path on every Indigo version.
+Never `pip install` into the system Python — those packages disappear on any Python upgrade. `requirements.txt` is the **preferred** path (auto-install requires `ServerApiVersion` ≥ 3.4); manual bundling into `Contents/Packages/` with `pip3 install -t` is the supported fallback for older API levels or vendored builds. See canonical `reference/canonical/scripting/guides/python-packages.md`.
 
 ### Force Reinstall
 

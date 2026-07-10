@@ -173,7 +173,7 @@ class TestPluginLoaded(APIBase):
         self.assertIn("enabled=True", result, f"indigo-host returned: {result!r}")
 ```
 
-The plugin object's API (`isInstalled()`, `isEnabled()`, `isRunning()`, plus several properties) is in `/indigo:dev` → `docs/plugin-dev/api/iom/command-namespaces.md` under "Plugin Object Access". That's the SDK side; this section is about how to *invoke* it from a TestingBase test.
+The plugin object's API (`isInstalled()`, `isEnabled()`, `isRunning()`, plus several properties) is in `/indigo:dev` → `reference/canonical/scripting/reference/server-commands.md` (plugin object access). That's the SDK side; this section is about how to *invoke* it from a TestingBase test.
 
 ---
 
@@ -219,4 +219,4 @@ The right `URL_PREFIX` is whatever protocol your specific server is configured t
 - TestingBase upstream `example_test_xml_files.py`: canonical `ValidateXmlFile` patterns
 - Plugin HTTP API (consumed by Pattern B): see `/indigo:api`
 - Plugin lifecycle (what you'd typically test): see `concepts/plugin-lifecycle.md`
-- Plugin Object Access (the IOM surface for plugin queries): `docs/plugin-dev/api/iom/command-namespaces.md` — "Plugin Object Access" section
+- Plugin Object Access (the IOM surface for plugin queries): `reference/canonical/scripting/reference/server-commands.md`

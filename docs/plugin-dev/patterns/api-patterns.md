@@ -2,7 +2,7 @@
 
 Common patterns for working with the Indigo Object Model.
 
-For core concepts like client-server architecture, object modification, and `replaceOnServer()` patterns, see [IOM Architecture](../api/iom/architecture.md).
+For core concepts like client-server architecture, object modification, and `replaceOnServer()` patterns, see the canonical [IOM Concepts](../../../reference/canonical/scripting/iom-concepts.md).
 
 ## Device State Updates
 
@@ -376,6 +376,6 @@ def poll(self):
 
 ## See Also
 
-- [IOM Architecture](../api/iom/architecture.md) - Core concepts, replaceOnServer, pluginProps
-- [Device Classes](../api/iom/devices.md) - Device properties and methods
-- [Filters](../api/iom/filters.md) - Iteration patterns
+- [IOM Concepts](../../../reference/canonical/scripting/iom-concepts.md) - Core concepts, replaceOnServer, pluginProps
+- [Device Base Class](../../../reference/canonical/scripting/reference/devices/base-class.md) - Device properties and methods
+- [Devices collection](../../../reference/canonical/scripting/reference/devices.md) - Iteration patterns (`indigo.devices.iter`)

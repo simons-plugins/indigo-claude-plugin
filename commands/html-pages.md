@@ -49,7 +49,7 @@ Produce a single self-contained HTML file. Refer to `references/indigo-api-js.md
 - Debounce slider inputs (300ms)
 - Handle errors gracefully
 
-**Critical**: All device commands go to `POST /v2/api/command` — consult `/indigo:api` docs (`docs/api/device-commands.md`) for the command reference. Do not guess command formats.
+**Critical**: All device commands go to `POST /v2/api/command` — consult `/indigo:api` docs (`reference/canonical/api/messages.md`) for the command reference. Do not guess command formats.
 
 ### Phase 4: DEPLOY
 

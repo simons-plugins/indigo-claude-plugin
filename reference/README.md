@@ -19,9 +19,11 @@ Quick reference guide for Claude Code when working with the Indigo SDK. Contains
 - Common patterns
 
 ### [Python3-Migration-Guide.md](Python3-Migration-Guide.md)
-**Essential reading for upgrading plugins from Python 2 to Python 3.**
+**Legacy porting reference — only needed if you're updating an old Python 2 plugin.**
 
-Complete guide for updating plugins to API version 3.0:
+Indigo has shipped Python 3 since 2023.2 (API 3.4), so new plugins never need this. It remains
+accurate and is still linked from the live SDK, kept here for the few porting a legacy plugin.
+Covers updating a Python 2 plugin to Python 3:
 - Python 2 vs Python 3 syntax changes
 - Import statement updates
 - String/Unicode handling
@@ -37,16 +39,16 @@ Complete guide for updating plugins to API version 3.0:
 
 ## SDK Version
 
-These materials are from **Indigo SDK 2025.1** which supports:
-- Indigo 2023.2+ (Python 3.10+)
-- ServerApiVersion 3.0
+Current target: **Indigo 2025.2** — Python 3.13, ServerApiVersion 3.8. Python 3 support began at
+Indigo 2023.2 (API 3.4). For any live reference fact, prefer the vendored canonical docs under
+[`../reference/canonical/`](canonical/) (see `canonical/VERSION`).
 
 ## Related Resources
 
+- **[Canonical docs (vendored)](canonical/INDEX.md)** - Indigo 2025.2 reference, source of truth
 - **[SDK Examples](../sdk-examples/)** - 16 complete example plugins
-- **[SDK Documentation](.)** - Organized SDK docs
-- **[Official Plugin Guide](https://www.indigodomo.com/docs/plugin_guide)** - Online reference
-- **[Object Model Reference](https://www.indigodomo.com/docs/object_model_reference)** - API docs
+- **[Plugin Development (official docs)](https://docs.indigodomo.com/2025.2/plugin-dev/)**
+- **[Scripting / IOM (official docs)](https://docs.indigodomo.com/2025.2/scripting/)**
 
 ## Using These References
 
