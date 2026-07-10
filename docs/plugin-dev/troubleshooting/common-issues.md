@@ -135,6 +135,20 @@
 
 ## Device Issues
 
+### `LowLevelBadParameterError -- illegal XML tag name character`
+
+This is Indigo's catch-all rejection from the XML serialiser when something
+in your `getDeviceStateList()` output, `replacePluginPropsOnServer()` payload,
+or `stateListOrDisplayStateIdChanged()` refresh contains a character it
+considers invalid for an XML element name. The error message does **not**
+identify which key is bad. Three undocumented rules cause it; see
+[concepts/devices.md → State ID naming rules](../concepts/devices.md#state-id-naming-rules-undocumented-but-strict)
+for the full diagnosis. Quick checklist:
+
+- State IDs must be camelCase ASCII, no underscores (`colorTempStartup`, NOT `color_temp_startup`)
+- `dev.pluginProps` keys via `replacePluginPropsOnServer` cannot start with `_`
+- Don't append to the LIVE list returned by `indigo.PluginBase.getDeviceStateList()` — make a `list(...)` copy first
+
 ### Device Won't Create
 
 **Check**:
