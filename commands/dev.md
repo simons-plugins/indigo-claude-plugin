@@ -28,6 +28,7 @@ paths below are relative to `${CLAUDE_PLUGIN_ROOT}` (this plugin), not the user'
 |------|---------|
 | `docs/plugin-dev/quick-start.md` | Getting started (opinionated on-ramp) |
 | `docs/plugin-dev/concepts/plugin-lifecycle.md` | Lifecycle narrative + `super()` rules |
+| `docs/plugin-dev/concepts/{devices,actions,events,plugin-preferences}.md` | **Field notes** — undocumented gotchas (state-ID naming, live-list cache trap, `uiPath` crash, cross-plugin actions, custom-event traps, `_`-prefix rule) |
 | `docs/plugin-dev/patterns/api-patterns.md` | State updates, `replaceOnServer` patterns |
 | `docs/plugin-dev/patterns/testing.md` | pytest mocks (Pattern A) + TestingBase (Pattern B) |
 | `docs/plugin-dev/patterns/open-source-contributing.md` | Contributing to IndigoDomotics open source |

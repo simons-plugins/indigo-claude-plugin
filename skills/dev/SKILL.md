@@ -120,8 +120,17 @@ verbatim from Indigo 2025.2 docs via `tools/refresh_canonical.py`. Load only the
 `reference/canonical/INDEX.md` lists all. A few docs under `docs/plugin-dev/` are workspace
 on-ramps/patterns kept alongside canonical. All paths below are relative to `${CLAUDE_PLUGIN_ROOT}`.
 
+> **Field notes — undocumented gotchas canonical does NOT cover.** Consult these before writing
+> custom states, dynamic state lists, cross-plugin actions, `uiPath` menus, or custom events:
+> `docs/plugin-dev/concepts/{devices,actions,events,plugin-preferences}.md`. They cover strict
+> state-ID naming (`LowLevelBadParameterError`), reserved names (`batteryLevel` shadowing), the
+> live-`getDeviceStateList` cache trap, `deviceUpdated` self-loop guard, `uiPath` PascalCase (crashes
+> the client), cross-plugin `executeAction` prop-matching, and the `pluginPrefs` vs `pluginProps`
+> `_`-prefix rule.
+
 | Topic | File |
 |-------|------|
+| **Field notes — undocumented device/state/action/event gotchas** | `docs/plugin-dev/concepts/{devices,actions,events,plugin-preferences}.md` |
 | Plugin lifecycle (workspace on-ramp) | `docs/plugin-dev/concepts/plugin-lifecycle.md` |
 | plugin.py lifecycle methods (reference) | `reference/canonical/plugin-dev/reference/plugin-py/general-methods.md` |
 | Device start/stop/config/action callbacks | `reference/canonical/plugin-dev/reference/plugin-py/device-methods.md` |
