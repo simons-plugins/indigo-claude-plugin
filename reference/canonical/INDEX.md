@@ -54,6 +54,20 @@ Each entry points at a local vendored file — load only the page you need.
 
 ## Bundled Plugins
 
+- **Bundled Plugins** — Documentation for the plugins that ship with Indigo: Airfoil Pro, Alexa, EasyDAQ, Email+, Global Property Manager, NOAA Weather, SQL Logger, and Timers and Pesters. → `reference/canonical/plugins.md`
+- **Airfoil Pro** — Documentation for the Airfoil Pro bundled plugin: controlling Airfoil audio routing from Indigo actions and scripts. → `reference/canonical/plugins/airfoilpro.md`
+- **EasyDAQ Relay Card** — Documentation for the EasyDAQ Relay Card plugin: controlling EasyDAQ USB relay boards from Indigo. → `reference/canonical/plugins/easydaq_1.md`
+- **Email+** — Documentation for the Email+ bundled plugin: sending and receiving email from Indigo actions. → `reference/canonical/plugins/email.md`
+- **Global Property Manager** — Documentation for the Global Property Manager bundled plugin: storing and retrieving persistent key-value data shared across plugins. → `reference/canonical/plugins/globalpropertymanager.md`
+- **NOAA Weather** — Documentation for the NOAA Weather bundled plugin: fetching weather conditions and forecasts into Indigo variables. → `reference/canonical/plugins/noaaweather.md`
+- **SQL Logger** — Documentation for the SQL Logger bundled plugin: logging device state changes and variable updates to a SQLite database. → `reference/canonical/plugins/sql_logger.md`
+- **Timers and Pesters** — Documentation for the Timers and Pesters bundled plugin: countdown timers, repeating actions, and scheduled one-shot events. → `reference/canonical/plugins/timersandpesters.md`
+- **Alexa** — Documentation for the Alexa bundled plugin: linking Indigo devices to Amazon Alexa for voice control. → `reference/canonical/plugins/alexa.md`
+- **Custom Indigo Skill** — How to execute Indigo action groups and read variable values by voice with the Custom Indigo Alexa Skill. → `reference/canonical/plugins/alexa/custom-skill.md`
+- **Migrating from Alexa-Hue Bridge** — How to migrate from the legacy Alexa-Hue Bridge plugin to the current Alexa plugin. → `reference/canonical/plugins/alexa/migrating.md`
+- **Plugin Operations** — Day-to-day operation of the Alexa plugin: publishing devices, managing the device list, and discovery. → `reference/canonical/plugins/alexa/operations.md`
+- **Smart Home Skill** — How to control Indigo devices with Alexa using the Indigo Smart Home Skill. → `reference/canonical/plugins/alexa/smart-home-skill.md`
+- **Troubleshooting** — Troubleshooting the Alexa plugin: discovery failures, naming, and skill-linking problems. → `reference/canonical/plugins/alexa/troubleshooting.md`
 
 ## Scripting
 
@@ -86,5 +100,51 @@ Each entry points at a local vendored file — load only the page you need.
 
 ## User Guide
 
+- **Indigo User Guide** — The Indigo User Guide: getting started, core concepts, the Mac client, hardware interfaces, remote access, automation techniques, and maintenance. → `reference/canonical/user.md`
+- **Glossary** — Definitions of key Indigo terms: devices, triggers, action groups, variables, control pages, and more. → `reference/canonical/user/glossary.md`
+- **Apple Shortcuts** — How to use Apple Shortcuts with Indigo to trigger actions, control devices, and query status from iOS and macOS. → `reference/canonical/user/automation/apple-shortcuts.md`
+- **Event Data Passing** — How to pass data from the event that triggered an action — device state changes, variable values, and trigger metadata. → `reference/canonical/user/automation/event-data.md`
+- **Get Contents of URL** — How to use the Get Contents of URL action to fetch data from HTTP endpoints and store responses in Indigo variables. → `reference/canonical/user/automation/get-contents-of-url.md`
+- **Substitutions** — How to use Indigo substitution syntax to embed dynamic device state, variable values, and date/time data in action parameters. → `reference/canonical/user/automation/substitutions.md`
+- **Core Concepts** — Overview of Indigo's building blocks: devices, triggers, schedules, actions and action groups, variables, control pages, conditions, and plugins. → `reference/canonical/user/concepts.md`
+- **Actions & Action Groups** — What Indigo actions and action groups are: the full catalog of device, server, variable, notification, Z-Wave, and Insteon actions, and grouping them for reuse. → `reference/canonical/user/concepts/actions.md`
+- **Conditions** — What Indigo conditions are: restricting when triggers and schedules execute, including condition scripts. → `reference/canonical/user/concepts/conditions.md`
+- **Control Pages** — What Indigo control pages are: building custom touch/browser interfaces with the Control Page editor. → `reference/canonical/user/concepts/control-pages.md`
+- **Devices** — What Indigo devices are: representing Z-Wave, Insteon, X10, virtual, and plugin hardware, device options, and multi-personality devices. → `reference/canonical/user/concepts/devices.md`
+- **Managing Plugins** — What Indigo plugins are and how to manage them: installing and updating from the Plugin Store, the Plugins menu, preferences, and uninstalling. → `reference/canonical/user/concepts/plugins.md`
+- **Schedules** — What Indigo schedules are: time and date options for running actions on a schedule, including sunrise/sunset and randomization. → `reference/canonical/user/concepts/schedules.md`
+- **Triggers** — What Indigo triggers are: every trigger event type, from device state changes and variable changes to email, interface, and plugin events. → `reference/canonical/user/concepts/triggers.md`
+- **Variables** — What Indigo variables are: storing state and data for use in triggers, conditions, and substitutions. → `reference/canonical/user/concepts/variables.md`
+- **Getting Started Guide** — Step-by-step guide to installing Indigo, configuring interfaces, adding devices, and setting up your first automations. → `reference/canonical/user/getting-started.md`
+- **Installation & Server Setup** — Installing Indigo, starting and configuring the Indigo Server, general preferences, location settings, and keeping the Mac awake for continuous operation. → `reference/canonical/user/getting-started/installation.md`
+- **Managing the Built-in Interfaces** — Enabling, disabling, and configuring Indigo's four built-in interfaces: Z-Wave, Insteon, X10, and Virtual Devices. → `reference/canonical/user/getting-started/interfaces.md`
+- **Accessing Indigo Remotely** — Reaching the Indigo Server from other Macs, Indigo Touch, and web browsers — firewall settings, server discovery, and reflector activation. → `reference/canonical/user/getting-started/remote-access.md`
+- **Virtual Devices** — How to create and use Virtual Devices in Indigo to represent non-physical devices or aggregate states. → `reference/canonical/user/interfaces/virtual-devices.md`
+- **Managing Insteon Devices** — How to add, configure, link, and troubleshoot Insteon devices in Indigo using the Mac client. → `reference/canonical/user/interfaces/insteon.md`
+- **Advanced PowerLinc Options** — Advanced configuration options for the PowerLinc 2413U/2413S Insteon interface, including LED brightness and signal timing. → `reference/canonical/user/interfaces/insteon/advanced-powerlinc.md`
+- **FanLinc and KeypadLinc** — Configure a 6-button KeypadLinc as a radio group to control a FanLinc: setting auto-off button groups, non-toggle mode, creating the links, and keeping button LEDs in sync from Indigo. → `reference/canonical/user/interfaces/insteon/fanlinc_and_keypadlinc.md`
+- **Insteon Links (Scenes)** — How Insteon device links (scenes) work, how they compare to Indigo triggers, and when to use each — or both together. → `reference/canonical/user/interfaces/insteon/insteon_links.md`
+- **PowerLinc 2413S** — Setup and configuration guide for the PowerLinc 2413S serial Insteon interface. → `reference/canonical/user/interfaces/insteon/powerlinc-2413s.md`
+- **Connecting X10 Interfaces** — How to add and control X10 devices in Indigo, including configuring the X10 RF interface and assigning house/unit codes. → `reference/canonical/user/interfaces/x10.md`
+- **X10 RF Options** — Configuration options for the X10 RF receiver interface, including supported hardware and frequency settings. → `reference/canonical/user/interfaces/x10/rf-options.md`
+- **Managing Z-Wave Devices** — How to add, interview, configure, and troubleshoot Z-Wave devices in Indigo, including secure inclusion and network repair. → `reference/canonical/user/interfaces/z-wave.md`
+- **Z-Wave Technology Overview** — A general-terms overview of Z-Wave technology: the wireless mesh network, primary and secondary controllers, including and excluding devices, associations, network healing, and a glossary of Z-Wave terms. → `reference/canonical/user/interfaces/z-wave/about.md`
+- **Association Management** — How to view and manage Z-Wave device associations in Indigo, including adding, removing, and troubleshooting association groups. → `reference/canonical/user/interfaces/z-wave/associations.md`
+- **Mac Client** — Tour of the Indigo Mac client interface: the main window, device list, event log, editors, and key menu items. → `reference/canonical/user/mac-client.md`
+- **Event Log Window** — Tour of the Indigo Mac client interface: the main window, device list, event log, editors, and key menu items. → `reference/canonical/user/mac-client/event-log.md`
+- **Home Window** — Tour of the Indigo Mac client interface: the main window, device list, event log, editors, and key menu items. → `reference/canonical/user/mac-client/home-window.md`
+- **Menus** — Tour of the Indigo Mac client interface: the main window, device list, event log, editors, and key menu items. → `reference/canonical/user/mac-client/menus.md`
+- **License Transfers** — Step-by-step guide to transferring an Indigo license to another user. → `reference/canonical/user/maintenance/license-transfer.md`
+- **Moving to Another Mac** — Step-by-step guide to moving your Indigo software to another computer. → `reference/canonical/user/maintenance/moving.md`
+- **Uninstalling Indigo** — Step-by-step guide to uninstalling Indigo. → `reference/canonical/user/maintenance/uninstalling.md`
+- **Upgrading Indigo** — Step-by-step guide to upgrading the Indigo software. → `reference/canonical/user/maintenance/upgrading.md`
+- **Indigo Reflectors** — How to set up and use the Indigo Reflector Service to access your Indigo server remotely without port forwarding. → `reference/canonical/user/remote-access/reflector.md`
+- **SSL Certificates Examples** — How to configure SSL/TLS certificates for the Indigo Web Server to enable secure HTTPS connections. → `reference/canonical/user/remote-access/ssl-certificates.md`
+- **Indigo Touch for Web** — Guide to using Indigo Touch for Web — the browser-based control interface powered by the Indigo Web Server. → `reference/canonical/user/remote-access/touch-for-web.md`
+- **Indigo Web Server** — Complete guide to configuring and using the Indigo Web Server (IWS): authentication, ports, SSL, and the REST/WebSocket APIs. → `reference/canonical/user/remote-access/web-server.md`
+- **Insteon/X10 Signal Troubleshooting** — How to diagnose and fix Insteon and X10 power-line signal problems: bridging your home's power legs, changing the signal path, removing or filtering noisy electronics and signal absorbers, and isolating problem circuits. → `reference/canonical/user/troubleshooting/powerline-signal-troubleshooting.md`
+- **Python Version Conflicts** — Explanation of Python version conflicts between Indigo's embedded Python and system Python, and how to resolve them. → `reference/canonical/user/troubleshooting/python-conflicts.md`
 
 ## Documentation
+
+- **Deletion Dependencies** — Reference table showing which Indigo objects depend on others and what is deleted or disabled when an object is removed. → `reference/canonical/user/concepts/deletion-dependencies.md`

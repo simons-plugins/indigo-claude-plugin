@@ -40,8 +40,10 @@ from urllib.request import Request, urlopen
 INDEX_URL = "https://docs.indigodomo.com/llms.txt"
 FULL_URL = "https://docs.indigodomo.com/llms-full.txt"
 
-# Only these top-level doc trees are vendored — the surface the dev/api skills route into.
-INCLUDE_PREFIXES = ("api", "plugin-dev", "scripting")
+# Top-level doc trees to vendor. api/plugin-dev/scripting back the dev + api skills;
+# user/plugins back the general /indigo:guide skill (concepts, interfaces incl. Z-Wave,
+# remote access, and the bundled plugins).
+INCLUDE_PREFIXES = ("api", "plugin-dev", "scripting", "user", "plugins")
 
 SECTION_RE = re.compile(r"^--- (?P<title>.+?) \((?P<url>https?://\S+?)\) ---$")
 INDEX_LINK_RE = re.compile(r"^- \[(?P<title>[^\]]+)\]\((?P<url>https?://\S+?)\)(?::\s*(?P<desc>.*))?$")
