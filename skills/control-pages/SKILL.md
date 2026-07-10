@@ -81,6 +81,7 @@ For detailed guidance, read these files relative to `${CLAUDE_PLUGIN_ROOT}`:
 | Screen sizing | `docs/control-pages/layouts/sizing.md` |
 | Layout templates | `docs/control-pages/layouts/templates.md` |
 | Clipping export | `docs/control-pages/export/clipping-export.md` |
+| Control pages — the user-facing concept | `reference/canonical/user/concepts/control-pages.md` |
 
 ## Full Documentation
 

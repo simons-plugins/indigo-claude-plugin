@@ -93,6 +93,8 @@ Vendored verbatim from Indigo's published docs. Read relative to `${CLAUDE_PLUGI
 | WebSocket API (feeds, refresh, patches) | `reference/canonical/api/websocket.md` |
 | Webhooks (receiving external events) | `reference/canonical/api/webhooks.md` |
 | Migrating from the old REST API | `reference/canonical/api/rest-migration.md` |
+| Server auth setup: local secrets, ports, Start Local Server dialog | `reference/canonical/user/remote-access/web-server.md` |
+| Reflector (remote access over the internet) | `reference/canonical/user/remote-access/reflector.md` |
 | Full canonical index (all pages) | `reference/canonical/INDEX.md` |
 
 ## Full Documentation
