@@ -91,7 +91,7 @@ Derive the two working paths:
 
 ### Phase 2 — PATCH
 
-Locate the two call sites in `plugin.py` with `Grep`. Line numbers
+Locate the three call sites in `plugin.py` with `Grep`. Line numbers
 drift across SQL Logger versions — always locate by the message
 fragment, not by number:
 
@@ -100,12 +100,19 @@ fragment, not by number:
   it's at ~line 529 and already carries `exc_info=True`.
 - Create path — grep `Failed to create table .* for device history`.
   Currently at ~line 476 and does **not** carry `exc_info=True`.
+- Schema-update path — grep `Failed to update schema`. Present in
+  SQL Logger 2025.2.0 at ~line 679, inside `_update_device_history`'s
+  `(ColumnsMissing, ColumnsChanged)` retry handler; carries
+  `exc_info=True`. This path fires when the retried `insert_row`
+  after a schema refresh fails (e.g. INT4 overflow) — in a live
+  2026-07 debugging pass it was the **only** site firing, so skipping
+  it makes the whole patch cycle come up empty.
 
 Promote each to `logger.error`, prefix the message with
-`[DEBUG-PATCH] `, and ensure `exc_info=True` is present on both (add
-it to the create call if missing — without it the traceback never
-reaches the log, which defeats the point of the patch). Use `Edit`,
-not `Write`.
+`[DEBUG-PATCH] `, and ensure `exc_info=True` is present on all three
+(add it to the create call if missing — without it the traceback
+never reaches the log, which defeats the point of the patch). Use
+`Edit`, not `Write`.
 
 Update path before/after:
 
@@ -128,12 +135,30 @@ self.logger.debug(f"Failed to create table {table_name} for device history: {err
 self.logger.error(f"[DEBUG-PATCH] Failed to create table {table_name} for device history: {err}", exc_info=True)
 ```
 
+Schema-update path before/after:
+
+```python
+# before (~line 679, with exc_info=True already)
+self.logger.debug(f"Failed to update schema for {dev_table_name}: {schema_err}", exc_info=True)
+
+# after
+self.logger.error(f"[DEBUG-PATCH] Failed to update schema for {dev_table_name}: {schema_err}", exc_info=True)
+```
+
 If a `grep` finds the fragment but the surrounding arguments differ
 from the above (SQL Logger is maintained; call signatures drift),
 adapt — the invariant is *promote to error, add the DEBUG-PATCH tag,
 ensure exc_info=True*. Every patched line MUST contain the literal
 string `[DEBUG-PATCH]` — the revert step relies on grep returning
 zero hits.
+
+Completeness check before restarting: grep
+`kErrorKeyDeviceHistoryError` and confirm every `logger.debug` that
+sits next to one of those `_log_error_unobtrusive` calls got
+promoted. SQL Logger is maintained and new swallowed sites appear
+between versions (the schema-update path above shipped after this
+skill was first written). A device-history error path that still
+logs at debug level will produce the Phase 3 symptom below.
 
 Restart the plugin:
 
@@ -147,7 +172,13 @@ Ask the user to wait one error cycle (~60s) and signal when ready.
 Do not sleep blindly — the cadence varies with server load.
 
 Read the last 200 lines of the plugin log and search for
-`[DEBUG-PATCH]`. The first matching line names the failing table:
+`[DEBUG-PATCH]`. If the generic error keeps repeating but **no**
+`[DEBUG-PATCH]` line appears after a full cycle, a swallowed call
+site was missed — go back to the Phase 2 completeness check and grep
+`kErrorKeyDeviceHistoryError` for an unpromoted `logger.debug`
+neighbour (this is exactly how the schema-update path was found).
+
+The first matching line names the failing table:
 
 ```
 [DEBUG-PATCH] Failed to update table device_history_1234567 for device 1234567: integer out of range
@@ -265,12 +296,13 @@ skill's own extraction output.
 
 ### Phase 6 — REVERT
 
-Undo every patch. Up to three regions may need reverting:
+Undo every patch. Up to four regions may need reverting:
 
 1. `_update_device_history` logger call — restore to
    `self.logger.debug(...)`, remove `[DEBUG-PATCH]` prefix
-2. `_create_table_for_dev` logger call — same
-3. `startup()` one-shot DROP block (option c only) — delete the whole
+2. `_update_device_history` schema-update logger call — same
+3. `_create_table_for_dev` logger call — same
+4. `startup()` one-shot DROP block (option c only) — delete the whole
    try/except block
 
 Verify cleanup with Grep:

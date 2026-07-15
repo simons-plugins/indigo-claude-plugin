@@ -20,7 +20,7 @@ SQL Logger Error: One or more failures updating device history; see the debug lo
 
 repeating every ~60s — no device ID, no traceback.
 
-This command temporarily patches SQL Logger's two swallowed
+This command temporarily patches SQL Logger's three swallowed
 `logger.debug` call sites to `error` level (tagged `[DEBUG-PATCH]`),
 surfaces the real exception, names the failing device via MCP, and
 then asks which of three fixes to apply:
@@ -46,8 +46,9 @@ At-a-glance phases:
 1. **CONFIRM + DISCOVER** — verify errors are actively repeating
    (`query_event_log`), locate SQL Logger plugin + log via
    `mcp__indigo__list_plugins`
-2. **PATCH** — promote the two `logger.debug(..., exc_info=True)`
-   calls in `_update_device_history` and `_create_table_for_dev` to
+2. **PATCH** — promote the three swallowed `logger.debug` calls
+   (update, schema-update, and create paths in
+   `_update_device_history` / `_create_table_for_dev`) to
    `logger.error` tagged `[DEBUG-PATCH]`, restart plugin
 3. **EXTRACT** — read plugin log, pull `device_history_<id>` and
    exception class, resolve device via `get_device_by_id`
