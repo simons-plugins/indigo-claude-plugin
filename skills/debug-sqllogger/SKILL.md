@@ -173,8 +173,14 @@ Do not sleep blindly — the cadence varies with server load.
 
 Read the last 200 lines of the plugin log and search for
 `[DEBUG-PATCH]`. If the generic error keeps repeating but **no**
-`[DEBUG-PATCH]` line appears after a full cycle, a swallowed call
-site was missed — go back to the Phase 2 completeness check and grep
+`[DEBUG-PATCH]` line appears after a full cycle, first rule out the
+mundane causes: confirm the plugin actually restarted after the
+patch deployed (grep the plugin log for the restart banner, or check
+the event log for "Started plugin") and that you're reading the
+right log file (`ls -lt` the log directory; rotation can leave you
+tailing yesterday's file). Only once the patched code is confirmed
+live does a missing marker mean a swallowed call site was missed —
+then go back to the Phase 2 completeness check and grep
 `kErrorKeyDeviceHistoryError` for an unpromoted `logger.debug`
 neighbour (this is exactly how the schema-update path was found).
 
@@ -358,7 +364,7 @@ happening, what to do next.
   any point after Phase 2 — user cancels, log-read finds nothing,
   extraction fails, any error, interrupt, or user "none" in Phase 4 —
   the first action before exiting is a full Phase 6 revert
-  (restore both `logger.debug` call sites, remove any `startup()`
+  (restore all three `logger.debug` call sites, remove any `startup()`
   DROP block, grep-verify zero `[DEBUG-PATCH]` hits, restart plugin).
   A patched `logger.error` left behind will spam the event log every
   ~60s at error level until noticed.
