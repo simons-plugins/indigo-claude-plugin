@@ -447,6 +447,76 @@ See [Python 3 Migration Guide](../../reference/Python3-Migration-Guide.md) for c
    indigo.kStateImageSel.NoImage
    ```
 
+### `UnicodeDecodeError: 'ascii' codec can't decode byte 0xe2`
+
+**Symptom:**
+```text
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xe2 in position N: ordinal not in range(128)
+```
+Triggered by code like:
+```python
+exec(open(SOME_PATH).read())
+# or
+text = open(some_path).read()
+```
+
+**Cause:** `IndigoPluginHost3` runs Python with a locale that makes the built-in `open()` default to **ASCII** encoding rather than UTF-8. Any source file or text file containing common non-ASCII characters fails to decode:
+
+| Byte sequence | Character | Where it appears |
+|---------------|-----------|------------------|
+| `0xe2 0x80 0x94` | `—` (em-dash) | comments, docstrings, log messages |
+| `0xe2 0x86 0x92` | `→` (arrow) | log messages (`Hall Lamp → blue`) |
+| `0xc2 0xb0` | `°` | temperature strings |
+| `0xc2 0xa3` | `£` | currency in error messages |
+
+This bites:
+- Scripts that `exec()` another script to reuse its functions (the "core-only" / shared-module pattern used by many automation setups)
+- Plugins reading bundled `.json`, `.txt`, or `.py` resource files with bare `open()`
+- Any code that loads UTF-8 user content (MQTT payloads written to disk, scraped web data, etc.)
+
+**Fix:** always pass `encoding="utf-8"` explicitly to `open()` when reading text:
+```python
+# WRONG — relies on Indigo's locale default (ASCII)
+with open(path) as f:
+    contents = f.read()
+
+# RIGHT — explicit UTF-8
+with open(path, encoding="utf-8") as f:
+    contents = f.read()
+```
+
+For the `exec()` pattern (e.g. when one script reuses functions from another), pass `globals()` explicitly as well — see the next section.
+
+Indigo's own logs, plugin sources, MQTT payloads, and JSON configs are all UTF-8 in practice. Defaulting to `encoding="utf-8"` everywhere is the safe rule.
+
+**Note:** `Path.read_text()` has the same default-encoding issue — pass `encoding="utf-8"` there too if you're using `pathlib`.
+
+### `NameError: name 'log' is not defined` after `exec()`-ing a shared library
+
+**Symptom:** A trigger or action script `exec()`s another script to reuse its functions (the "core-only" / shared-library pattern), but every call to a function from that library raises:
+```text
+NameError: name '<function>' is not defined
+```
+The exec call itself succeeds with no error.
+
+**Cause:** Indigo runs embedded trigger/action scripts **inside a function wrapper**, not at true module level. At the point of your `exec()` call, `globals()` and `locals()` are *different* dicts. Python's `exec()` semantics in that case put any new definitions into `locals()` only — i.e. the wrapper function's local scope. The library's functions are defined, but they never reach the global namespace where the subsequent code looks them up.
+
+**Fix:** pass `globals()` to `exec()` explicitly so definitions land in the module global namespace:
+```python
+LIBRARY_PATH = "/Library/Application Support/Perceptive Automation/Python Scripts/Some_Library.py"
+
+with open(LIBRARY_PATH, encoding="utf-8") as _f:
+    exec(_f.read(), globals())   # ← globals() makes the functions visible below
+
+# Now functions defined in Some_Library.py resolve correctly:
+log("Library loaded")
+do_something()
+```
+
+Without `globals()`, `exec()` runs as if inside a class body (per Python's documented behaviour when globals and locals are different) and `def` statements bind names locally.
+
+**Why this is Indigo-specific:** a normal Python script run from the command line has `globals() is locals()` at module level, so bare `exec(code)` works as expected. Indigo's plugin host wraps embedded scripts, breaking that assumption. The pairing of this with the UTF-8 default (above) means the "exec a shared library" pattern needs *both* `encoding="utf-8"` AND `globals()` to work reliably under Indigo.
+
 ## HTTP Responder Issues
 
 ### 404 Errors
