@@ -46,7 +46,10 @@ Control pages are XML-defined touch interfaces for Indigo, displayed on iOS/macO
 
 ## Essential Rules
 
-- Use 2x (retina) images for all new pages
+- Use 2x (retina) images for all new pages, but check the file exists first —
+  older images such as `lightbulb_large` have no 2x variant, and a missing
+  image renders as a bare caption. Pick from `docs/control-pages/images/`, or
+  confirm against `Web Assets/images/controls/devices/`
 - `ClientActionType` 1014 for dimmers/thermostats (popup control)
 - Empty `ActionGroup` element for display-only sensors
 - Dark theme background: `19 19 19`
@@ -63,8 +66,12 @@ Read `${CLAUDE_PLUGIN_ROOT}/control-pages.local.md` for user-configured defaults
 ## Export Tool
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/tools/create_clipping.py" input.xml output.textClipping
+cat input.xml | python3 "${CLAUDE_PLUGIN_ROOT}/tools/create_clipping.py" output.textClipping
 ```
+
+The script takes the output path as its only positional argument and reads the
+XML from stdin, or from `--xml` as a string. See
+`docs/control-pages/export/clipping-export.md` for the full argument list.
 
 ## Reference Documentation
 
