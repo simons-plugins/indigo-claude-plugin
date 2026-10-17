@@ -146,6 +146,32 @@ def deviceUpdated(self, origDev, newDev):
     # ...rest of the handler
 ```
 
+## `indigo.device.getDependencies` — two traps
+
+The canonical page shows the shape but not what it means in practice:
+
+1. **The dict is never empty.** It always carries six list keys: `actionGroups`,
+   `controlPages`, `devices`, `schedules`, `triggers`, and `variables`. Each entry is
+   `{"ID", "Name"}`. A device with no dependents returns six empty lists, so a check like
+   `if deps:` is always true. Test whether any of the lists is non-empty.
+2. **A grouped device lists its own group siblings under `devices`.** Verified live on
+   2025.2 (2026-10-17): each member of a two-device group reported the other as its only
+   dependent. Code that reads "any dependent" as "in use" refuses every grouped device. Ignore
+   entries that belong to the same group or node.
+
+It also does **not** see a device referenced only inside another plugin action's props. A
+Lamplighter zone is one example. An empty result means no *Indigo-visible* references, not no
+references at all.
+
+```python
+KINDS = ("actionGroups", "controlPages", "devices", "schedules", "triggers", "variables")
+deps = indigo.device.getDependencies(dev_id)
+if not any(k in deps for k in KINDS):
+    raise RuntimeError("unexpected getDependencies shape")  # don't read as "unused"
+referrers = [e["Name"] for k in KINDS for e in (deps.get(k) or [])
+             if not (k == "devices" and e["ID"] in own_group_ids)]
+```
+
 ## Quick rules
 
 - State IDs: camelCase ASCII only — no underscores, no non-ASCII letters.

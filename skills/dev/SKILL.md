@@ -122,15 +122,16 @@ on-ramps/patterns kept alongside canonical. All paths below are relative to `${C
 
 > **Field notes — undocumented gotchas canonical does NOT cover.** Consult these before writing
 > custom states, dynamic state lists, cross-plugin actions, `uiPath` menus, or custom events:
-> `docs/plugin-dev/concepts/{devices,actions,events,plugin-preferences}.md`. They cover strict
+> `docs/plugin-dev/concepts/{devices,actions,events,plugin-preferences,configui}.md`. They cover strict
 > state-ID naming (`LowLevelBadParameterError`), reserved names (`batteryLevel` shadowing), the
 > live-`getDeviceStateList` cache trap, `deviceUpdated` self-loop guard, `uiPath` PascalCase (crashes
 > the client), cross-plugin `executeAction` prop-matching, and the `pluginPrefs` vs `pluginProps`
-> `_`-prefix rule.
+> `_`-prefix rule, the `getDependencies` traps (never-empty dict, group siblings), and ConfigUI
+> layout (the longest Label sets the label column; put long text in `<Description>`).
 
 | Topic | File |
 |-------|------|
-| **Field notes — undocumented device/state/action/event gotchas** | `docs/plugin-dev/concepts/{devices,actions,events,plugin-preferences}.md` |
+| **Field notes — undocumented device/state/action/event gotchas** | `docs/plugin-dev/concepts/{devices,actions,events,plugin-preferences,configui}.md` |
 | Plugin lifecycle (workspace on-ramp) | `docs/plugin-dev/concepts/plugin-lifecycle.md` |
 | plugin.py lifecycle methods (reference) | `reference/canonical/plugin-dev/reference/plugin-py/general-methods.md` |
 | Device start/stop/config/action callbacks | `reference/canonical/plugin-dev/reference/plugin-py/device-methods.md` |
